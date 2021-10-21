@@ -9,14 +9,14 @@ import pandas as pd
 import json
 import csv
 
-def Create_app():
+def create_app():
     app = Flask(__name__)
     # make flask support CORS
     CORS(app)
     app.config['CORS_HEADERS'] = 'Content-Type'
     return app
 
-app = Create_app()
+app = create_app()
 
 # testing API, you can try to access http://localhost:5000/ on your browser after starting the server
 # params:
