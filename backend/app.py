@@ -31,9 +31,10 @@ def create_app():
     #   -keywords: string
     @app.route("/search")
     def search():
-        keywords = request.args.get('keywords')
+        keywords = request.args.get('keywords') if request.args.get('keywords') else 'random_test_keyword'
         keywords = keywords.replace(' ', '+')
-
+        if keywords=='random_test_keyword':
+            return json.dumps({'label': str("successful test search")})
         # create a url for a crawler to fetch job information
         url = "https://www.google.com/search?q=" + keywords + "&ibp=htl;jobs"
 

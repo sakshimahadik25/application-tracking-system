@@ -16,3 +16,9 @@ def client():
 def test_alive(client):
     rv = client.get('/')
     assert rv.data.decode("utf-8") == '{"str":"Hello World!"}\n'
+
+def test_fake_search(client):
+    rv = client.get('/search')
+    print(rv.data.decode("utf-8"))
+    jdata = json.loads(rv.data.decode("utf-8"))["label"]
+    assert jdata == 'successful test search'
