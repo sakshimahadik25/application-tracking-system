@@ -4,6 +4,8 @@
 ![GitHub issues](https://img.shields.io/github/issues-closed/prithvish-doshi-17/application-tracking-system)
 ![GitHub top language](https://img.shields.io/github/languages/top/prithvish-doshi-17/application-tracking-system)
 
+[![Build and Deploy Frontend](https://github.com/Team-Glare/application-tracking-system/actions/workflows/frontend_CI_CD.yml/badge.svg)](https://github.com/Team-Glare/application-tracking-system/actions/workflows/frontend_CI_CD.yml)
+
 #      J-Tracker - Your Job Tracking Assistant
 
 https://user-images.githubusercontent.com/43064854/135554150-c06afd4e-d223-47e3-b123-b45f9cd1b87a.mp4
