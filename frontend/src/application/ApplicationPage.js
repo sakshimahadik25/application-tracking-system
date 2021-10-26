@@ -33,7 +33,9 @@ export default class CardBoard extends Component {
         // fetch the data only after this component is mounted
         this.getInitData()
         .done((data) => {
+            console.log(data);
             data = JSON.parse(data);
+            console.log(data);
             let result = this.groupApplication(data);
             let card_titles = this.createCardTitle(result);
             let card_class = this.createCardClass(result);
@@ -173,8 +175,8 @@ export default class CardBoard extends Component {
             }
         ]
         applications.forEach(app => {
-            let app_class = result.find(v => { return v.class === app.class })
-            app_class.applications.push(app)
+            let app_class = result.find(v => { return v.class === app.status });
+            app_class.applications.push(app);
         })
         return result;
     }

@@ -36,7 +36,7 @@ class Card extends Component {
 
     render() {
         let dateType = date.find(d =>{
-            return d.class === this.props.application.class
+            return d.class === this.props.application.status
         })
         return (
             <div className="card card-col" key={this.state.id+"_card"}  onClick={this.state.showEditModal}>
