@@ -1,5 +1,5 @@
 [![GitHub license](https://img.shields.io/github/license/Team-Glare/application-tracking-system)](https://github.com/Team-Glare/application-tracking-system/blob/main/LICENSE)
-[![DOI](https://zenodo.org/badge/408949717.svg)](https://zenodo.org/badge/latestdoi/408949717)
+[![DOI](https://zenodo.org/badge/417325535.svg)](https://zenodo.org/badge/latestdoi/417325535)
 ![GitHub issues](https://img.shields.io/github/issues/Team-Glare/application-tracking-system)
 ![GitHub issues](https://img.shields.io/github/issues-closed/Team-Glare/application-tracking-system)
 ![GitHub top language](https://img.shields.io/github/languages/top/Team-Glare/application-tracking-system)
