@@ -104,7 +104,7 @@ def create_app():
             app_dict = a.to_mongo().to_dict()
             apps_list.append(app_dict)
         apps_json = dumps(apps_list)
-        return jsonify(apps_json)
+        return jsonify(apps_json), 200
 
     # write a new record to the CSV file 
     @app.route("/application", methods=['POST'])
