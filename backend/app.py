@@ -19,10 +19,14 @@ def create_app():
     CORS(app)
     app.config['CORS_HEADERS'] = 'Content-Type'
 
-    app.config['MONGODB_SETTINGS'] = {
-        'db': 'appTracker',
-        'host': f'mongodb+srv://user:apptracker@apptracker.goffn.mongodb.net/appTracker?retryWrites=true&w=majority'
-    }
+    with open('application.yml') as f:
+        info = yaml.load(f, Loader=yaml.FullLoader)
+        username = info['username']
+        password = info['password']
+        app.config['MONGODB_SETTINGS'] = {
+            'db': 'appTracker',
+            'host': f'mongodb+srv://{username}:{password}@apptracker.goffn.mongodb.net/appTracker?retryWrites=true&w=majority'
+        }
     db = MongoEngine()
     db.init_app(app)
 
