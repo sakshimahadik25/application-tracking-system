@@ -34,7 +34,7 @@ export default class CardBoard extends Component {
         this.getData()
         .done((data) => {
             data = JSON.parse(data);
-            console.log(data);
+            // console.log(data);
             let result = this.groupApplication(data);
             let card_titles = this.createCardTitle(result);
             let card_class = this.createCardClass(result);
@@ -49,7 +49,7 @@ export default class CardBoard extends Component {
     // the update function for child component
     updateCardBoard(application){
         let newApplications = this.state.applications
-        console.log(application)
+        // console.log(application)
         if (application.id == null){
             // current application is a new application, create a new one and save in the backend.
             console.log('new application');
@@ -69,7 +69,7 @@ export default class CardBoard extends Component {
                 }
             })
         } else {
-            console.log('updating application id=' + application.id)
+            console.log('updating id=' + application.id)
             $.ajax({
                 url: 'http://localhost:5000/application',
                 method: 'PUT',
@@ -85,7 +85,6 @@ export default class CardBoard extends Component {
                     let updatedApp = data.responseJSON
                     let idx = newApplications.findIndex((a => a.id === updatedApp.id))
                     newApplications[idx] = updatedApp
-                    console.log(newApplications)
                 }
             })
         }
@@ -105,6 +104,7 @@ export default class CardBoard extends Component {
 
     deleteApplication(application) {
         let newApplications = this.state.applications
+        console.log('deleting id=' + application.id)
         $.ajax({
             url: 'http://localhost:5000/application',
             method: 'DELETE',
@@ -114,7 +114,7 @@ export default class CardBoard extends Component {
             }),
             contentType: 'application/json',
             success: (msg)=>{
-                    console.log("deleted: " + msg)
+                    console.log(msg)
             },
             complete: function(data) {
                 let idx = newApplications.indexOf(data.responseJSON)

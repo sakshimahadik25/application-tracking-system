@@ -117,7 +117,6 @@ def create_app():
                                   companyName=a['companyName'],
                                   date=a['date'],
                                   status=a['status'])
-        print("test print")
         application.save()
         return jsonify(application.to_json())
 
