@@ -7,9 +7,9 @@ export default class CardEdit extends Component {
             closeEditModal: props.closeEditModal,
             submitFunc: props.submitFunc,
             id: props.application.id,
+            jobTitle: props.application.jobTitle,
             companyName: props.application.companyName,
             date: props.application.date,
-            jobTitle: props.application.jobTitle,
             class: props.application.status
         }
     }
@@ -27,7 +27,7 @@ export default class CardEdit extends Component {
             companyName: this.state.companyName,
             jobTitle: this.state.jobTitle,
             date: this.state.date,
-            class: this.state.status
+            status: this.state.class
         }
         // call parent function to handle data change
         this.state.submitFunc(application)

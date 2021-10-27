@@ -15,14 +15,14 @@ export default class CardBoard extends Component {
             card_class: [],
             showModal:false
         }
-        this.getInitData = this.getInitData.bind(this);
+        this.getData = this.getData.bind(this);
         this.groupApplication = this.groupApplication.bind(this);
         this.createCardTitle = this.createCardTitle.bind(this);
         this.createCardClass = this.createCardClass.bind(this);
     }
 
     // get initial data to render the root page
-    getInitData(){
+    getData(){
         return $.ajax({
                 url: 'http://localhost:5000/application',
                 method: 'GET'
@@ -31,9 +31,8 @@ export default class CardBoard extends Component {
 
     componentDidMount(){
         // fetch the data only after this component is mounted
-        this.getInitData()
+        this.getData()
         .done((data) => {
-            console.log(data);
             data = JSON.parse(data);
             console.log(data);
             let result = this.groupApplication(data);
@@ -44,62 +43,51 @@ export default class CardBoard extends Component {
                 card_titles: card_titles,
                 card_class: card_class
             })
-        })
+        });
     }
 
     // the update function for child component
     updateCardBoard(application){
         let newApplications = this.state.applications
-        if (application.id >= newApplications.length){
+        if (!application.id){
             // current application is a new application, create a new one and save in the backend.
-            newApplications.push(application)
-
+            console.log('new application');
             $.ajax({
                 url: 'http://localhost:5000/application',
                 method: 'POST',
+                async: false,
                 data:JSON.stringify({
                     application: application
                 }),
                 contentType: 'application/json',
                 success: (msg)=>{
-                    alert(msg);
+                    console.log(msg)
+                },
+                complete: function(data) {
+                    newApplications.push(data.responseJSON)
                 }
             })
-        }else{
-            newApplications[application.id] = application
+        } else {
+            console.log('updating application id=' + application.id)
         }
-        
+
         // rerender the page to represent the update result
         let result = this.groupApplication(newApplications);
         let card_titles = this.createCardTitle(result);
         let card_class = this.createCardClass(result);
-        
+
         this.setState({
-            applications: newApplications, 
+            applications: newApplications,
             card_titles: card_titles,
             card_class: card_class,
-            showModal:false,
+            showModal: false,
             application: null
-        })
-    }
-
-    getNewId() {
-        return $.ajax({
-            async: false,
-            url: 'http://localhost:5000/getNewId',
-            method: 'GET'
         })
     }
 
     // open the card modal according to the application in parameter
     showEditModal(application, mode) {
         let modalMode = mode
-        if (!application.id){
-            // if the application lacks id meaning it is new record.
-            this.getNewId().done((newID=>{
-                application.id = newID
-            }))
-        }
             
         this.setState({
             showModal: true,

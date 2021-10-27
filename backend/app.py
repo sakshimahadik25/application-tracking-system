@@ -19,18 +19,15 @@ def create_app():
     CORS(app)
     app.config['CORS_HEADERS'] = 'Content-Type'
 
-    with open('application.yml') as f:
-        info = yaml.load(f, Loader=yaml.FullLoader)
-        username = info['username']
-        password = info['password']
-        app.config['MONGODB_SETTINGS'] = {
-            'db': 'appTracker',
-            'host': f'mongodb+srv://{username}:{password}@apptracker.goffn.mongodb.net/appTracker?retryWrites=true&w=majority'
-        }
+    app.config['MONGODB_SETTINGS'] = {
+        'db': 'appTracker',
+        'host': f'mongodb+srv://user:apptracker@apptracker.goffn.mongodb.net/appTracker?retryWrites=true&w=majority'
+    }
     db = MongoEngine()
     db.init_app(app)
 
     class Application(db.Document):
+        id = db.IntField(primary_key=True)
         jobTitle = db.StringField()
         companyName = db.StringField()
         date = db.StringField()
@@ -87,23 +84,23 @@ def create_app():
     # get data from the CSV file for rendering root page
     @app.route("/application", methods=['GET'])
     def get_data():
+
         applications = Application.objects()
         if len(applications) == 0:
             # provide some initial data
-            Application(jobTitle='Backend Engineer', companyName='Facebook', date=str(datetime.date(2021, 9, 22))).save()
-            Application(jobTitle='Front-end Engineer', companyName='Roblox', date=str(datetime.date(2021, 9, 22))).save()
-            Application(jobTitle='Software Engineer', companyName='Cisco', date=str(datetime.date(2021, 10, 12))).save()
-            Application(jobTitle='Software Engineer', companyName='Amazon', date=str(datetime.date(2021, 9, 24))).save()
-            Application(jobTitle='Software Engineer', companyName='Google', date=str(datetime.date(2021, 9, 23))).save()
+            Application(id=1, jobTitle='Backend Engineer', companyName='Facebook', date=str(datetime.date(2021, 9, 22))).save()
+            Application(id=2, jobTitle='Front-end Engineer', companyName='Roblox', date=str(datetime.date(2021, 9, 22))).save()
+            Application(id=3, jobTitle='Software Engineer', companyName='Cisco', date=str(datetime.date(2021, 10, 12))).save()
+            Application(id=4, jobTitle='Software Engineer', companyName='Amazon', date=str(datetime.date(2021, 9, 24))).save()
+            Application(id=5, jobTitle='Software Engineer', companyName='Google', date=str(datetime.date(2021, 9, 23))).save()
 
         applications = Application.objects()
         apps_list = []
         for a in applications:
             app_dict = a.to_mongo().to_dict()
-            del app_dict['_id']
             apps_list.append(app_dict)
         apps_json = dumps(apps_list)
-        return apps_json
+        return jsonify(apps_json)
 
     # write a new record to the CSV file 
     @app.route("/application", methods=['POST'])
@@ -123,29 +120,36 @@ def create_app():
         #     print(e)
         #     exit(1)
         # return jsonify('Create an application succeddfully!')
-        record = json.loads(request.data)
-        application = Application(jobTitle=record['jobTitle'],
+        record = json.loads(request.data)['application']
+        print(record)
+        application = Application(id=get_new_id(),
+                                  jobTitle=record['jobTitle'],
                                   companyName=record['companyName'],
                                   date=record['date'],
                                   status=record['status'])
         application.save()
         return jsonify(application)
 
+    def get_new_id():
+        # path = "./data/applications.csv"
+        # try:
+        #     f = open(path, 'r',  encoding='utf-8')
+        #     rows = csv.reader(f)
+        #     i = 0
+        #     for row in islice(rows, 1, None):
+        #         i += 1
+        #     return jsonify(i)
+        # except Exception as e:
+        #     print(e)
+        #     exit(1)
+        id_list = []
+        for a in Application.objects():
+            id_list.append(a['id'])
+        nums = list(range(1, max(id_list) + 1))
+        if nums == id_list:
+            return max(id_list) + 1
+        return min(set(nums) - set(id_list))
 
-    # get the biggest id in the CSV for creating a new application
-    @app.route("/getNewId", methods=['GET'])
-    def getNewId():
-        path = "./data/applications.csv"
-        try:
-            f = open(path, 'r',  encoding='utf-8')
-            rows = csv.reader(f)
-            i = 0
-            for row in islice(rows, 1, None):
-                i += 1
-            return jsonify(i)
-        except Exception as e: 
-            print(e)
-            exit(1)
     return app
 
 app = create_app()
