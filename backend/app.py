@@ -150,7 +150,7 @@ def create_app():
         for a in Application.objects():
             id_list.append(a['id'])
         nums = list(range(1, max(id_list) + 1))
-        if nums == id_list:
+        if set(nums) == set(id_list):
             return max(id_list) + 1
         return min(set(nums) - set(id_list))
 

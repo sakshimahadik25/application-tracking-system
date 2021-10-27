@@ -162,9 +162,9 @@ export default class CardBoard extends Component {
                 class: "4"
             }
         ]
-        applications.forEach(app => {
+        applications?.forEach(app => {
             let app_class = result.find(v => { return v.class === app.status });
-            app_class.applications.push(app);
+            app_class?.applications.push(app);
         })
         return result;
     }
