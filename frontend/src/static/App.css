@@ -80,8 +80,8 @@
 }
 
 .btn-danger {
-  background-color: #7784ee;
-  border-color: #7784ee;
+  background-color: #fa5f55;
+  border-color: #fa5f55;
 }
 
 .btn-danger:hover,
@@ -91,8 +91,7 @@
 .btn-danger.active,
 .btn-danger:active,
 .show > .btn-danger.dropdown-toggle {
-  background-color: #5868e8;
-  border-color: #5868e8;
+  box-shadow: 0 0 0 0.25rem rgb(119 132 238 / 33%);
 }
 .btn-check:focus + .btn-danger,
 .btn-danger:focus {

@@ -38,7 +38,8 @@ def create_app():
         status = db.StringField(default="1")
 
         def to_json(self):
-            return {"jobTitle": self.jobTitle,
+            return {"id": self.id,
+                    "jobTitle": self.jobTitle,
                     "companyName": self.companyName,
                     "date": self.date,
                     "status": self.status}
@@ -98,10 +99,11 @@ def create_app():
             Application(id=4, jobTitle='Software Engineer', companyName='Amazon', date=str(datetime.date(2021, 9, 24))).save()
             Application(id=5, jobTitle='Software Engineer', companyName='Google', date=str(datetime.date(2021, 9, 23))).save()
 
-        applications = Application.objects()
         apps_list = []
         for a in applications:
             app_dict = a.to_mongo().to_dict()
+            app_dict['id'] = app_dict['_id']
+            del app_dict['_id']
             apps_list.append(app_dict)
         apps_json = dumps(apps_list)
         return jsonify(apps_json), 200
@@ -109,43 +111,40 @@ def create_app():
     # write a new record to the CSV file 
     @app.route("/application", methods=['POST'])
     def add_application():
-        # path = "./data/applications.csv"
-        # csvTitle = ['jobTitle', 'companyName', 'date', 'class', 'id']
-        # application = request.get_json()['application']
-        # newLine = []
-        # for t in csvTitle:
-        #     newLine.append(application[t] if t in application else None)
-        #
-        # try:
-        #     with open(path, 'a+', encoding='utf-8') as f:
-        #         writer = csv.writer(f, delimiter=',')
-        #         writer.writerow(newLine)
-        # except Exception as e:
-        #     print(e)
-        #     exit(1)
-        # return jsonify('Create an application succeddfully!')
-        record = json.loads(request.data)['application']
-        print(record)
+        a = json.loads(request.data)['application']
         application = Application(id=get_new_id(),
-                                  jobTitle=record['jobTitle'],
-                                  companyName=record['companyName'],
-                                  date=record['date'],
-                                  status=record['status'])
+                                  jobTitle=a['jobTitle'],
+                                  companyName=a['companyName'],
+                                  date=a['date'],
+                                  status=a['status'])
+        print("test print")
         application.save()
-        return jsonify(application)
+        return jsonify(application.to_json())
+
+    @app.route('/application', methods=['PUT'])
+    def update_application():
+        a = json.loads(request.data)['application']
+        application = Application.objects(id=a['id']).first()
+        if not application:
+            return jsonify({'error': 'data not found'})
+        else:
+            application.update(jobTitle=a['jobTitle'],
+                               companyName=a['companyName'],
+                               date=a['date'],
+                               status=a['status'])
+        return jsonify(a)
+
+    @app.route("/application", methods=['DELETE'])
+    def delete_application():
+        a = json.loads(request.data)['application']
+        application = Application.objects(id=a['id']).first()
+        if not application:
+            return jsonify({'error': 'data not found'})
+        else:
+            application.delete()
+        return jsonify(application.to_json())
 
     def get_new_id():
-        # path = "./data/applications.csv"
-        # try:
-        #     f = open(path, 'r',  encoding='utf-8')
-        #     rows = csv.reader(f)
-        #     i = 0
-        #     for row in islice(rows, 1, None):
-        #         i += 1
-        #     return jsonify(i)
-        # except Exception as e:
-        #     print(e)
-        #     exit(1)
         id_list = []
         for a in Application.objects():
             id_list.append(a['id'])

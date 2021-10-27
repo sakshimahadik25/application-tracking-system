@@ -49,7 +49,8 @@ export default class CardBoard extends Component {
     // the update function for child component
     updateCardBoard(application){
         let newApplications = this.state.applications
-        if (!application.id){
+        console.log(application)
+        if (application.id == null){
             // current application is a new application, create a new one and save in the backend.
             console.log('new application');
             $.ajax({
@@ -69,8 +70,57 @@ export default class CardBoard extends Component {
             })
         } else {
             console.log('updating application id=' + application.id)
+            $.ajax({
+                url: 'http://localhost:5000/application',
+                method: 'PUT',
+                async: false,
+                data:JSON.stringify({
+                    application: application
+                }),
+                contentType: 'application/json',
+                success: (msg)=>{
+                    console.log(msg)
+                },
+                complete: function(data) {
+                    let updatedApp = data.responseJSON
+                    let idx = newApplications.findIndex((a => a.id === updatedApp.id))
+                    newApplications[idx] = updatedApp
+                    console.log(newApplications)
+                }
+            })
         }
+        // rerender the page to represent the update result
+        let result = this.groupApplication(newApplications);
+        let card_titles = this.createCardTitle(result);
+        let card_class = this.createCardClass(result);
 
+        this.setState({
+            applications: newApplications,
+            card_titles: card_titles,
+            card_class: card_class,
+            showModal: false,
+            application: null
+        })
+    }
+
+    deleteApplication(application) {
+        let newApplications = this.state.applications
+        $.ajax({
+            url: 'http://localhost:5000/application',
+            method: 'DELETE',
+            async: false,
+            data:JSON.stringify({
+                application: application
+            }),
+            contentType: 'application/json',
+            success: (msg)=>{
+                    console.log("deleted: " + msg)
+            },
+            complete: function(data) {
+                let idx = newApplications.indexOf(data.responseJSON)
+                newApplications.splice(idx, 1)
+            }
+        })
         // rerender the page to represent the update result
         let result = this.groupApplication(newApplications);
         let card_titles = this.createCardTitle(result);
@@ -172,7 +222,12 @@ export default class CardBoard extends Component {
     render() {
         let applicationModal = null
         if (this.state.application){
-            applicationModal = <CardModal show={this.state.showModal} submitFunc={this.updateCardBoard.bind(this)}  mode={this.state.modalMode} application={this.state.application} closeEditModal={this.closeEditModal.bind(this)} />
+            applicationModal = <CardModal show={this.state.showModal}
+                                          submitFunc={this.updateCardBoard.bind(this)}
+                                          mode={this.state.modalMode}
+                                          application={this.state.application}
+                                          closeEditModal={this.closeEditModal.bind(this)}
+                                          deleteApplication={this.deleteApplication.bind(this)}/>
         }
         return (
             <span id="tab">
