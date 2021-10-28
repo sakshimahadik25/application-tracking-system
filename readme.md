@@ -86,4 +86,4 @@ flask run
 
 
 ## License
-[MIT](https://choosealicense.com/licenses/mit/)
+The project is licensed under the [MIT](https://choosealicense.com/licenses/mit/) license. 
