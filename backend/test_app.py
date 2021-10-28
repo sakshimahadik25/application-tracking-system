@@ -1,5 +1,6 @@
 import pytest
 import json
+import datetime
 from app import create_app
 
 # Pytest fixtures are useful tools for calling resources
@@ -25,3 +26,11 @@ def test_fake_search(client):
 def test_db_get_data(client):
     rv = client.get('/')
     assert rv.status_code == 200
+
+def test_db_add_application(client):
+    rv = client.post('/application', json={'application':{
+        'jobTitle':'fakeJob', 'companyName':'fakeCompany', 'date':str(datetime.date(2021, 9, 23)), 'status':'1'
+        }})
+    print(rv.data)
+    jdata = json.loads(rv.data.decode("utf-8"))["companyName"]
+    assert jdata == 'fakeCompany'
