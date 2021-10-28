@@ -91,3 +91,11 @@ The project is licensed under the [MIT](https://choosealicense.com/licenses/mit/
 
 ## How to Contribute?
 Please see our CONTRIBUTING.md for instructions on how to contribute to the repo and assist us in improving the project. 
+
+
+## Team Members
+* [Setu Kumar Basak](https://github.com/setu1421)  
+* [Conor Thomason](https://github.com/ConorThomason)  
+* [Keertana Vellanki](https://github.com/KeertanaVellanki)  
+* [Muntasir Hoq](https://github.com/muntasirhoq)  
+* [Matthew Sohacki](https://github.com/msohacki)  
