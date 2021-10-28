@@ -9,13 +9,27 @@ When contributing to the repository, we recommend that you discuss the change yo
 
 Please make sure that all your contributions adhere to the guidelines specified in the Code of Conduct.
 
-Several ways through which one could contribute to the project are:
+There are a number of ways you may help with the project, which are described below.
 
-
-**Suggesting additional functionality:**
-
-One can suggest more features to be added to the application by updating the Readme - Future scope map.  Once reviewed and aligned,  the design and implementation can be discussed further. 
 ##
+
+# SUGGESTING ADDITIONAL FUNCTIONALITY
+
+1. Please go through the  By upgrading the Future scope map, further functionality for the application can be suggested. The design and implementation can be addressed further after they have been reviewed and aligned. 
+
+##
+
+
+# REPORTING BUGS
+
+1. Please let one of the us know if you encounter any bugs. 
+2. Fill out a bug report. 
+3. While filling a bug report, please describe the problem you have faced in detail and include all the relevant information.
+4. We will go through the bug report and try to resolve the issues as quickly as possible. 
+
+
+##
+
 
 # PULL REQUESTS
 
@@ -30,6 +44,3 @@ Any suggestions or changes to improve the project would be appreciated.
 
 
 
-**Adding Issues:**
-
-While navigating the application, if you come across any issues/challenges you would want to highlight, please add them to the open issue tracker and assign one of the team members. We can further look into the same.
