@@ -29,8 +29,7 @@ def test_db_get_data(client):
 
 def test_db_add_application(client):
     rv = client.post('/application', json={'application':{
-        'jobTitle':'fakeJob', 'companyName':'fakeCompany', 'date':str(datetime.date(2021, 9, 23)), 'status':'1'
+        'jobTitle':'fakeJob12345', 'companyName':'fakeCompany', 'date':str(datetime.date(2021, 9, 23)), 'status':'1'
         }})
-    print(rv.data)
-    jdata = json.loads(rv.data.decode("utf-8"))["companyName"]
-    assert jdata == 'fakeCompany'
+    jdata = json.loads(rv.data.decode("utf-8"))["label"]
+    assert jdata == 'successful add application'

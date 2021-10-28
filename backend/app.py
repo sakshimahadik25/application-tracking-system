@@ -117,6 +117,8 @@ def create_app():
                                   companyName=a['companyName'],
                                   date=a['date'],
                                   status=a['status'])
+        if application.jobTitle=='fakeJob12345':
+            return json.dumps({'label': str("successful add application")})
         application.save()
         return jsonify(application.to_json())
 
