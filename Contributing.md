@@ -9,13 +9,13 @@ When contributing to the repository, we recommend that you discuss the change yo
 
 Please make sure that all your contributions adhere to the guidelines specified in the Code of Conduct.
 
-There are a number of ways you may help with the project, which are described below.
+There are several ways you may help with the project, which are described below.
 
 ##
 
 # SUGGESTING ADDITIONAL FUNCTIONALITY
 
-1. Please go through the  By upgrading the Future scope map, further functionality for the application can be suggested. The design and implementation can be addressed further after they have been reviewed and aligned. 
+Additional application features can be suggested by amending the Roadmap. After the design and execution have been reviewed and aligned, they can be further addressed.
 
 ##
 
