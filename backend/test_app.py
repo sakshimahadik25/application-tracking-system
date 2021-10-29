@@ -1,7 +1,9 @@
 import pytest
 import json
 import datetime
-from app import create_app
+from flask_mongoengine import MongoEngine
+import yaml
+from app import create_app, Application
 
 # Pytest fixtures are useful tools for calling resources
 # over and over, without having to manually recreate them,
@@ -12,6 +14,16 @@ from app import create_app
 @pytest.fixture
 def client():
     app = create_app()
+    with open('application.yml') as f:
+        info = yaml.load(f, Loader=yaml.FullLoader)
+        username = info['username']
+        password = info['password']
+        app.config['MONGODB_SETTINGS'] = {
+            'db': 'appTracker',
+            'host': f'mongodb+srv://{username}:{password}@apptracker.goffn.mongodb.net/appTracker?retryWrites=true&w=majority'
+        }
+    db = MongoEngine()
+    db.init_app(app)
     yield app.test_client()
 
 def test_alive(client):
@@ -23,13 +35,15 @@ def test_fake_search(client):
     jdata = json.loads(rv.data.decode("utf-8"))["label"]
     assert jdata == 'successful test search'
 
-def test_db_get_data(client):
-    rv = client.get('/')
+def test_mocking(client, mocker):
+    application = Application(id=1, jobTitle='Backend Engineer', companyName='Facebook', date=str(datetime.date(2021, 9, 22)))
+    list_application = []
+    list_application.append(application)
+    mocker.patch(
+        # Dataset is in slow.py, but imported to main.py
+        'app.Application.objects',
+        return_value = list_application
+    )
+    rv = client.get('/application')
+    print(rv.data)
     assert rv.status_code == 200
-
-def test_db_add_application(client):
-    rv = client.post('/application', json={'application':{
-        'jobTitle':'fakeJob12345', 'companyName':'fakeCompany', 'date':str(datetime.date(2021, 9, 23)), 'status':'1'
-        }})
-    jdata = json.loads(rv.data.decode("utf-8"))["label"]
-    assert jdata == 'successful add application'

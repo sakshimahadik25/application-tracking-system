@@ -9,7 +9,6 @@ from webdriver_manager.chrome import ChromeDriverManager
 from bson.json_util import dumps
 import pandas as pd
 import json
-import csv
 import datetime
 import yaml
 
@@ -18,31 +17,6 @@ def create_app():
     # make flask support CORS
     CORS(app)
     app.config['CORS_HEADERS'] = 'Content-Type'
-
-    with open('application.yml') as f:
-        info = yaml.load(f, Loader=yaml.FullLoader)
-        username = info['username']
-        password = info['password']
-        app.config['MONGODB_SETTINGS'] = {
-            'db': 'appTracker',
-            'host': f'mongodb+srv://{username}:{password}@apptracker.goffn.mongodb.net/appTracker?retryWrites=true&w=majority'
-        }
-    db = MongoEngine()
-    db.init_app(app)
-
-    class Application(db.Document):
-        id = db.IntField(primary_key=True)
-        jobTitle = db.StringField()
-        companyName = db.StringField()
-        date = db.StringField()
-        status = db.StringField(default="1")
-
-        def to_json(self):
-            return {"id": self.id,
-                    "jobTitle": self.jobTitle,
-                    "companyName": self.companyName,
-                    "date": self.date,
-                    "status": self.status}
 
     # testing API, you can try to access http://localhost:5000/ on your browser after starting the server
     # params:
@@ -91,6 +65,7 @@ def create_app():
     def get_data():
 
         applications = Application.objects()
+        print(applications)
         if len(applications) == 0:
             # provide some initial data
             Application(id=1, jobTitle='Backend Engineer', companyName='Facebook', date=str(datetime.date(2021, 9, 22))).save()
@@ -113,12 +88,10 @@ def create_app():
     def add_application():
         a = json.loads(request.data)['application']
         application = Application(id=get_new_id(),
-                                  jobTitle=a['jobTitle'],
-                                  companyName=a['companyName'],
-                                  date=a['date'],
-                                  status=a['status'])
-        if application.jobTitle=='fakeJob12345':
-            return json.dumps({'label': str("successful add application")})
+                                    jobTitle=a['jobTitle'],
+                                    companyName=a['companyName'],
+                                    date=a['date'],
+                                    status=a['status'])
         application.save()
         return jsonify(application.to_json())
 
@@ -130,9 +103,9 @@ def create_app():
             return jsonify({'error': 'data not found'})
         else:
             application.update(jobTitle=a['jobTitle'],
-                               companyName=a['companyName'],
-                               date=a['date'],
-                               status=a['status'])
+                                companyName=a['companyName'],
+                                date=a['date'],
+                                status=a['status'])
         return jsonify(a)
 
     @app.route("/application", methods=['DELETE'])
@@ -144,19 +117,42 @@ def create_app():
         else:
             application.delete()
         return jsonify(application.to_json())
-
-    def get_new_id():
-        id_list = []
-        for a in Application.objects():
-            id_list.append(a['id'])
-        nums = list(range(1, max(id_list) + 1))
-        if set(nums) == set(id_list):
-            return max(id_list) + 1
-        return min(set(nums) - set(id_list))
-
     return app
 
 app = create_app()
+with open('application.yml') as f:
+    info = yaml.load(f, Loader=yaml.FullLoader)
+    username = info['username']
+    password = info['password']
+    app.config['MONGODB_SETTINGS'] = {
+        'db': 'appTracker',
+        'host': f'mongodb+srv://{username}:{password}@apptracker.goffn.mongodb.net/appTracker?retryWrites=true&w=majority'
+    }
+db = MongoEngine()
+db.init_app(app)
+
+class Application(db.Document):
+        id = db.IntField(primary_key=True)
+        jobTitle = db.StringField()
+        companyName = db.StringField()
+        date = db.StringField()
+        status = db.StringField(default="1")
+
+        def to_json(self):
+            return {"id": self.id,
+                    "jobTitle": self.jobTitle,
+                    "companyName": self.companyName,
+                    "date": self.date,
+                    "status": self.status}
+
+def get_new_id():
+    id_list = []
+    for a in Application.objects():
+        id_list.append(a['id'])
+    nums = list(range(1, max(id_list) + 1))
+    if set(nums) == set(id_list):
+        return max(id_list) + 1
+    return min(set(nums) - set(id_list))
 
 if __name__ == "__main__":
     app.run(debug=True)
