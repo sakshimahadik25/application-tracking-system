@@ -26,18 +26,18 @@ def client():
     db.init_app(app)
     yield app.test_client()
 
-#testing if the flask app is running properly
+#1. testing if the flask app is running properly
 def test_alive(client):
     rv = client.get('/')
     assert rv.data.decode("utf-8") == '{"str":"Hello World!"}\n'
 
-#testing if the search function running properly
+#2. testing if the search function running properly
 def test_fake_search(client):
     rv = client.get('/search')
     jdata = json.loads(rv.data.decode("utf-8"))["label"]
     assert jdata == 'successful test search'
 
-#testing if the application is getting data from database properly
+#3. testing if the application is getting data from database properly
 def test_get_data(client, mocker):
     application = Application(id=1, jobTitle='Backend Engineer', companyName='Facebook', date=str(datetime.date(2021, 9, 22)))
     list_application = []
@@ -51,7 +51,7 @@ def test_get_data(client, mocker):
     print(rv.data)
     assert rv.status_code == 200
 
-#testing if the application is saving data in database properly
+#4. testing if the application is saving data in database properly
 def test_add_application(client, mocker):
     mocker.patch(
         # Dataset is in slow.py, but imported to main.py
@@ -64,6 +64,26 @@ def test_add_application(client, mocker):
     )
     rv = client.post('/application', json={'application':{
         'jobTitle':'fakeJob12345', 'companyName':'fakeCompany', 'date':str(datetime.date(2021, 9, 23)), 'status':'1'
+        }})
+    jdata = json.loads(rv.data.decode("utf-8"))["jobTitle"]
+    assert jdata == 'fakeJob12345'
+
+#5. testing if the application is updating data in database properly
+def test_update_application(client, mocker):
+    application = Application(id=1, jobTitle='fakeJob12345', companyName='fakeCompany', date=str(datetime.date(2021, 9, 22)))
+    list_application = []
+    list_application.append(application)
+    mocker.patch(
+        # Dataset is in slow.py, but imported to main.py
+        'app.Application.update'
+    )
+    mocker.patch(
+        # Dataset is in slow.py, but imported to main.py
+        'app.Application.objects.first',
+        return_value = list_application
+    )
+    rv = client.put('/application', json={'application':{
+        'id':1, 'jobTitle':'fakeJob12345', 'companyName':'fakeCompany', 'date':str(datetime.date(2021, 9, 23)), 'status':'1'
         }})
     jdata = json.loads(rv.data.decode("utf-8"))["jobTitle"]
     assert jdata == 'fakeJob12345'

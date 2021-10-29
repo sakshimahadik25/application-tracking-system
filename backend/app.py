@@ -99,6 +99,7 @@ def create_app():
     def update_application():
         a = json.loads(request.data)['application']
         application = Application.objects(id=a['id']).first()
+        print(application)
         if not application:
             return jsonify({'error': 'data not found'})
         else:
