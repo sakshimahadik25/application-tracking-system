@@ -35,7 +35,7 @@ def test_fake_search(client):
     jdata = json.loads(rv.data.decode("utf-8"))["label"]
     assert jdata == 'successful test search'
 
-def test_mocking(client, mocker):
+def test_get_data(client, mocker):
     application = Application(id=1, jobTitle='Backend Engineer', companyName='Facebook', date=str(datetime.date(2021, 9, 22)))
     list_application = []
     list_application.append(application)
@@ -47,3 +47,19 @@ def test_mocking(client, mocker):
     rv = client.get('/application')
     print(rv.data)
     assert rv.status_code == 200
+
+def test_add_application(client, mocker):
+    mocker.patch(
+        # Dataset is in slow.py, but imported to main.py
+        'app.get_new_id',
+        return_value = -1
+    )
+    mocker.patch(
+        # Dataset is in slow.py, but imported to main.py
+        'app.Application.save'
+    )
+    rv = client.post('/application', json={'application':{
+        'jobTitle':'fakeJob12345', 'companyName':'fakeCompany', 'date':str(datetime.date(2021, 9, 23)), 'status':'1'
+        }})
+    jdata = json.loads(rv.data.decode("utf-8"))["jobTitle"]
+    assert jdata == 'fakeJob12345'
