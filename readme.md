@@ -10,8 +10,7 @@
 
 https://user-images.githubusercontent.com/43064854/135554150-c06afd4e-d223-47e3-b123-b45f9cd1b87a.mp4
 
-If you have ever come across the process of applying for jobs and internships, you must be knowing that it's not a cakewalk. Managing the job applications is a tedious task. Our application helps you to track and manage your job application process and helps you to control your application process without the need of messy excel sheets.
-
+If you have ever come across the process of applying for jobs and internships, you must be knowing that it's not a cakewalk. Managing job applications is a time-consuming process. Our application allows you to track and manage your job application process, as well as regulate it, without the use of cumbersome Excel spreadsheets.
 This application is created as a part of our SE project for Fall 2021
 
 ## Basic Design:
