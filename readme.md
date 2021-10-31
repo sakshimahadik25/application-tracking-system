@@ -6,7 +6,6 @@
 ![GitHub top language](https://img.shields.io/github/languages/top/Team-Glare/application-tracking-system)
 
 [![Build and Deploy Frontend](https://github.com/Team-Glare/application-tracking-system/actions/workflows/frontend_CI_CD.yml/badge.svg)](https://github.com/Team-Glare/application-tracking-system/actions/workflows/frontend_CI_CD.yml)
-
 [![Super Linter](https://github.com/Team-Glare/application-tracking-system/actions/workflows/super-linter.yml/badge.svg)](https://github.com/Team-Glare/application-tracking-system/actions/workflows/super-linter.yml)
 
 #      J-Tracker - Your Job Tracking Assistant
