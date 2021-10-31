@@ -18,10 +18,9 @@ jobs:
         uses: actions/checkout@v1
         
       - name: Run linters
-        uses: wearerequired/lint-action@v1
+        uses: stefanoeb/eslint-action@1.0.2
         with:
-          eslint: true
-          prettier: true
+          files: frontend/
 
       - name: Install and build
         run: npm install && npm run build
