@@ -54,7 +54,7 @@ export default class CardBoard extends Component {
             // current application is a new application, create a new one and save in the backend.
             console.log('new application');
             $.ajax({
-                url: 'http://localhost:5000/application',
+                url: 'http://localhost:5000/application', //TODO: will have to replace with production URL
                 method: 'POST',
                 async: false,
                 data:JSON.stringify({
