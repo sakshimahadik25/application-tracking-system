@@ -1,0 +1,23 @@
+name: Backend CI
+
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  prettier:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Prettify code
+      uses: creyD/prettier_action@v4.0
+      with:
+        # This part is also where you can pass other options, for example:
+        prettier_options: --write **/*.{js,md}
+        only_changed: True
