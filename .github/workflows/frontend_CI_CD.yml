@@ -17,8 +17,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
 
-      - name: Install and build
-        run: npm install && npm run build
+      - name: Install dependencies
+        run: npm install && 
+        working-directory: frontend/
+
+      - name: Build
+        run: npm run build
         working-directory: frontend/
         
       - name: Run linters
