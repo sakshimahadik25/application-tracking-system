@@ -15,9 +15,9 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Prettify code
-      uses: creyD/prettier_action@v4.0
-      with:
-        # This part is also where you can pass other options, for example:
-        prettier_options: --write **/*.{js,md}
-        only_changed: True
+    - name: Lint Code Base
+      uses: github/super-linter@v4
+      env:
+          VALIDATE_ALL_CODEBASE: true
+          DEFAULT_BRANCH: main
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
