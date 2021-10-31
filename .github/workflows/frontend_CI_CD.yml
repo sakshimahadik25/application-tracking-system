@@ -24,7 +24,7 @@ jobs:
       - name: Run linters
         uses: stefanoeb/eslint-action@1.0.2
         with:
-          files: frontend/  
+          files: frontend/src/  
       
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@4.1.1
