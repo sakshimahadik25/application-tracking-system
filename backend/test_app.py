@@ -3,7 +3,7 @@ import json
 import datetime
 from flask_mongoengine import MongoEngine
 import yaml
-from app import create_app, Application
+from app import create_app, Application, get_new_id
 
 # Pytest fixtures are useful tools for calling resources
 # over and over, without having to manually recreate them,
@@ -99,5 +99,18 @@ def test_delete_application(client, mocker):
     rv = client.delete('/application', json={'application':{
         'id':1, 'jobTitle':'fakeJob12345', 'companyName':'fakeCompany', 'date':str(datetime.date(2021, 9, 23)), 'status':'1'
         }})
+    print(rv.data)
     jdata = json.loads(rv.data.decode("utf-8"))["jobTitle"]
     assert jdata == 'fakeJob12345'
+
+#7. Testing getting_new_id function returns correct next id
+def test_get_new_id(mocker):
+    application = Application(id=1, jobTitle='Backend Engineer', companyName='Facebook', date=str(datetime.date(2021, 9, 22)))
+    list_application = []
+    list_application.append(application)
+    mocker.patch(
+        # Dataset is in slow.py, but imported to main.py
+        'app.Application.objects',
+        return_value = list_application
+    )
+    assert get_new_id() == 2
