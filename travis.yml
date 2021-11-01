@@ -3,3 +3,6 @@ scripts:
   - npm install codecov -g
 after_success:
   - codecov
+
+
+codecov --token=: a2522b4c-9350-4466-9cc6-072d9123116d
