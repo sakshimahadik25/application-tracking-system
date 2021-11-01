@@ -32,7 +32,7 @@ def test_alive(client):
     assert rv.data.decode("utf-8") == '{"str":"Hello World!"}\n'
 
 #2. testing if the search function running properly
-def test_fake_search(client):
+def test_search(client):
     rv = client.get('/search')
     jdata = json.loads(rv.data.decode("utf-8"))["label"]
     assert jdata == 'successful test search'
