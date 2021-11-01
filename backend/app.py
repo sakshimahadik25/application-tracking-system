@@ -28,7 +28,7 @@ def create_app():
         obj = {
             "str": "Hello World!"+name
         }
-        return jsonify(obj)
+        return jsonify(obj), 300
 
     # search function
     # params:

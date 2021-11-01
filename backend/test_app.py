@@ -114,3 +114,8 @@ def test_get_new_id(mocker):
         return_value = list_application
     )
     assert get_new_id() == 2
+
+#8. testing if the flask app is running properly with status code
+def test_alive_status_code(client):
+    rv = client.get('/')
+    assert rv.status_code == 300
