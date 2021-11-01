@@ -71,18 +71,32 @@ def test_add_application(client, mocker):
 #5. testing if the application is updating data in database properly
 def test_update_application(client, mocker):
     application = Application(id=1, jobTitle='fakeJob12345', companyName='fakeCompany', date=str(datetime.date(2021, 9, 22)))
-    list_application = []
-    list_application.append(application)
+
     mocker.patch(
-        # Dataset is in slow.py, but imported to main.py
         'app.Application.update'
     )
-    mocker.patch(
-        # Dataset is in slow.py, but imported to main.py
-        'app.Application.objects.first',
-        return_value = list_application
-    )
+
+    mock_objects = mocker.MagicMock(name='objects')
+    mocker.patch('app.Application.objects', new=mock_objects)
+    mock_objects.return_value.first.return_value = application
+
     rv = client.put('/application', json={'application':{
+        'id':1, 'jobTitle':'fakeJob12345', 'companyName':'fakeCompany', 'date':str(datetime.date(2021, 9, 23)), 'status':'1'
+        }})
+    jdata = json.loads(rv.data.decode("utf-8"))["jobTitle"]
+    assert jdata == 'fakeJob12345'
+
+#6. testing if the application is deleting data in database properly
+def test_delete_application(client, mocker):
+    application = Application(id=1, jobTitle='fakeJob12345', companyName='fakeCompany', date=str(datetime.date(2021, 9, 22)))
+    mocker.patch(
+        'app.Application.delete'
+    )
+    mock_objects = mocker.MagicMock(name='objects')
+    mocker.patch('app.Application.objects', new=mock_objects)
+    mock_objects.return_value.first.return_value = application
+
+    rv = client.delete('/application', json={'application':{
         'id':1, 'jobTitle':'fakeJob12345', 'companyName':'fakeCompany', 'date':str(datetime.date(2021, 9, 23)), 'status':'1'
         }})
     jdata = json.loads(rv.data.decode("utf-8"))["jobTitle"]
