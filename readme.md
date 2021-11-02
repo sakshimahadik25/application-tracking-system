@@ -99,7 +99,7 @@ The project is licensed under the [MIT](https://choosealicense.com/licenses/mit/
 
 
 ## How to Contribute?
-Please see our CONTRIBUTING.md for instructions on how to contribute to the repo and assist us in improving the project. 
+Please see our CONTRIBUTING.md for instructions on how to contribute to the repo and assist us in improving the project
 
 
 ## Team Members
