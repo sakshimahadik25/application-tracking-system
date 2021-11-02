@@ -32,6 +32,17 @@ https://user-images.githubusercontent.com/43064854/135554649-9f5e8f21-ff12-45c9-
 ![Roadmap](https://github.com/prithvish-doshi-17/application-tracking-system/blob/main/resources/Roadmap%20-%202.PNG)
 
 
+* Include deadline reminders for the application and interview.
+* Add a feature that allows users to attach these reminders to their Google calendar.
+* Incorporate notifications for upcoming deadlines. 
+* Add a storage option for resumes and cover letters so they can be saved for future use.
+* Include a direct link to the company's application website when the wishlist item is clicked.
+* Include a link to the university’s career fair page. 
+* Direct connection to Linkedin, allowing for the addition of job opportunities to the wishlist.
+* Improve keyword search to improve specifications such as pay range, employment location, and so on.
+* An option to maintain separate profiles for job tracking.
+
+
 ## Explanation:
 Each section illustrates one of the application's numerous stages. Currently, we have four fundamental steps: job applied, job you want to apply for without a referral, job that has rejected you, and job you're waiting for a referral. During the entire process, any details in any table can be edited at any time. 
 
