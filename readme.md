@@ -44,15 +44,17 @@ https://user-images.githubusercontent.com/43064854/135554649-9f5e8f21-ff12-45c9-
 
 
 ## Explanation:
-Each section illustrates one of the application's numerous stages. Currently, we have four fundamental steps: 
-1. The job applied
-2. The job you want to apply for without a referral
-3. The job at which you faced a rejection and 
-4. The job you're waiting for a referral. 
+
+Currently, we have four fundamental steps in our project:
 
 
-During the entire process, any details in any table can be edited at any time. 
+1. The position for which you have applied
+2. The job you want to apply for, without a referral
+3. The job at which you have faced rejection, and
+4. The job you're waiting for a referral.
 
+
+Any details in any table can be modified at any time during the process.
 
 ## Technologies Used:
 
