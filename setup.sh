@@ -16,7 +16,7 @@ exit_result () {
 }
 
 echo -e "Navigating to frontend directory..."
-cd ./frontend
+cd ./frontend || exit
 echo -e "Attempting to install NPM packages..."
 npm install
 exit_result $? "NPM package installation"
@@ -24,7 +24,7 @@ echo -e "Verifying pip installation..."
 pip -V
 exit_result $? "pip installation check"
 echo -e "Returning to project root directory"
-cd ../
+cd ../ || exit
 echo -e "Installing required pip packages from requirements.txt..."
 pip install -r ./requirements.txt
 exit_result $? "pip package installation"

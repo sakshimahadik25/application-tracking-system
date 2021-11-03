@@ -16,13 +16,13 @@ exit_result () {
 }
 
 echo -e "Navigating to frontend..."
-cd ./frontend
+cd ./frontend || exit
 echo -e "Attempting to start frontend..."
 npm start &
 exit_result $? "Frontend boot"
 
 echo -e "Navigating to backend..."
-cd ../backend
+cd ../backend || exit
 echo -e "Attempting to start backend..."
 flask run &
 exit_result $? "Backend boot"
