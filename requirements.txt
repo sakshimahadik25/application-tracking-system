@@ -5,6 +5,8 @@ gunicorn
 # Flask Framework
 Flask==1.0.2
 selenium==3.0.2
+wheel==0.36.2
+flask-mongoengine==1.0.0
 # Automated tests
 pytest==3.0.5
 pytest-cov==2.4.0
