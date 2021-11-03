@@ -156,4 +156,4 @@ def get_new_id():
     return min(set(nums) - set(id_list))
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
