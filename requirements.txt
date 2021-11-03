@@ -1,7 +1,6 @@
 ###### Requirements without Version Specifiers ######
 beautifulsoup4
 pandas
-git
 gunicorn
 # Flask Framework
 Flask==1.0.2
