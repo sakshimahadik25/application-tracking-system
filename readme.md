@@ -32,6 +32,7 @@ https://user-images.githubusercontent.com/43064854/135554649-9f5e8f21-ff12-45c9-
 ![Roadmap](https://github.com/prithvish-doshi-17/application-tracking-system/blob/main/resources/Roadmap%20-%202.PNG)
 
 
+## Future Scope: 
 * Include deadline reminders for the application and interview.
 * Add a feature that allows users to attach these reminders to their Google calendar.
 * Incorporate notifications for upcoming deadlines. 
