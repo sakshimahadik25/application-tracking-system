@@ -5,12 +5,13 @@ export default class CardEdit extends Component {
         super(props);
         this.state = {
             closeEditModal: props.closeEditModal,
+            deleteApplication: props.deleteApplication,
             submitFunc: props.submitFunc,
             id: props.application.id,
+            jobTitle: props.application.jobTitle,
             companyName: props.application.companyName,
             date: props.application.date,
-            jobTitle: props.application.jobTitle,
-            class: props.application.class
+            class: props.application.status
         }
     }
 
@@ -21,17 +22,31 @@ export default class CardEdit extends Component {
 	}
 
     submitAction(){
+        console.log('hit!')
         this.state.closeEditModal()
         let application = {
             id: this.state.id,
             companyName: this.state.companyName,
             jobTitle: this.state.jobTitle,
             date: this.state.date,
-            class: this.state.class
+            status: this.state.class
         }
+        console.log(application)
         // call parent function to handle data change
         this.state.submitFunc(application)
 
+    }
+
+    deleteAction(){
+        this.state.closeEditModal()
+        let application = {
+            id: this.state.id,
+            companyName: this.state.companyName,
+            jobTitle: this.state.jobTitle,
+            date: this.state.date,
+            status: this.state.class
+        }
+        this.state.deleteApplication(application)
     }
 
     render() {
@@ -81,6 +96,9 @@ export default class CardEdit extends Component {
                     </div>
                 </Modal.Body>
                 <Modal.Footer>
+                    <button type="button" className="btn btn-danger mr-auto" onClick={this.deleteAction.bind(this)}>
+                        Delete
+                    </button>
                     <button type="button" className="btn btn-secondary" onClick={this.state.closeEditModal}>
                         Close
                     </button>

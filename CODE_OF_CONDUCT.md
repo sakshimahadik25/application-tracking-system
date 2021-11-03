@@ -1,53 +1,3 @@
-# CONTRIBUTING
-
-
-Thank you for choosing to contribute to our project. Your input is greatly appreciated.
-
-The idea of having this project as an open source is to enhance it further with some creative and usable functionalities. The README.md file provides a consolidated plan of the scope of the project and what additional functionalities are planned to be deployed in the near future. 
-
-When contributing to the repository, we recommend that you discuss the change you wish to make through an issue, email or contacting one of the owners of the repository.
-
-Please make sure that all your contributions adhere to the guidelines specified in the Code of Conduct.
-
-There are several ways you may help with the project, which are described below.
-
-##
-
-# SUGGESTING ADDITIONAL FUNCTIONALITY
-
-Additional application features can be suggested by amending the Roadmap. After the design and execution have been reviewed and aligned, they can be further addressed.
-
-##
-
-
-# REPORTING BUGS/ISSUES
-
-1. Please let one of the us know if you encounter any bugs. 
-2. Fill out a bug report. 
-3. While filling a bug report, please describe the problem you have faced in detail and include all the relevant information.
-4. We will go through the bug report and try to resolve the issues as quickly as possible. 
-
-
-##
-
-
-# PULL REQUESTS
-
-Any suggestions or changes to improve the project would be appreciated.
-
-1. Please check the roadmap in order to see the list of tasks to be completed. 
-2. Fill out a pull request.
-3. Please include relevant test cases and regression testing results before requesting a commit.
-4. We will go through the request and merge it after the testing. 
-##
-
-
-
-
-
-
-
-
 # Contributor Covenant Code of Conduct
 
 ## Our Pledge
@@ -176,4 +126,3 @@ enforcement ladder](https://github.com/mozilla/diversity).
 For answers to common questions about this code of conduct, see the FAQ at
 https://www.contributor-covenant.org/faq. Translations are available at
 https://www.contributor-covenant.org/translations.
-
