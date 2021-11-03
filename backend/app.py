@@ -11,7 +11,6 @@ import pandas as pd
 import json
 import datetime
 import yaml
-import git
 
 def create_app():
     app = Flask(__name__)
