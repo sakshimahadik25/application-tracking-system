@@ -33,7 +33,7 @@ jobs:
         printf 'username: $MONGO_USER\npassword: $MONGO_PASS' > application.yml
         echo 'Created application.yml'
         pwd
-        pytest --cov-report xml:cov.xml --cov=./ ./backend
+        pytest --cov-report xml:cov.xml --cov=./ ./
     - name: "Upload coverage to Codecov"
       uses: codecov/codecov-action@v1
       with:
