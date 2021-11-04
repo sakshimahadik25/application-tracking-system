@@ -14,6 +14,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - shell: bash
+      env:
+        MONGO_USER: ${{ secrets.MONGO_USER }}
+        MONGO_PASS: ${{ secrets.MONGO_PASS }}
     - uses: actions/checkout@v2
     - name: Set up Python 3.9
       uses: actions/setup-python@v2
@@ -25,6 +29,7 @@ jobs:
         pip install pytest pytest-cov coverage
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         pip install -r ./backend/requirements.txt
+        printf 'user: $MONGO_USER\npassword: $MONGO_PASS' > ./backend/application.yml
     - name: Test with pytest, upload to codecov
       run: |
         pytest --cov-report xml:cov.xml --cov=./ ./backend
