@@ -6,7 +6,7 @@ const columns = [
         label: 'Company Name',
         id: 'companyName'
     }, {
-        label: 'Job tilte',
+        label: 'Job title',
         id: 'jobTitle'
     }, {
         label: 'Date',
@@ -55,8 +55,6 @@ export default class SearchPage extends Component {
         })
     }
 
-
-
     deleteTheApplication(id) {
         let newRows = this.state.rows.filter(app => {
             return app.id !== id
@@ -73,36 +71,27 @@ export default class SearchPage extends Component {
     addToWaitlist(job) {
         let newAddedList = this.state.addedList
         newAddedList.push(job.id)
-        this.getNewId().done((newID=>{
-            let newApplication = {
-                id: newID,
+        console.log(job)
+        let newApplication = {
                 jobTitle: job.jobTitle,
                 companyName: job.companyName,
-                date: job.date,
-                class: '1'
-            };
-            $.ajax({
-                url: 'http://localhost:5000/application',
-                method: 'POST',
-                data:JSON.stringify({
-                    application: newApplication
-                }),
-                contentType: 'application/json',
-                success: (msg)=>{
-                    alert(msg);
-                }
-            })
-        }))
+                date:  new Date().toJSON().slice(0,10).replace(/-/g,'-'),
+                status: '1'
+        };
+        console.log(newApplication);
+        $.ajax({
+            url: 'http://localhost:5000/application',
+            method: 'POST',
+            data:JSON.stringify({
+                application: newApplication
+            }),
+            contentType: 'application/json',
+            success: (msg)=>{
+                console.log(msg)
+            }
+        })
         this.setState({
             addedList: newAddedList
-        })
-    }
-
-    getNewId() {
-        return $.ajax({
-            async: false,
-            url: 'http://localhost:5000/getNewId',
-            method: 'GET'
         })
     }
 

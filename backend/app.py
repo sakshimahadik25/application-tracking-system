@@ -26,7 +26,7 @@ def create_app():
     def hello():
         name = request.args.get('name') if request.args.get('name') else ''
         obj = {
-            "str": "Hello World!"+name
+            "str": "Hello World!" + name
         }
         return jsonify(obj), 300
 
@@ -37,7 +37,7 @@ def create_app():
     def search():
         keywords = request.args.get('keywords') if request.args.get('keywords') else 'random_test_keyword'
         keywords = keywords.replace(' ', '+')
-        if keywords=='random_test_keyword':
+        if keywords == 'random_test_keyword':
             return json.dumps({'label': str("successful test search")})
         # create a url for a crawler to fetch job information
         url = "https://www.google.com/search?q=" + keywords + "&ibp=htl;jobs"
@@ -68,11 +68,16 @@ def create_app():
         print(applications)
         if len(applications) == 0:
             # provide some initial data
-            Application(id=1, jobTitle='Backend Engineer', companyName='Facebook', date=str(datetime.date(2021, 9, 22))).save()
-            Application(id=2, jobTitle='Front-end Engineer', companyName='Roblox', date=str(datetime.date(2021, 9, 22))).save()
-            Application(id=3, jobTitle='Software Engineer', companyName='Cisco', date=str(datetime.date(2021, 10, 12))).save()
-            Application(id=4, jobTitle='Software Engineer', companyName='Amazon', date=str(datetime.date(2021, 9, 24))).save()
-            Application(id=5, jobTitle='Software Engineer', companyName='Google', date=str(datetime.date(2021, 9, 23))).save()
+            Application(id=1, jobTitle='Backend Engineer', companyName='Facebook',
+                        date=str(datetime.date(2021, 9, 22))).save()
+            Application(id=2, jobTitle='Front-end Engineer', companyName='Roblox',
+                        date=str(datetime.date(2021, 9, 22))).save()
+            Application(id=3, jobTitle='Software Engineer', companyName='Cisco',
+                        date=str(datetime.date(2021, 10, 12))).save()
+            Application(id=4, jobTitle='Software Engineer', companyName='Amazon',
+                        date=str(datetime.date(2021, 9, 24))).save()
+            Application(id=5, jobTitle='Software Engineer', companyName='Google',
+                        date=str(datetime.date(2021, 9, 23))).save()
 
         apps_list = []
         for a in applications:
@@ -87,11 +92,12 @@ def create_app():
     @app.route("/application", methods=['POST'])
     def add_application():
         a = json.loads(request.data)['application']
+        print(a)
         application = Application(id=get_new_id(),
-                                    jobTitle=a['jobTitle'],
-                                    companyName=a['companyName'],
-                                    date=a['date'],
-                                    status=a['status'])
+                                  jobTitle=a['jobTitle'],
+                                  companyName=a['companyName'],
+                                  date=a['date'],
+                                  status=a['status'])
         application.save()
         return jsonify(application.to_json())
 
@@ -104,9 +110,9 @@ def create_app():
             return jsonify({'error': 'data not found'})
         else:
             application.update(jobTitle=a['jobTitle'],
-                                companyName=a['companyName'],
-                                date=a['date'],
-                                status=a['status'])
+                               companyName=a['companyName'],
+                               date=a['date'],
+                               status=a['status'])
         return jsonify(a)
 
     @app.route("/application", methods=['DELETE'])
@@ -118,6 +124,7 @@ def create_app():
         else:
             application.delete()
         return jsonify(application.to_json())
+
     return app
 
 app = create_app()
@@ -127,24 +134,25 @@ with open('application.yml') as f:
     password = info['password']
     app.config['MONGODB_SETTINGS'] = {
         'db': 'appTracker',
-        'host': f'mongodb+srv://{username}:{password}@apptracker.goffn.mongodb.net/appTracker?retryWrites=true&w=majority'
+        # 'host': f'mongodb+srv://{username}:{password}@apptracker.goffn.mongodb.net/appTracker?retryWrites=true&w=majority'
+        'host': 'localhost'
     }
 db = MongoEngine()
 db.init_app(app)
 
 class Application(db.Document):
-        id = db.IntField(primary_key=True)
-        jobTitle = db.StringField()
-        companyName = db.StringField()
-        date = db.StringField()
-        status = db.StringField(default="1")
+    id = db.IntField(primary_key=True)
+    jobTitle = db.StringField()
+    companyName = db.StringField()
+    date = db.StringField()
+    status = db.StringField(default="1")
 
-        def to_json(self):
-            return {"id": self.id,
-                    "jobTitle": self.jobTitle,
-                    "companyName": self.companyName,
-                    "date": self.date,
-                    "status": self.status}
+    def to_json(self):
+        return {"id": self.id,
+                "jobTitle": self.jobTitle,
+                "companyName": self.companyName,
+                "date": self.date,
+                "status": self.status}
 
 def get_new_id():
     id_list = []
