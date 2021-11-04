@@ -27,12 +27,12 @@ jobs:
         pip install pytest pytest-cov coverage
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         pip install -r ./backend/requirements.txt
+    - name: Test with pytest, upload to codecov
+      run: |
         cd ./backend
         printf 'username: $MONGO_USER\npassword: $MONGO_PASS' > application.yml
         echo 'Created application.yml'
         pwd
-    - name: Test with pytest, upload to codecov
-      run: |
         pytest --cov-report xml:cov.xml --cov=./ ./backend
     - name: "Upload coverage to Codecov"
       uses: codecov/codecov-action@v1
