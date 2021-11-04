@@ -3,7 +3,7 @@
 When our team took over the project from the previous group, we thoroughly reviewed the project in order to establish an effective takeover strategy. We attempted to improve the project in as many ways as possible. We've detailed the enhancements we've made in this document.
 
 * Easier setup instructions and Installation process:
-//TODO
+The previous instructions were cumbersome and unnecessarily manual. In Phase 2, we have provided shell scripts that automate the installation and setup of all required packages. We also included startup and shutdown scripts, preventing the need for multiple terminals as the previous instructions suggested.
 
 * Restructuring the Flask application:
 The previous structure of the Flask application from phase 1 was not compatible for the testing. In this Phase 2, we have restructured the Flask application file app.py and have written tests on the API endpoints.
