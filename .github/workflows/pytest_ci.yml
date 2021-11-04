@@ -29,6 +29,7 @@ jobs:
         pip install -r ./backend/requirements.txt
         cd ./backend
         printf 'username: $MONGO_USER\npassword: $MONGO_PASS' > application.yml
+        echo 'Created application.yml'
     - name: Test with pytest, upload to codecov
       run: |
         pytest --cov-report xml:cov.xml --cov=./ ./backend
