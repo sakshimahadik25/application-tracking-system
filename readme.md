@@ -25,11 +25,17 @@ This application is created as a part of our SE project for Fall 2021
 ## Basic Design:
 ![Basic Design](https://github.com/prithvish-doshi-17/application-tracking-system/blob/main/resources/Overall%20Design.PNG)
 
-### Here's how the application looks like:
+### Here's how the application looks:
 https://user-images.githubusercontent.com/43064854/135554649-9f5e8f21-ff12-45c9-82b4-37078e88709d.mp4
 
 
 ## Improvements:
+
+
+https://user-images.githubusercontent.com/89696745/140273086-a03a6c7b-2d06-47c5-a7d4-a27ec4e99c3e.mp4
+
+
+
 * Easier setup instructions and Installation process
 * Restructuring the Flask application
 * Writing unit tests
