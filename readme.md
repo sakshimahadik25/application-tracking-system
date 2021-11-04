@@ -28,6 +28,19 @@ This application is created as a part of our SE project for Fall 2021
 ### Here's how the application looks like:
 https://user-images.githubusercontent.com/43064854/135554649-9f5e8f21-ff12-45c9-82b4-37078e88709d.mp4
 
+
+## Improvements:
+* Easier setup instructions and Installation process
+* Restructuring the Flask application
+* Writing unit tests
+* Introducing Database
+* Removing unused codes and updating Gitignore
+* CI/CD Pipeline for Frontend app
+* Adding Linters, Code formatters
+* Adding Software documentation
+
+
+
 ## Roadmap:
 ![Roadmap](https://github.com/prithvish-doshi-17/application-tracking-system/blob/main/resources/Roadmap%20-%202.PNG)
 
