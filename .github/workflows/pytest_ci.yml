@@ -6,9 +6,9 @@ name: Pytest CI
 on:
   push:
     branches:
-    - main
+      - "main"
     paths: 
-    - './backend/**'
+      - "backend/*"
   
 jobs:
   build:
@@ -29,7 +29,7 @@ jobs:
         pip install -r ./backend/requirements.txt
     - name: Test with pytest, upload to codecov
       run: |
-        pytest --cov-report xml:cov.xml --cov=glare/tests ./backend
+        pytest --cov-report xml:cov.xml --cov=./ ./backend
     - name: "Upload coverage to Codecov"
       uses: codecov/codecov-action@v1
       with:
