@@ -105,7 +105,7 @@ This will search for any active process containing "flask" and kill the process.
 
 ## Hosting the Database:
 ### Local MongoDB:
-1. Download the [MongoDB Community Server](https://docs.mongodb.com/manual/administration/install-community/)
+1. Download [MongoDB Community Server](https://docs.mongodb.com/manual/administration/install-community/)
 2. Follow the [Installion Guide](https://docs.mongodb.com/guides/server/install/)
 3. In  ```app.py```  set  ```'host'```  string to  ```'localhost'```
 4. Run the local database: 
@@ -118,7 +118,7 @@ mongod
 ### Hosted database with MongoDB Atlas:
 1. [Create account](https://account.mongodb.com/account/register) for MongoDB
  
-** ___Can have another developer add your username/password as a user to their database and skip to step 4___ **
+** ___If current MongoDB Atlas owner adds your username/password to the cluster, skip to step 4___ **
 
 2. Follow MongoDB Atlas [Setup Guide](https://docs.atlas.mongodb.com/getting-started/) to create a database collection for hosting applications
 3. In  ```app.py```  set  ```'host'```  string to your MongoDB Atlas connection string
