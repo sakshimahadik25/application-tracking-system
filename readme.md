@@ -64,56 +64,30 @@ Any details in any table can be modified at any time during the process.
 ** Flask 
 
 ## Installation:
-* Clone our project
-* Before installation, we recommand you to open two consoles, one for frontend and the other for backend.
-* First of all, you need to install [Node.js](https://nodejs.org/en/). After that, run the following command in the frontend directory to open the website. 
-* After installing Node.js, try to run command `npm` on your console, and you will see the result as below. If you can't, trying to reopen your console and try the command again.
-```
-$ npm
-npm <command>
+### Requirements:
+* [Python](https://www.python.org/downloads/) (recommended >= 3.8)
+* [pip](https://pip.pypa.io/en/stable/installation/) (Latest version 21.3 used as of 11/3)
+* [npm](https://nodejs.org/en/) (Latest version 6.14.4 used as of 11/3)
 
-Usage:
+To install all required packages, while within the context of project root directory, run:
+```
+setup.sh
+```
+This will handle all npm and pip package installations required for both the front and backend.
 
-npm install        install all the dependencies in your project
-npm install <foo>  add the <foo> dependency to your project
-npm test           run this project's tests
-npm run <foo>      run the script named <foo>
-npm <command> -h   quick help on <command>
-npm -l             display usage info for all commands
-npm help <term>    search for help on <term>
-npm help npm       more involved overview
+## Getting Started:
+### Boot:
+To run a testing environment, run:
 ```
-* Third, run the following command. <br/> `npm start` is the command to run frontend server.
+startup.sh
 ```
-cd [location of the git repository]/frontend
-npm install
-npm start
+This will run flask and npm simultaneously, booting both the front and backend. Note - npm takes substantially longer to boot compared to flask.
+### Shutdown:
+To ensure that flask is no longer occupying a port, run:
 ```
-* Install [python3](https://www.python.org/downloads/) and [pip](https://pip.pypa.io/en/stable/installation/). Run the following command on `the other console`. If you can see the pip version in your console, you install pip successfully!
+shutdown.sh
 ```
-pip -V
-```
-
-* Then, start to install python dependencies:
-```
-cd [location of the git repository]/backend
-pip install flask
-pip install -U flask-cors
-pip install selenium
-pip install bs4
-pip install webdriver-manager
-```
-
-* Now, you can start the backend by running `flask run` on your console
-* Conclusion:<br/>After installing all ncessary dependencies, you can run the following command to start the frontend and backend server in separate console:
-```
-cd [location of the git repository]/frontend
-npm start
-
-cd [location of the git repository]/backend
-flask run
-```
-
+This will search for any active process containing "flask" and kill the process.
 
 ## License
 The project is licensed under the [MIT](https://choosealicense.com/licenses/mit/) license. 
