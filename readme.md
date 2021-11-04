@@ -78,10 +78,10 @@ Any details in any table can be modified at any time during the process.
 
 ## Technologies Used:
 
-** Python
-** Node.Js
-** Flask
-** MongoDB
+* Python
+* Node.Js
+* Flask
+* MongoDB
 
 ## Installation:
 ### Requirements:
