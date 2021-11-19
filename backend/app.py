@@ -92,7 +92,7 @@ def create_app():
     @app.route("/application", methods=['POST'])
     def add_application():
         a = json.loads(request.data)['application']
-        print(a)
+        app.logger.info('Application %s',a)
         application = Application(id=get_new_id(),
                                   jobTitle=a['jobTitle'],
                                   companyName=a['companyName'],
@@ -134,7 +134,7 @@ with open('application.yml') as f:
     password = info['password']
     app.config['MONGODB_SETTINGS'] = {
         'db': 'appTracker',
-        'host': f'mongodb+srv://{username}:{password}@apptracker.goffn.mongodb.net/appTracker?retryWrites=true&w=majority'
+        'host': 'localhost'#f'mongodb+srv://{username}:{password}@apptracker.goffn.mongodb.net/appTracker?retryWrites=true&w=majority'
     }
 db = MongoEngine()
 db.init_app(app)

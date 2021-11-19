@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import $ from 'jquery'
+import CardModal from "../application/CardModal";
+import SearchCard from "./SearchCard";
 
 const columns = [
     {
@@ -68,22 +70,35 @@ export default class SearchPage extends Component {
         })
     }
 
+    // open the card modal according to the application in parameter
+    showEditModal(job, mode) {
+        let modalMode = mode
+
+        this.setState({
+            showModal: true,
+            job: job,
+            modalMode: modalMode
+        })
+    }
+
+    closeEditModal() {
+        this.setState({
+            showModal: false,
+            job: null
+        })
+    }
+
     addToWaitlist(job) {
+
         let newAddedList = this.state.addedList
         newAddedList.push(job.id)
         console.log(job)
-        let newApplication = {
-                jobTitle: job.jobTitle,
-                companyName: job.companyName,
-                date:  new Date().toJSON().slice(0,10).replace(/-/g,'-'),
-                status: '1'
-        };
-        console.log(newApplication);
+
         $.ajax({
             url: 'http://localhost:5000/application',
             method: 'POST',
             data:JSON.stringify({
-                application: newApplication
+                application: job
             }),
             contentType: 'application/json',
             success: (msg)=>{
@@ -93,6 +108,8 @@ export default class SearchPage extends Component {
         this.setState({
             addedList: newAddedList
         })
+
+
     }
 
     removeFromWaitlist(job) {
@@ -110,6 +127,16 @@ export default class SearchPage extends Component {
 
     render() {
         let rows = this.state.rows
+
+        let applicationModal = null
+        if (this.state.job){
+            applicationModal = <SearchCard show={this.state.showModal}
+                                          submitFunc={this.addToWaitlist.bind(this)}
+                                          mode={this.state.modalMode}
+                                          application={this.state.job}
+                                          closeEditModal={this.closeEditModal.bind(this)}
+                                          deleteApplication={this.deleteTheApplication.bind(this)}/>
+        }
 
         return (
             <div>
@@ -141,7 +168,7 @@ export default class SearchPage extends Component {
                                     } else {
                                         let addButton = this.state.addedList.includes(row.id)
                                             ? <button type="button" className="btn btn-outline-secondary" onClick={this.removeFromWaitlist.bind(this, row)}> Added </button>
-                                            : <button type="button" className="btn btn-secondary" onClick={this.addToWaitlist.bind(this, row)}> Add </button>
+                                            : <button type="button" className="btn btn-secondary" onClick={this.showEditModal.bind(this, row)}> Add </button>
                                         return <td key={row.id + '_func'}>
                                             <div className="container">
                                                 <div className="row">
@@ -165,6 +192,8 @@ export default class SearchPage extends Component {
                         })}
                     </tbody>
                 </table>
+
+                {applicationModal}
             </div>
         );
     }
