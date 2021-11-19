@@ -96,8 +96,8 @@ def create_app():
         application = Application(id=get_new_id(),
                                   jobTitle=a['jobTitle'],
                                   companyName=a['companyName'],
-                                  date=a['date'],
-                                  status=a['status'])
+                                  date=a.get('date'),
+                                  status=a.get('status'))
         application.save()
         return jsonify(application.to_json())
 
