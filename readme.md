@@ -15,7 +15,7 @@ https://user-images.githubusercontent.com/43064854/135554150-c06afd4e-d223-47e3-
 The process of applying for jobs and internships is not a cakewalk. Managing job applications is a time-consuming process. Due to the referrals and deadlines, the entire procedure can be stressful. Our application allows you to track and manage your job application process, as well as regulate it, without the use of cumbersome Excel spreadsheets.
 
 
-Our application keeps track of the jobs you've added to your wish list. It also keeps track of the companies you've already applied to and keeps a list of any rejections. Rather than having the user browse each company's website for potential prospects, our application allows the applicant to search for them directly using basic keywords. Any prospective work offers can then be added to the applicant's wishlist.
+Our application keeps track of the jobs you've added to your wish list. It also keeps track of the companies you've already applied to and keeps a list of any rejections. Rather than having the user browse each company's site for potential prospects, our application allows the applicant to search for them directly using basic keywords. Any prospective work offers can then be added to the applicant's wishlist.
 
 
 
@@ -56,7 +56,7 @@ https://user-images.githubusercontent.com/89696745/140273086-a03a6c7b-2d06-47c5-
 * Add a feature that allows users to attach these reminders to their Google calendar.
 * Incorporate notifications for upcoming deadlines. 
 * Add a storage option for resumes and cover letters so they can be saved for future use.
-* Include a direct link to the company's application website when the wishlist item is clicked.
+* Include a direct link to the company's application site when the wishlist item is clicked.
 * Include a link to the university’s career fair page. 
 * Direct connection to Linkedin, allowing for the addition of job opportunities to the wishlist.
 * Improve keyword search to improve specifications such as pay range, employment location, and so on.
