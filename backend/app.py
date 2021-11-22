@@ -122,7 +122,6 @@ def create_app():
     def update_application():
         a = json.loads(request.data)['application']
         application = Application.objects(id=a['id']).first()
-        print(application)
         if not application:
             return jsonify({'error': 'data not found'})
         else:
@@ -184,31 +183,27 @@ class Users(db.Document):
 
 
 def get_new_user_id():
-    id_list = []
     user_objects = Users.objects()
     if len(user_objects) == 0:
         return 1
 
+    new_id = 0
     for a in user_objects:
-        id_list.append(a['id'])
-    nums = list(range(1, max(id_list) + 1))
-    if set(nums) == set(id_list):
-        return max(id_list) + 1
-    return min(set(nums) - set(id_list))
+        new_id = max(new_id, a['id'])
+
+    return new_id + 1
 
 
 def get_new_application_id():
-    id_list = []
     application_objects = Application.objects()
     if len(application_objects) == 0:
         return 1
 
-    for a in Application.objects():
-        id_list.append(a['id'])
-    nums = list(range(1, max(id_list) + 1))
-    if set(nums) == set(id_list):
-        return max(id_list) + 1
-    return min(set(nums) - set(id_list))
+    new_id = 0
+    for a in application_objects:
+        new_id = max(new_id, a['id'])
+
+    return new_id + 1
 
 
 if __name__ == "__main__":
