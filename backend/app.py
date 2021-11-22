@@ -63,9 +63,9 @@ def create_app():
             user = Users.objects(username=data['username'], password=password_hash).first()
             if user is None:
                 return jsonify({"error": "Wrong username or password"})
-            token = str(user['id'])+str(uuid.uuid4())
+            token = str(user['id'])+"."+str(uuid.uuid4())
             expiry = datetime.now() + timedelta(days=1)
-            expiry_str = expiry.strftime("%H:%M:%S")
+            expiry_str = expiry.strftime("%m/%d/%Y, %H:%M:%S")
             auth_tokens_new = user['authTokens'] + [{'token': token, 'expiry': expiry_str}]
             user.update(authTokens=auth_tokens_new)
             return jsonify({'token': token, 'expiry': expiry_str})
