@@ -196,8 +196,10 @@ def create_app():
         else:
             updated_applications = []
             for application in current_applications:
-                if application[id] != a['id']:
-                    updated_applications += application
+                if application['id'] == a['id']:
+                    updated_applications += [a]
+                else:
+                    updated_applications += [application]
 
             user.update(applications=updated_applications)
 
