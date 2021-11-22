@@ -9,10 +9,10 @@ from webdriver_manager.chrome import ChromeDriverManager
 from bson.json_util import dumps
 import pandas as pd
 import json
-import datetime
+from datetime import datetime, timedelta
 import yaml
 import hashlib
-
+import uuid
 
 def create_app():
     app = Flask(__name__)
@@ -43,9 +43,24 @@ def create_app():
         user = Users(id=get_new_user_id(),
                      fullName=data['fullName'],
                      username=data['username'],
-                     password=password_hash.hexdigest())
+                     password=password_hash.hexdigest(),
+                     authTokens=[])
         user.save()
         return jsonify(user.to_json())
+
+    @app.route("/users/login", methods=['POST'])
+    def login():
+        data = json.loads(request.data)
+        password_hash = hashlib.md5(data['password'].encode()).hexdigest()
+        user = Users.objects(username=data['username'], password=password_hash).first()
+        if user is None:
+            return jsonify({"error": "Wrong username or password"})
+        token = str(user['id'])+str(uuid.uuid4())
+        expiry = datetime.now() + timedelta(days=1)
+        expiry_str = expiry.strftime("%H:%M:%S")
+        auth_tokens_new = user['authTokens'] + [{'token': token, 'expiry': expiry_str}]
+        user.update(authTokens=auth_tokens_new)
+        return jsonify({'token': token, 'expiry': expiry_str})
 
     # search function
     # params:
@@ -175,6 +190,7 @@ class Users(db.Document):
     fullName = db.StringField()
     username = db.StringField()
     password = db.StringField()
+    authTokens = db.ListField()
 
     def to_json(self):
         return {"id": self.id,
