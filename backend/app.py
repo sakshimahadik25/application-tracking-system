@@ -145,34 +145,41 @@ def create_app():
     # get data from the CSV file for rendering root page
     @app.route("/applications", methods=['GET'])
     def get_data():
-        headers = request.headers
-        token = headers['Authorization'].split(" ")[1]
-        userid = token.split(".")[0]
+        try:
+            headers = request.headers
+            token = headers['Authorization'].split(" ")[1]
+            userid = token.split(".")[0]
 
-        user = Users.objects(id=userid).first()
-        applications = user['applications']
-        return jsonify(applications)
+            user = Users.objects(id=userid).first()
+            applications = user['applications']
+            return jsonify(applications)
+        except:
+            return jsonify({'error': 'Internal server error'}), 500
+
 
     # write a new record to the CSV file 
     @app.route("/application", methods=['POST'])
     def add_application():
-        headers = request.headers
-        token = headers['Authorization'].split(" ")[1]
-        userid = token.split(".")[0]
-        user = Users.objects(id=userid).first()
+        try:
+            headers = request.headers
+            token = headers['Authorization'].split(" ")[1]
+            userid = token.split(".")[0]
+            user = Users.objects(id=userid).first()
 
-        a = json.loads(request.data)
-        current_application = {
-            'id': get_new_application_id(userid),
-            'jobTitle': a['jobTitle'],
-            'companyName': a['companyName'],
-            'date': a['date'],
-            'status': a['status']
-        }
-        applications = user['applications'] + [current_application]
+            a = json.loads(request.data)
+            current_application = {
+                'id': get_new_application_id(userid),
+                'jobTitle': a['jobTitle'],
+                'companyName': a['companyName'],
+                'date': a['date'],
+                'status': a['status']
+            }
+            applications = user['applications'] + [current_application]
 
-        user.update(applications=applications)
-        return jsonify(current_application), 200
+            user.update(applications=applications)
+            return jsonify(current_application), 200
+        except:
+            return jsonify({'error': 'Internal server error'}), 500
 
     @app.route('/application', methods=['PUT'])
     def update_application():
