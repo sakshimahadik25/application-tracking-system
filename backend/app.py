@@ -35,15 +35,14 @@ def create_app():
     @app.route("/users/signup", methods=['POST'])
     def sign_up():
         data = json.loads(request.data)
-        print(data)
         password = data['password']
         password_hash = hashlib.md5(password.encode())
-        application = Users(id=get_new_id(),
+        user = Users(id=get_new_user_id(),
                                   fullName=data['fullName'],
                                   username=data['username'],
                                   password=password_hash.hexdigest())
-        application.save()
-        return jsonify(application.to_json())
+        user.save()
+        return jsonify(user.to_json())
 
     # search function
     # params:
@@ -180,8 +179,16 @@ class Users(db.Document):
                 "fullName": self.fullName,
                 "username": self.username}
 
+def get_new_user_id():
+    id_list = []
+    for a in Users.objects():
+        id_list.append(a['id'])
+    nums = list(range(1, max(id_list) + 1))
+    if set(nums) == set(id_list):
+        return max(id_list) + 1
+    return min(set(nums) - set(id_list))
 
-def get_new_id():
+def get_new_application_id():
     id_list = []
     for a in Application.objects():
         id_list.append(a['id'])
