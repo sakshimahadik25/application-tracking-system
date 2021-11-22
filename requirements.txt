@@ -11,3 +11,6 @@ flask-mongoengine==1.0.0
 pytest==3.0.5
 pytest-cov==2.4.0
 pytest-mock
+flask-cors
+webdriver-manager
+PyYAML
