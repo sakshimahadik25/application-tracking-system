@@ -1,6 +1,5 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import $ from 'jquery'
-import CardModal from "../application/CardModal";
 import SearchCard from "./SearchCard";
 
 const columns = [
@@ -72,12 +71,10 @@ export default class SearchPage extends Component {
 
     // open the card modal according to the application in parameter
     showEditModal(job, mode) {
-        let modalMode = mode
-
         this.setState({
             showModal: true,
             job: job,
-            modalMode: modalMode
+            modalMode: mode
         })
     }
 

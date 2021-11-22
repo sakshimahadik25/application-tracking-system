@@ -92,7 +92,7 @@ def create_app():
     @app.route("/application", methods=['POST'])
     def add_application():
         a = json.loads(request.data)['application']
-        app.logger.info('Application %s',a)
+        print(a)
         application = Application(id=get_new_id(),
                                   jobTitle=a['jobTitle'],
                                   companyName=a['companyName'],

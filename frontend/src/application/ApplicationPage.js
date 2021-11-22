@@ -49,9 +49,6 @@ export default class CardBoard extends Component {
     // the update function for child component
     updateCardBoard(application){
         let newApplications = this.state.applications
-        console.log(application)
-        let app_data = JSON.stringify(application, (k, v) => v === undefined ? "t" : v)
-        console.log(app_data)
         if (application.id == null){
             // current application is a new application, create a new one and save in the backend.
             console.log('new application');
@@ -59,7 +56,9 @@ export default class CardBoard extends Component {
                 url: 'http://localhost:5000/application', //TODO: will have to replace with production URL
                 method: 'POST',
                 async: false,
-                data:app_data,
+                data:JSON.stringify({
+                    application: application
+                }),
                 contentType: 'application/json',
                 success: (msg)=>{
                     console.log(msg)
@@ -74,7 +73,9 @@ export default class CardBoard extends Component {
                 url: 'http://localhost:5000/application',
                 method: 'PUT',
                 async: false,
-                data:app_data,
+                data:JSON.stringify({
+                    application: application
+                }),
                 contentType: 'application/json',
                 success: (msg)=>{
                     console.log(msg)

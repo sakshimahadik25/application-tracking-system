@@ -1,5 +1,6 @@
-import React, { Component } from 'react';
-import { Modal } from 'react-bootstrap';
+import React, {Component} from 'react';
+import {Modal} from 'react-bootstrap';
+
 export default class SearchCard extends Component {
     constructor(props) {
         super(props);
@@ -45,7 +46,7 @@ export default class SearchCard extends Component {
         </button>
 
 
-        let view = !this.props.application ? <div /> : <div>
+        return !this.props.application ? <div/> : <div>
             <Modal show={this.props.show} onHide={this.state.closeEditModal}>
                 <Modal.Header closeButton>
                     <Modal.Title>
@@ -55,21 +56,25 @@ export default class SearchCard extends Component {
                 <Modal.Body>
                     <div className="form-group">
                         <label htmlFor="companyName" className="col-form-label">Company Name</label>
-                        <input type="text" className="form-control" id="companyName" value={this.state.companyName} onChange={this.handleChange.bind(this)}/>
+                        <input type="text" className="form-control" id="companyName" value={this.state.companyName}
+                               onChange={this.handleChange.bind(this)}/>
                     </div>
                     <div className="form-group">
                         <label htmlFor="job_title" className="col-form-label">Job Title</label>
-                        <input type="text" className="form-control" id="jobTitle" value={this.state.jobTitle} onChange={this.handleChange.bind(this)}/>
+                        <input type="text" className="form-control" id="jobTitle" value={this.state.jobTitle}
+                               onChange={this.handleChange.bind(this)}/>
                     </div>
                     <div className="form-group">
                         <label htmlFor="date" className="col-form-label">Date</label>
-                        <input type="date" className="form-control" id="date" value={this.state.date} onChange={this.handleChange.bind(this)}/>
+                        <input type="date" className="form-control" id="date" value={this.state.date}
+                               onChange={this.handleChange.bind(this)}/>
                     </div>
                     <div className="input-group mb-3">
                         <div className="input-group-prepend">
                             <label className="input-group-text" htmlFor="class">Application Type</label>
                         </div>
-                        <select className="custom-select" id="class" value={this.state.class} onChange={this.handleChange.bind(this)}>
+                        <select className="custom-select" id="class" value={this.state.class}
+                                onChange={this.handleChange.bind(this)}>
                             <option>Choose...</option>
                             <option value="1">Wish list</option>
                             <option value="2">Waiting Referral</option>
@@ -85,7 +90,6 @@ export default class SearchCard extends Component {
                     {function_btn}
                 </Modal.Footer>
             </Modal>
-        </div >
-        return view
+        </div>
     }
 }
