@@ -1,2 +1,2 @@
 #! /bin/bash
-kill $(ps -A | grep flask | awk '{print $1}')
+kill $(ps -a | grep flask | awk '{print $1}')
