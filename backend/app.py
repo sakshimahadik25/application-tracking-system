@@ -35,6 +35,13 @@ def create_app():
     @app.route("/users/signup", methods=['POST'])
     def sign_up():
         data = json.loads(request.data)
+        try:
+            _ = data['username']
+            _ = data['password']
+            _ = data['fullName']
+        except:
+            return jsonify({'error': 'Missing fields in input'}), 400
+
         username_exists = Users.objects(username=data['username'])
         if len(username_exists) != 0:
             return jsonify({'error': 'Username already exists'})
