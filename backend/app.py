@@ -11,6 +11,7 @@ import pandas as pd
 import json
 import datetime
 import yaml
+import hashlib
 
 
 def create_app():
@@ -30,6 +31,19 @@ def create_app():
             "str": "Hello World!" + name
         }
         return jsonify(obj), 300
+
+    @app.route("/users/signup", methods=['POST'])
+    def sign_up():
+        data = json.loads(request.data)
+        print(data)
+        password = data['password']
+        password_hash = hashlib.md5(password.encode())
+        application = Users(id=get_new_id(),
+                                  fullName=data['fullName'],
+                                  username=data['username'],
+                                  password=password_hash.hexdigest())
+        application.save()
+        return jsonify(application.to_json())
 
     # search function
     # params:
@@ -155,15 +169,15 @@ class Application(db.Document):
                 "status": self.status}
 
 
-class User(db.Document):
+class Users(db.Document):
     id = db.IntField(primary_key=True)
-    full_name = db.StringField()
+    fullName = db.StringField()
     username = db.StringField()
     password = db.StringField()
 
     def to_json(self):
         return {"id": self.id,
-                "fullName": self.full_name,
+                "fullName": self.fullName,
                 "username": self.username}
 
 
