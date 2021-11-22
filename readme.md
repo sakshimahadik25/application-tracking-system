@@ -1,12 +1,12 @@
-[![GitHub license](https://img.shields.io/github/license/Team-Glare/application-tracking-system)](https://github.com/Team-Glare/application-tracking-system/blob/main/LICENSE)
+[![GitHub license](https://img.shields.io/github/license/kingan1/application-tracking-system)](https://github.com/kingan1/application-tracking-system/blob/main/LICENSE)
 [![DOI](https://zenodo.org/badge/417325535.svg)](https://zenodo.org/badge/latestdoi/417325535)
-[![codecov](https://codecov.io/gh/Team-Glare/application-tracking-system/branch/main/graph/badge.svg)](https://codecov.io/gh/Team-Glare/application-tracking-system)
-![GitHub issues](https://img.shields.io/github/issues/Team-Glare/application-tracking-system)
-![GitHub issues](https://img.shields.io/github/issues-closed/Team-Glare/application-tracking-system)
-![GitHub top language](https://img.shields.io/github/languages/top/Team-Glare/application-tracking-system)
+[![codecov](https://codecov.io/gh/kingan1/application-tracking-system/branch/main/graph/badge.svg)](https://codecov.io/gh/kingan1/application-tracking-system)
+![GitHub issues](https://img.shields.io/github/issues/kingan1/application-tracking-system)
+![GitHub issues](https://img.shields.io/github/issues-closed/kingan1/application-tracking-system)
+![GitHub top language](https://img.shields.io/github/languages/top/kingan1/application-tracking-system)
 
-[![Build and Deploy Frontend](https://github.com/Team-Glare/application-tracking-system/actions/workflows/frontend_CI_CD.yml/badge.svg)](https://github.com/Team-Glare/application-tracking-system/actions/workflows/frontend_CI_CD.yml)
-[![Super Linter](https://github.com/Team-Glare/application-tracking-system/actions/workflows/super-linter.yml/badge.svg)](https://github.com/Team-Glare/application-tracking-system/actions/workflows/super-linter.yml)
+[![Build and Deploy Frontend](https://github.com/kingan1/application-tracking-system/actions/workflows/frontend_CI_CD.yml/badge.svg)](https://github.com/kingan1/application-tracking-system/actions/workflows/frontend_CI_CD.yml)
+[![Super Linter](https://github.com/kingan1/application-tracking-system/actions/workflows/super-linter.yml/badge.svg)](https://github.com/kingan1/application-tracking-system/actions/workflows/super-linter.yml)
 
 #      J-Tracker - Your Job Tracking Assistant
 
@@ -15,7 +15,7 @@ https://user-images.githubusercontent.com/43064854/135554150-c06afd4e-d223-47e3-
 The process of applying for jobs and internships is not a cakewalk. Managing job applications is a time-consuming process. Due to the referrals and deadlines, the entire procedure can be stressful. Our application allows you to track and manage your job application process, as well as regulate it, without the use of cumbersome Excel spreadsheets.
 
 
-Our application keeps track of the jobs you've added to your wish list. It also keeps track of the companies you've already applied to and keeps a list of any rejections. Rather than having the user browse each company's website for potential prospects, our application allows the applicant to search for them directly using basic keywords. Any prospective work offers can then be added to the applicant's wishlist.
+Our application keeps track of the jobs you've added to your wish list. It also keeps track of the companies you've already applied to and keeps a list of any rejections. Rather than having the user browse each company's site for potential prospects, our application allows the applicant to search for them directly using basic keywords. Any prospective work offers can then be added to the applicant's wishlist.
 
 
 
@@ -56,7 +56,7 @@ https://user-images.githubusercontent.com/89696745/140273086-a03a6c7b-2d06-47c5-
 * Add a feature that allows users to attach these reminders to their Google calendar.
 * Incorporate notifications for upcoming deadlines. 
 * Add a storage option for resumes and cover letters so they can be saved for future use.
-* Include a direct link to the company's application website when the wishlist item is clicked.
+* Include a direct link to the company's application site when the wishlist item is clicked.
 * Include a link to the university’s career fair page. 
 * Direct connection to Linkedin, allowing for the addition of job opportunities to the wishlist.
 * Improve keyword search to improve specifications such as pay range, employment location, and so on.
@@ -147,7 +147,7 @@ The project is licensed under the [MIT](https://choosealicense.com/licenses/mit/
 
 
 ## How to Contribute?
-Please see our CONTRIBUTING.md for instructions on how to contribute to the repo and assist us in improving the project.
+Please see our CONTRIBUTING.md for instructions on how to contribute to the repository and assist us in improving the project.
 
 
 ## Team Members
