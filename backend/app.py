@@ -211,15 +211,28 @@ def create_app():
 
         return jsonify(a)
 
-    @app.route("/application", methods=['DELETE'])
-    def delete_application():
-        a = json.loads(request.data)['application']
-        application = Application.objects(id=a['id']).first()
-        if not application:
+    @app.route("/application/<int:delete_user_id>", methods=['DELETE'])
+    def delete_application(delete_user_id):
+        headers = request.headers
+        token = headers['Authorization'].split(" ")[1]
+        userid = token.split(".")[0]
+        user = Users.objects(id=userid).first()
+
+        current_applications = user['applications']
+
+        flag = False
+        updated_applications = []
+        for application in current_applications:
+            if application['id'] != delete_user_id:
+                updated_applications += [application]
+            else:
+                flag = True
+
+        if not flag:
             return jsonify({'error': 'data not found'})
-        else:
-            application.delete()
-        return jsonify(application.to_json())
+        user.update(applications=updated_applications)
+
+        return jsonify({"success": ""}), 200
 
     return app
 
