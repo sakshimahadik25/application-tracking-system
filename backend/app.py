@@ -158,21 +158,27 @@ def create_app():
 
 
     # write a new record to the CSV file 
-    @app.route("/application", methods=['POST'])
+    @app.route("/applications", methods=['POST'])
     def add_application():
         try:
             headers = request.headers
             token = headers['Authorization'].split(" ")[1]
             userid = token.split(".")[0]
             user = Users.objects(id=userid).first()
+            try:
+                a = json.loads(request.data)
+                _ = a['jobTitle']
+                _ = a['companyName']
+                _ = a['date']
+            except:
+                return jsonify({'error': 'Missing fields in input'}), 400
 
-            a = json.loads(request.data)
             current_application = {
                 'id': get_new_application_id(userid),
                 'jobTitle': a['jobTitle'],
                 'companyName': a['companyName'],
                 'date': a['date'],
-                'status': a['status']
+                # 'status': a['status']
             }
             applications = user['applications'] + [current_application]
 
@@ -181,7 +187,7 @@ def create_app():
         except:
             return jsonify({'error': 'Internal server error'}), 500
 
-    @app.route('/application', methods=['PUT'])
+    @app.route('/applications', methods=['PUT'])
     def update_application():
         a = json.loads(request.data)
         headers = request.headers
