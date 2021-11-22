@@ -247,6 +247,7 @@ def create_app():
         except:
             return jsonify({"error": "Internal server error"}), 500
 
+
     return app
 
 

@@ -2,6 +2,9 @@
 beautifulsoup4
 pandas
 gunicorn
+flask-cors
+webdriver-manager
+PyYAML
 # Flask Framework
 Flask==1.1.2
 selenium==3.0.2
