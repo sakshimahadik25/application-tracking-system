@@ -14,6 +14,9 @@ import yaml
 import hashlib
 import uuid
 
+existing_endpoints = ["/"]
+
+
 def create_app():
     app = Flask(__name__)
     # make flask support CORS
@@ -31,6 +34,41 @@ def create_app():
             "str": "Hello World!" + name
         }
         return jsonify(obj), 300
+
+    @app.before_request
+    def middleware():
+        # request - flask.request
+        # print('endpoint: %s, url: %s, path: %s' % (
+        #     request.endpoint,
+        #     request.url,
+        #     request.path))
+        # # just do here everything what you need...
+        if request.path in existing_endpoints:
+            headers = request.headers
+            token = headers['Authorization'].split(" ")[1]
+            userid = token.split(".")[0]
+            user = Users.objects(id=userid).first()
+
+            if user is None:
+                return jsonify({"error": "Unauthorized"}), 401
+
+            expiry_flag = False
+            for tokens in user['authTokens']:
+                if tokens['token'] == token:
+                    expiry = tokens['expiry']
+                    expiry_time_object = datetime.strptime(expiry, "%m/%d/%Y, %H:%M:%S")
+                    if datetime.now() <= expiry_time_object:
+                        expiry_flag = True
+                        break
+
+            if not expiry_flag:
+                return jsonify({"error": "Unauthorized"}), 401
+
+
+    @app.errorhandler(404)
+    def page_not_found(e):
+        # note that we set the 404 status explicitly
+        return jsonify({'error': 'Not Found'}), 404
 
     @app.route("/users/signup", methods=['POST'])
     def sign_up():
@@ -63,7 +101,7 @@ def create_app():
             user = Users.objects(username=data['username'], password=password_hash).first()
             if user is None:
                 return jsonify({"error": "Wrong username or password"})
-            token = str(user['id'])+"."+str(uuid.uuid4())
+            token = str(user['id']) + "." + str(uuid.uuid4())
             expiry = datetime.now() + timedelta(days=1)
             expiry_str = expiry.strftime("%m/%d/%Y, %H:%M:%S")
             auth_tokens_new = user['authTokens'] + [{'token': token, 'expiry': expiry_str}]
