@@ -14,7 +14,7 @@ import yaml
 import hashlib
 import uuid
 
-existing_endpoints = ["/"]
+existing_endpoints = ["/", "/applications"]
 
 
 def create_app():
@@ -37,15 +37,12 @@ def create_app():
 
     @app.before_request
     def middleware():
-        # request - flask.request
-        # print('endpoint: %s, url: %s, path: %s' % (
-        #     request.endpoint,
-        #     request.url,
-        #     request.path))
-        # # just do here everything what you need...
         if request.path in existing_endpoints:
             headers = request.headers
-            token = headers['Authorization'].split(" ")[1]
+            try:
+                token = headers['Authorization'].split(" ")[1]
+            except:
+                return jsonify({"error": "Unauthorized"}), 401
             userid = token.split(".")[0]
             user = Users.objects(id=userid).first()
 
@@ -141,7 +138,7 @@ def create_app():
         return jsonify(df.to_dict('records'))
 
     # get data from the CSV file for rendering root page
-    @app.route("/application", methods=['GET'])
+    @app.route("/applications", methods=['GET'])
     def get_data():
         headers = request.headers
         token = headers['Authorization'].split(" ")[1]
@@ -149,17 +146,6 @@ def create_app():
 
         user = Users.objects(id=userid).first()
         applications = user['applications']
-        print(applications)
-        if len(applications) == 0:
-            # provide some initial data
-            all_applications = user['applications'] + [{
-                'id': get_new_application_id(userid),
-                'jobTitle': 'Backend Engineer',
-                'companyName': 'Facebook',
-                'date': datetime.now().strftime("%m/%d/%Y")
-            }]
-            user.update(applications=all_applications)
-
         return jsonify(applications)
 
     # write a new record to the CSV file 
