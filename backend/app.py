@@ -151,15 +151,22 @@ def create_app():
     # write a new record to the CSV file 
     @app.route("/application", methods=['POST'])
     def add_application():
-        a = json.loads(request.data)['application']
-        print(a)
-        application = Application(id=get_new_application_id(),
-                                  jobTitle=a['jobTitle'],
-                                  companyName=a['companyName'],
-                                  date=a['date'],
-                                  status=a['status'])
-        application.save()
-        return jsonify(application.to_json())
+        headers = request.headers
+        token = headers['Authorization'].split(" ")[1]
+        userid = token.split(".")[0]
+        user = Users.objects(id=userid).first()
+
+        a = json.loads(request.data)
+        current_application = {
+            'jobTitle': a['jobTitle'],
+            'companyName': a['companyName'],
+            'date': a['date'],
+            'status': a['status']
+        }
+        applications = user['applications'] + [current_application]
+
+        user.update(applications=applications)
+        return jsonify(current_application), 200
 
     @app.route('/application', methods=['PUT'])
     def update_application():
