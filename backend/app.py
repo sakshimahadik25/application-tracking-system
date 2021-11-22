@@ -163,6 +163,7 @@ def create_app():
 
         a = json.loads(request.data)
         current_application = {
+            'id': get_new_application_id(userid),
             'jobTitle': a['jobTitle'],
             'companyName': a['companyName'],
             'date': a['date'],
@@ -175,15 +176,24 @@ def create_app():
 
     @app.route('/application', methods=['PUT'])
     def update_application():
-        a = json.loads(request.data)['application']
-        application = Application.objects(id=a['id']).first()
-        if not application:
+        a = json.loads(request.data)
+        headers = request.headers
+        token = headers['Authorization'].split(" ")[1]
+        userid = token.split(".")[0]
+        user = Users.objects(id=userid).first()
+
+        current_applications = user['applications']
+
+        if len(current_applications) == 0:
             return jsonify({'error': 'data not found'})
         else:
-            application.update(jobTitle=a['jobTitle'],
-                               companyName=a['companyName'],
-                               date=a['date'],
-                               status=a['status'])
+            updated_applications = []
+            for application in current_applications:
+                if application[id] != a['id']:
+                    updated_applications += application
+
+            user.update(applications=updated_applications)
+
         return jsonify(a)
 
     @app.route("/application", methods=['DELETE'])
