@@ -44,7 +44,7 @@ export default class CardBoard extends Component {
       })
   }
 
-  renderPage(newApplications) {
+  renderPage (newApplications) {
     // helper function to render the page
     // rerender the page to represent the update result
     const result = this.groupApplication(newApplications)
