@@ -44,7 +44,7 @@ def create_app():
 
         username_exists = Users.objects(username=data['username'])
         if len(username_exists) != 0:
-            return jsonify({'error': 'Username already exists'})
+            return jsonify({'error': 'Username already exists'}), 400
         password = data['password']
         password_hash = hashlib.md5(password.encode())
         user = Users(id=get_new_user_id(),
@@ -57,17 +57,20 @@ def create_app():
 
     @app.route("/users/login", methods=['POST'])
     def login():
-        data = json.loads(request.data)
-        password_hash = hashlib.md5(data['password'].encode()).hexdigest()
-        user = Users.objects(username=data['username'], password=password_hash).first()
-        if user is None:
-            return jsonify({"error": "Wrong username or password"})
-        token = str(user['id'])+str(uuid.uuid4())
-        expiry = datetime.now() + timedelta(days=1)
-        expiry_str = expiry.strftime("%H:%M:%S")
-        auth_tokens_new = user['authTokens'] + [{'token': token, 'expiry': expiry_str}]
-        user.update(authTokens=auth_tokens_new)
-        return jsonify({'token': token, 'expiry': expiry_str})
+        try:
+            data = json.loads(request.data)
+            password_hash = hashlib.md5(data['password'].encode()).hexdigest()
+            user = Users.objects(username=data['username'], password=password_hash).first()
+            if user is None:
+                return jsonify({"error": "Wrong username or password"})
+            token = str(user['id'])+str(uuid.uuid4())
+            expiry = datetime.now() + timedelta(days=1)
+            expiry_str = expiry.strftime("%H:%M:%S")
+            auth_tokens_new = user['authTokens'] + [{'token': token, 'expiry': expiry_str}]
+            user.update(authTokens=auth_tokens_new)
+            return jsonify({'token': token, 'expiry': expiry_str})
+        except:
+            jsonify({'error': 'Internal server error'}), 500
 
     # search function
     # params:
