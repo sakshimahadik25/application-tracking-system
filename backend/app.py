@@ -35,8 +35,8 @@ def create_app():
     @app.route("/users/signup", methods=['POST'])
     def sign_up():
         data = json.loads(request.data)
-        username_exists = Users.objects(username=data['username']).first()
-        if username_exists is None:
+        username_exists = Users.objects(username=data['username'])
+        if len(username_exists) != 0:
             return jsonify({'error': 'Username already exists'})
         password = data['password']
         password_hash = hashlib.md5(password.encode())
