@@ -66,6 +66,11 @@ def create_app():
         # note that we set the 404 status explicitly
         return jsonify({'error': 'Not Found'}), 404
 
+    @app.errorhandler(405)
+    def page_not_found(e):
+        # note that we set the 404 status explicitly
+        return jsonify({'error': 'Method not Allowed'}), 405
+
     @app.route("/users/signup", methods=['POST'])
     def sign_up():
         data = json.loads(request.data)
