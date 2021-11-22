@@ -12,6 +12,7 @@ import json
 import datetime
 import yaml
 
+
 def create_app():
     app = Flask(__name__)
     # make flask support CORS
@@ -127,17 +128,17 @@ def create_app():
 
     return app
 
+
 app = create_app()
 with open('application.yml') as f:
     info = yaml.load(f, Loader=yaml.FullLoader)
-    username = info['username']
-    password = info['password']
     app.config['MONGODB_SETTINGS'] = {
         'db': 'appTracker',
-        'host': f'mongodb+srv://{username}:{password}@apptracker.goffn.mongodb.net/appTracker?retryWrites=true&w=majority'
+        'host': 'localhost'
     }
 db = MongoEngine()
 db.init_app(app)
+
 
 class Application(db.Document):
     id = db.IntField(primary_key=True)
@@ -153,6 +154,19 @@ class Application(db.Document):
                 "date": self.date,
                 "status": self.status}
 
+
+class User(db.Document):
+    id = db.IntField(primary_key=True)
+    full_name = db.StringField()
+    username = db.StringField()
+    password = db.StringField()
+
+    def to_json(self):
+        return {"id": self.id,
+                "fullName": self.full_name,
+                "username": self.username}
+
+
 def get_new_id():
     id_list = []
     for a in Application.objects():
@@ -161,6 +175,7 @@ def get_new_id():
     if set(nums) == set(id_list):
         return max(id_list) + 1
     return min(set(nums) - set(id_list))
+
 
 if __name__ == "__main__":
     app.run()
