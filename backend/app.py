@@ -64,7 +64,6 @@ def create_app():
             if not expiry_flag:
                 return jsonify({"error": "Unauthorized"}), 401
 
-
     @app.errorhandler(404)
     def page_not_found(e):
         # note that we set the 404 status explicitly
@@ -89,7 +88,8 @@ def create_app():
                      fullName=data['fullName'],
                      username=data['username'],
                      password=password_hash.hexdigest(),
-                     authTokens=[])
+                     authTokens=[],
+                     applications=[])
         user.save()
         return jsonify(user.to_json())
 
@@ -143,30 +143,24 @@ def create_app():
     # get data from the CSV file for rendering root page
     @app.route("/application", methods=['GET'])
     def get_data():
+        headers = request.headers
+        token = headers['Authorization'].split(" ")[1]
+        userid = token.split(".")[0]
 
-        applications = Application.objects()
+        user = Users.objects(id=userid).first()
+        applications = user['applications']
         print(applications)
         if len(applications) == 0:
             # provide some initial data
-            Application(id=1, jobTitle='Backend Engineer', companyName='Facebook',
-                        date=str(datetime.date(2021, 9, 22))).save()
-            Application(id=2, jobTitle='Front-end Engineer', companyName='Roblox',
-                        date=str(datetime.date(2021, 9, 22))).save()
-            Application(id=3, jobTitle='Software Engineer', companyName='Cisco',
-                        date=str(datetime.date(2021, 10, 12))).save()
-            Application(id=4, jobTitle='Software Engineer', companyName='Amazon',
-                        date=str(datetime.date(2021, 9, 24))).save()
-            Application(id=5, jobTitle='Software Engineer', companyName='Google',
-                        date=str(datetime.date(2021, 9, 23))).save()
+            all_applications = user['applications'] + [{
+                'id': get_new_application_id(userid),
+                'jobTitle': 'Backend Engineer',
+                'companyName': 'Facebook',
+                'date': datetime.now().strftime("%m/%d/%Y")
+            }]
+            user.update(applications=all_applications)
 
-        apps_list = []
-        for a in applications:
-            app_dict = a.to_mongo().to_dict()
-            app_dict['id'] = app_dict['_id']
-            del app_dict['_id']
-            apps_list.append(app_dict)
-        apps_json = dumps(apps_list)
-        return jsonify(apps_json), 200
+        return jsonify(applications)
 
     # write a new record to the CSV file 
     @app.route("/application", methods=['POST'])
@@ -239,6 +233,7 @@ class Users(db.Document):
     username = db.StringField()
     password = db.StringField()
     authTokens = db.ListField()
+    applications = db.ListField()
 
     def to_json(self):
         return {"id": self.id,
@@ -258,13 +253,14 @@ def get_new_user_id():
     return new_id + 1
 
 
-def get_new_application_id():
-    application_objects = Application.objects()
-    if len(application_objects) == 0:
+def get_new_application_id(user_id):
+    user = Users.objects(id=user_id).first()
+
+    if len(user['applications']) == 0:
         return 1
 
     new_id = 0
-    for a in application_objects:
+    for a in user['applications']:
         new_id = max(new_id, a['id'])
 
     return new_id + 1
