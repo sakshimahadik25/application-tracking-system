@@ -44,6 +44,22 @@ export default class CardBoard extends Component {
       })
   }
 
+  renderPage(newApplications) {
+    // helper function to render the page
+    // rerender the page to represent the update result
+    const result = this.groupApplication(newApplications)
+    const cardTitle = this.createCardTitle(result)
+    const cardClass = this.createCardClass(result)
+
+    this.setState({
+      applications: newApplications,
+      card_titles: cardTitle,
+      card_class: cardClass,
+      showModal: false,
+      application: null
+    })
+  }
+
   // the update function for child component
   updateCardBoard (application) {
     const newApplications = this.state.applications
@@ -85,18 +101,7 @@ export default class CardBoard extends Component {
         }
       })
     }
-    // rerender the page to represent the update result
-    const result = this.groupApplication(newApplications)
-    const cardTitle = this.createCardTitle(result)
-    const cardClass = this.createCardClass(result)
-
-    this.setState({
-      applications: newApplications,
-      card_titles: cardTitle,
-      card_class: cardClass,
-      showModal: false,
-      application: null
-    })
+    this.renderPage(newApplications)
   }
 
   deleteApplication (application) {
@@ -118,18 +123,7 @@ export default class CardBoard extends Component {
         newApplications.splice(idx, 1)
       }
     })
-    // rerender the page to represent the update result
-    const result = this.groupApplication(newApplications)
-    const cardTitle = this.createCardTitle(result)
-    const cardClass = this.createCardClass(result)
-
-    this.setState({
-      applications: newApplications,
-      card_titles: cardTitle,
-      card_class: cardClass,
-      showModal: false,
-      application: null
-    })
+    this.renderPage(newApplications)
   }
 
   // open the card modal according to the application in parameter
