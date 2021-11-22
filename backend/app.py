@@ -41,9 +41,9 @@ def create_app():
         password = data['password']
         password_hash = hashlib.md5(password.encode())
         user = Users(id=get_new_user_id(),
-                                  fullName=data['fullName'],
-                                  username=data['username'],
-                                  password=password_hash.hexdigest())
+                     fullName=data['fullName'],
+                     username=data['username'],
+                     password=password_hash.hexdigest())
         user.save()
         return jsonify(user.to_json())
 
@@ -182,17 +182,27 @@ class Users(db.Document):
                 "fullName": self.fullName,
                 "username": self.username}
 
+
 def get_new_user_id():
     id_list = []
-    for a in Users.objects():
+    user_objects = Users.objects()
+    if len(user_objects) == 0:
+        return 1
+
+    for a in user_objects:
         id_list.append(a['id'])
     nums = list(range(1, max(id_list) + 1))
     if set(nums) == set(id_list):
         return max(id_list) + 1
     return min(set(nums) - set(id_list))
 
+
 def get_new_application_id():
     id_list = []
+    application_objects = Application.objects()
+    if len(application_objects) == 0:
+        return 1
+
     for a in Application.objects():
         id_list.append(a['id'])
     nums = list(range(1, max(id_list) + 1))
