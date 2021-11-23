@@ -130,11 +130,15 @@ def create_app():
     @app.route("/search")
     def search():
         keywords = request.args.get('keywords') if request.args.get('keywords') else 'random_test_keyword'
+        salary = request.args.get('salary') if request.args.get('salary') else ''
         keywords = keywords.replace(' ', '+')
         if keywords == 'random_test_keyword':
             return json.dumps({'label': str("successful test search")})
         # create a url for a crawler to fetch job information
-        url = "https://www.google.com/search?q=" + keywords + "&ibp=htl;jobs"
+        if salary:
+            url = "https://www.google.com/search?q=" + keywords + "%20salary%20" + salary + "&ibp=htl;jobs"
+        else:
+            url = "https://www.google.com/search?q=" + keywords + "&ibp=htl;jobs"
 
         # webdriver can run the javascript and then render the page first.
         # This prevent websites don't provide Server-side rendering 
