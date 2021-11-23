@@ -88,7 +88,7 @@ export default class SearchPage extends Component {
   addToWaitlist (job) {
     const newAddedList = this.state.addedList
     newAddedList.push(job.id)
-    console.log(job)
+    //console.log(job)
 
     $.ajax({
       url: 'http://localhost:5000/application',
@@ -99,6 +99,7 @@ export default class SearchPage extends Component {
       contentType: 'application/json',
       success: (msg) => {
         console.log(msg)
+        alert("Added item to the Waitlist !");
       }
     })
     this.setState({
