@@ -16,6 +16,7 @@ import uuid
 
 existing_endpoints = ["/applications"]
 
+
 def create_app():
     app = Flask(__name__)
     # make flask support CORS
@@ -56,18 +57,34 @@ def create_app():
                         expiry_time_object = datetime.strptime(expiry, "%m/%d/%Y, %H:%M:%S")
                         if datetime.now() <= expiry_time_object:
                             expiry_flag = True
+                            delete_auth_token(tokens, userid)
                             break
 
                 if not expiry_flag:
                     return jsonify({"error": "Unauthorized"}), 401
+
+
         except:
             return jsonify({"error": "Internal server error"}), 500
 
-    def get_userid_from_token():
+    def get_token_from_header():
+        headers = request.headers
+        token = headers['Authorization'].split(" ")[1]
+        return token
+
+    def get_userid_from_header():
         headers = request.headers
         token = headers['Authorization'].split(" ")[1]
         userid = token.split(".")[0]
         return userid
+
+    def delete_auth_token(token_to_delete, user_id):
+        user = Users.objects(id=user_id).first()
+        auth_tokens = []
+        for token in user['authTokens']:
+            if token != token_to_delete:
+                auth_tokens.append(token)
+        user.update(authTokens=auth_tokens)
 
     @app.route("/")
     @cross_origin()
@@ -101,7 +118,6 @@ def create_app():
         except:
             return jsonify({'error': 'Internal server error'}), 500
 
-
     @app.route("/users/login", methods=['POST'])
     def login():
         try:
@@ -121,6 +137,23 @@ def create_app():
             auth_tokens_new = user['authTokens'] + [{'token': token, 'expiry': expiry_str}]
             user.update(authTokens=auth_tokens_new)
             return jsonify({'token': token, 'expiry': expiry_str})
+        except:
+            return jsonify({'error': 'Internal server error'}), 500
+
+    @app.route("/users/logout", methods=['POST'])
+    def logout():
+        try:
+            userid = get_userid_from_header()
+            user = Users.objects(id=userid).first()
+            auth_tokens = []
+            incoming_token = get_token_from_header()
+            for token in user['authTokens']:
+                if token['token'] != incoming_token:
+                    auth_tokens.append(token)
+            user.update(authTokens=auth_tokens)
+
+            return jsonify({"success": ""}), 200
+
         except:
             return jsonify({'error': 'Internal server error'}), 500
 
@@ -158,18 +191,17 @@ def create_app():
     @app.route("/applications", methods=['GET'])
     def get_data():
         try:
-            userid = get_userid_from_token()
+            userid = get_userid_from_header()
             user = Users.objects(id=userid).first()
             applications = user['applications']
             return jsonify(applications)
         except:
             return jsonify({'error': 'Internal server error'}), 500
 
-
     @app.route("/applications", methods=['POST'])
     def add_application():
         try:
-            userid = get_userid_from_token()
+            userid = get_userid_from_header()
             try:
                 request_data = json.loads(request.data)
                 _ = request_data['jobTitle']
@@ -195,7 +227,7 @@ def create_app():
     @app.route('/applications/<int:application_id>', methods=['PUT'])
     def update_application(application_id):
         try:
-            userid = get_userid_from_token()
+            userid = get_userid_from_header()
             try:
                 request_data = json.loads(request.data)
             except:
@@ -223,11 +255,10 @@ def create_app():
         except:
             return jsonify({'error': 'Internal server error'}), 500
 
-
     @app.route("/applications/<int:application_id>", methods=['DELETE'])
     def delete_application(application_id):
         try:
-            userid = get_userid_from_token()
+            userid = get_userid_from_header()
             user = Users.objects(id=userid).first()
 
             current_applications = user['applications']
@@ -247,7 +278,6 @@ def create_app():
         except:
             return jsonify({"error": "Internal server error"}), 500
 
-
     return app
 
 
@@ -260,6 +290,7 @@ with open('application.yml') as f:
     }
 db = MongoEngine()
 db.init_app(app)
+
 
 class Users(db.Document):
     id = db.IntField(primary_key=True)
