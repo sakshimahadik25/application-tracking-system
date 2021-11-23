@@ -31,6 +31,12 @@ export default class App extends React.Component {
     })
   }
 
+  handleLogout = () => {
+    this.setState({
+      sidebar:false
+    })
+  }
+
   switchPage(pageName){
     this.setState({
       currentPage: this.state.mapRouter[pageName]
@@ -39,7 +45,7 @@ export default class App extends React.Component {
 
   render() {
     var app;
-    console.log(this.state.sidebar)
+    // console.log(this.state.sidebar)
     if(this.state.sidebar){
       app = (<div className="main-page">
         <Sidebar switchPage={this.switchPage.bind(this)}/>
@@ -52,6 +58,12 @@ export default class App extends React.Component {
               </span> */}
             </div>
             {this.state.currentPage}
+            <button style={{position: 'absolute',
+                         bottom: '3vh',
+                         left:'35vw'}}
+                    onClick={this.handleLogout}>Logout
+
+            </button>
           </div>
         </div>
       </div>

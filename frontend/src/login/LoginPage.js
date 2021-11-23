@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Tabs, Tab } from 'react-bootstrap';
+import { getToken, signUp } from '../api/loginHandler';
 
 export default class LoginPage extends Component{
 
@@ -11,14 +12,38 @@ export default class LoginPage extends Component{
         }
     }
 
-    handleLogin = (e) =>{
-        e.preventDefault();
+    handleLogin = (uname, pwd) =>{
         console.log("Login click");
-        this.props.side()    
+        let obj = {
+            username: uname,
+            password: pwd
+        }
+        console.log(obj)
+        getToken(obj).then((res) => {
+            console.log(res)
+            if(res['error'])
+                throw "Wrong username or password"
+            this.props.side()
+        }).catch((error) => {
+            console.log("Error while logging in")
+        })
+         
     }
 
-    handleSignup = () => {
-
+    handleSignup = (fullname, uname, pwd) => {
+        console.log("Signup click");
+        let obj = {
+            username: uname,
+            password: pwd,
+            fullName: fullname
+        }
+        console.log(obj)
+        signUp(obj).then((res) => {
+            console.log(res)
+        }).catch((error) => {
+            console.log("Error while signing up")
+        })
+         
     }
 
     render() {
@@ -30,41 +55,48 @@ export default class LoginPage extends Component{
                     <Tab eventKey="login" title="Login">
                         <form>
                             <div className="form-group">
-                                <label>Email address</label>
-                                <input type="email" className="form-control" placeholder="Enter email" />
+                                <label>Username</label>
+                                <input type="text" className="form-control" id="uname" placeholder="Enter username" />
                             </div>
 
                             <div className="form-group">
                                 <label>Password</label>
-                                <input type="password" className="form-control" placeholder="Enter password" />
+                                <input type="password" className="form-control" id="pwd" placeholder="Enter password" />
                             </div>
 
-                            <button type="submit" onClick={this.handleLogin} className="btn btn-secondary btn-block">Login</button>
+                            <button type="submit" onClick={(e) =>{
+                                e.preventDefault();
+                                let uname = document.querySelector("#uname").value
+                                let pwd = document.querySelector("#pwd").value
+                                this.handleLogin(uname, pwd)
+                                }} 
+                            className="btn btn-secondary btn-block">Login</button>
                         </form>
                     </Tab>
                     <Tab eventKey="signup" title="Signup">
                         <form>
                             <div className="form-group">
-                                <label>First name</label>
-                                <input type="text" className="form-control" placeholder="First name" />
+                                <label>Full name</label>
+                                <input type="text" className="form-control" id="fullname" placeholder="Full name" />
                             </div>
 
                             <div className="form-group">
-                                <label>Last name</label>
-                                <input type="text" className="form-control" placeholder="Last name" />
-                            </div>
-
-                            <div className="form-group">
-                                <label>Email address</label>
-                                <input type="email" className="form-control" placeholder="Enter email" />
+                                <label>Usename</label>
+                                <input type="text" className="form-control" id="suname" placeholder="Enter username" />
                             </div>
 
                             <div className="form-group">
                                 <label>Password</label>
-                                <input type="password" className="form-control" placeholder="Enter password" />
+                                <input type="password" className="form-control" id="spwd" placeholder="Enter password" />
                             </div>
 
-                            <button type="submit" onClick={this.handleSignup} className="btn btn-secondary btn-block">Sign Up</button>
+                            <button type="submit" onClick={(e) =>{
+                                e.preventDefault();
+                                let name = document.querySelector("#fullname").value
+                                let uname = document.querySelector("#suname").value
+                                let pwd = document.querySelector("#spwd").value
+                                this.handleSignup(name, uname, pwd)
+                                }}  className="btn btn-secondary btn-block">Sign Up</button>
                         </form>
                     </Tab>
                 </Tabs> 
