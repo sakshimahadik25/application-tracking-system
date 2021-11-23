@@ -18,14 +18,14 @@ export default class LoginPage extends Component{
             username: uname,
             password: pwd
         }
-        console.log(obj)
+        //console.log(obj)
         getToken(obj).then((res) => {
-            console.log(res)
+            //console.log(res)
             if(res['error'])
                 throw "Wrong username or password"
             this.props.side()
         }).catch((error) => {
-            console.log("Error while logging in")
+            alert("Error while login ! Wrong username or password");
         })
          
     }
@@ -37,11 +37,11 @@ export default class LoginPage extends Component{
             password: pwd,
             fullName: fullname
         }
-        console.log(obj)
+        //console.log(obj)
         signUp(obj).then((res) => {
-            console.log(res)
+        //console.log(res)
         }).catch((error) => {
-            console.log("Error while signing up")
+            alert("Error while signing up !");
         })
          
     }
