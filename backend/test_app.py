@@ -20,7 +20,7 @@ def client():
         password = info['password']
         app.config['MONGODB_SETTINGS'] = {
             'db': 'appTracker',
-            'host': f'mongodb+srv://{username}:{password}@apptracker.goffn.mongodb.net/appTracker?retryWrites=true&w=majority'
+            'host': f'mongodb+srv://{username}:{password}@applicationtracker.287am.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
         }
     db = MongoEngine()
     db.init_app(app)
