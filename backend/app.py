@@ -94,7 +94,9 @@ def create_app():
     @app.route("/users/signup", methods=['POST'])
     def sign_up():
         try:
+            # print(request.data)
             data = json.loads(request.data)
+            print(data)
             try:
                 _ = data['username']
                 _ = data['password']

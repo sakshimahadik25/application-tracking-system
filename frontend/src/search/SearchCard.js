@@ -23,7 +23,7 @@ export default class SearchCard extends Component {
   }
 
   submitAction () {
-    console.log('hit!')
+    alert("Submitted !");
     this.state.handleCloseEditModal()
     const application = {
       id: this.state.id,
@@ -32,7 +32,7 @@ export default class SearchCard extends Component {
       date: this.state.date,
       status: this.state.class
     }
-    console.log(application)
+    //console.log(application)
     // call parent function to handle data change
     this.state.submitFunc(application)
   }
