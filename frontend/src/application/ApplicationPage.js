@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import Card from './Card'
 import CardModal from './CardModal'
 import $ from 'jquery'
+import { getApplications } from '../api/applicationHandler'
 
 export default class CardBoard extends Component {
   constructor (props) {
@@ -22,9 +23,19 @@ export default class CardBoard extends Component {
   // get initial data to render the root page
   getData () {
     return $.ajax({
-      url: 'http://localhost:5000/application',
-      method: 'GET'
+      url: 'http://localhost:5000/applications',
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer ' + localStorage.getItem('token'),
+        'Access-Control-Allow-Origin': 'http://localhost:3000',
+        'Access-Control-Allow-Credentials': 'true'
+    }
     })
+    // getApplications().then((res) => {
+
+    // }).catch((error) => {
+    //         alert("Error while retrieving applications");
+    //     })
   }
 
   componentDidMount () {

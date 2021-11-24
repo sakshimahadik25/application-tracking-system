@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Tabs, Tab } from 'react-bootstrap';
-import { getToken, signUp } from '../api/loginHandler';
+import { getToken, signUp, storeToken } from '../api/loginHandler';
 
 export default class LoginPage extends Component{
 
@@ -20,11 +20,13 @@ export default class LoginPage extends Component{
         }
         //console.log(obj)
         getToken(obj).then((res) => {
-            //console.log(res)
+            console.log(res)
             if(res['error'])
                 throw "Wrong username or password"
+            storeToken(res)
             this.props.side()
         }).catch((error) => {
+            console.log(error)
             alert("Error while login ! Wrong username or password");
         })
          
