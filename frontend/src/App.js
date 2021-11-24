@@ -31,7 +31,7 @@ export default class App extends React.Component {
       <Sidebar switchPage={this.switchPage.bind(this)}/>
       <div className="main">
         <div className="content">
-          <h1 className="text-center">My applications</h1>
+          <h1 className="text-center" style={{padding: 0.4 + 'em'}}>My applications</h1>
           <div className="">
             {/* <span className="btn-icon ">
               <button className="btn btn-danger btn-icon"><i className="fas fa-plus"></i>&nbsp;New</button>
