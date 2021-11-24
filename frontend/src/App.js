@@ -73,6 +73,7 @@ export default class App extends React.Component {
       app = (<div className="main-page">
       <div className="main">
         <div className="content">
+          <h1 className="text-center" style={{padding: 0.4 + 'em'}}>My applications</h1>
           <div className="">
             {/* <span className="btn-icon ">
               <button className="btn btn-danger btn-icon"><i className="fas fa-plus"></i>&nbsp;New</button>
