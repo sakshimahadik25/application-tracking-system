@@ -23,6 +23,7 @@ export default class LoginPage extends Component{
             console.log(res)
             if(res['error'])
                 throw new Error("Wrong username or password");
+            storeToken(res)
             this.props.side()
         }).catch((error) => {
             console.log(error)
