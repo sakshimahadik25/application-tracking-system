@@ -127,7 +127,7 @@ export default class CardBoard extends Component {
     const newApplications = this.state.applications
     console.log('deleting id=' + application.id)
     $.ajax({
-      url: 'http://localhost:5000/applications',
+      url: 'http://localhost:5000/applications/' + application.id,
       method: 'DELETE',
       async: false,
       data: JSON.stringify({
