@@ -3,6 +3,7 @@ from flask import Flask, jsonify, request
 from flask_mongoengine import MongoEngine
 from flask_cors import CORS, cross_origin
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 from itertools import islice
 from webdriver_manager.chrome import ChromeDriverManager
@@ -181,7 +182,13 @@ def create_app():
         # webdriver can run the javascript and then render the page first.
         # This prevent websites don't provide Server-side rendering 
         # leading to crawlers cannot fetch the page
-        driver = webdriver.Chrome(ChromeDriverManager().install())
+        chrome_options = Options()
+        # chrome_options.add_argument("--no-sandbox") # linux only
+        chrome_options.add_argument("--headless")
+        user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) " \
+                     "Chrome/71.0.3578.98 Safari/537.36 "
+        chrome_options.add_argument(f"user-agent={user_agent}")
+        driver = webdriver.Chrome(ChromeDriverManager().install(), chrome_options=chrome_options)
         driver.get(url)
         content = driver.page_source
         driver.close()
