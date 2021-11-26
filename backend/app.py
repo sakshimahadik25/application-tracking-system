@@ -39,6 +39,8 @@ def create_app():
     @app.before_request
     def middleware():
         try:
+            if request.method == 'OPTIONS':
+                return jsonify({'success': 'OPTIONS'}), 200
             if request.path in existing_endpoints:
                 headers = request.headers
                 try:
@@ -58,8 +60,9 @@ def create_app():
                         expiry_time_object = datetime.strptime(expiry, "%m/%d/%Y, %H:%M:%S")
                         if datetime.now() <= expiry_time_object:
                             expiry_flag = True
+                        else:
                             delete_auth_token(tokens, userid)
-                            break
+                        break
 
                 if not expiry_flag:
                     return jsonify({"error": "Unauthorized"}), 401
@@ -216,10 +219,9 @@ def create_app():
         try:
             userid = get_userid_from_header()
             try:
-                request_data = json.loads(request.data)
+                request_data = json.loads(request.data)['application']
                 _ = request_data['jobTitle']
                 _ = request_data['companyName']
-                _ = request_data['date']
             except:
                 return jsonify({'error': 'Missing fields in input'}), 400
 
@@ -228,7 +230,8 @@ def create_app():
                 'id': get_new_application_id(userid),
                 'jobTitle': request_data['jobTitle'],
                 'companyName': request_data['companyName'],
-                'date': request_data['date'],
+                'date': request_data.get('date'),
+                'status': request_data.get('status', "1")
             }
             applications = user['applications'] + [current_application]
 
@@ -242,7 +245,7 @@ def create_app():
         try:
             userid = get_userid_from_header()
             try:
-                request_data = json.loads(request.data)
+                request_data = json.loads(request.data)['application']
             except:
                 return jsonify({'error': 'No fields found in input'}), 400
 

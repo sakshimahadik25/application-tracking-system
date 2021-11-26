@@ -93,15 +93,20 @@ export default class SearchPage extends Component {
     //console.log(job)
 
     $.ajax({
-      url: 'http://localhost:5000/application',
+      url: 'http://localhost:5000/applications',
       method: 'POST',
       data: JSON.stringify({
         application: job
       }),
+      headers: {
+        'Authorization': 'Bearer ' + localStorage.getItem('token'),
+        'Access-Control-Allow-Origin': 'http://localhost:3000',
+        'Access-Control-Allow-Credentials': 'true'
+      },
       contentType: 'application/json',
       success: (msg) => {
         console.log(msg)
-        alert("Added item to the Waitlist !");
+        alert("Added item!");
       }
     })
     this.setState({

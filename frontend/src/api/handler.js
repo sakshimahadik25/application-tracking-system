@@ -5,6 +5,7 @@ export default function fetch(options) {
     axios({
       url: 'http://localhost:5000' + options.url,
       method: options.method,
+      headers: options.headers,
       params: options.params,
       data: options.body,
     }).then((response) => {
