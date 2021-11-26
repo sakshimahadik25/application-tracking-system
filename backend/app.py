@@ -58,8 +58,10 @@ def create_app():
                         expiry_time_object = datetime.strptime(expiry, "%m/%d/%Y, %H:%M:%S")
                         if datetime.now() <= expiry_time_object:
                             expiry_flag = True
-                            delete_auth_token(tokens, userid)
                             break
+                        else:
+                            delete_auth_token(tokens, userid)
+
 
                 if not expiry_flag:
                     return jsonify({"error": "Unauthorized"}), 401
@@ -297,9 +299,11 @@ def create_app():
 app = create_app()
 with open('application.yml') as f:
     info = yaml.load(f, Loader=yaml.FullLoader)
+    username = info['username']
+    password = info['password']
     app.config['MONGODB_SETTINGS'] = {
         'db': 'appTracker',
-        'host': 'localhost'
+        'host': f'mongodb+srv://{username}:{password}@applicationtracker.287am.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
     }
 db = MongoEngine()
 db.init_app(app)
