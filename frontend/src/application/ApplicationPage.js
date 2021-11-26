@@ -143,7 +143,8 @@ export default class CardBoard extends Component {
         'Access-Control-Allow-Credentials': 'true'
       },
       complete: function (data) {
-        const idx = newApplications.indexOf(data.responseJSON)
+        let deletedApp = data.responseJSON
+        const idx = newApplications.findIndex(a => a.id === deletedApp.id)
         newApplications.splice(idx, 1)
       }
     })

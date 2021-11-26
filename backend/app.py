@@ -256,9 +256,11 @@ def create_app():
                 return jsonify({'error': 'No applications found'}), 400
             else:
                 updated_applications = []
+                app_to_update = None
                 application_updated_flag = False
                 for application in current_applications:
                     if application['id'] == application_id:
+                        app_to_update = application
                         application_updated_flag = True
                         for key, value in request_data.items():
                             application[key] = value
@@ -267,7 +269,7 @@ def create_app():
                     return jsonify({'error': 'Application not found'}), 400
                 user.update(applications=updated_applications)
 
-            return jsonify({'message': 'Application successfully edited'}), 200
+            return jsonify(app_to_update), 200
         except:
             return jsonify({'error': 'Internal server error'}), 500
 
@@ -281,16 +283,18 @@ def create_app():
 
             application_deleted_flag = False
             updated_applications = []
+            app_to_delete = None
             for application in current_applications:
                 if application['id'] != application_id:
                     updated_applications += [application]
                 else:
+                    app_to_delete = application
                     application_deleted_flag = True
 
             if not application_deleted_flag:
                 return jsonify({'error': 'Application not found'}), 400
             user.update(applications=updated_applications)
-            return jsonify({"message": "Application deleted successfully"}), 200
+            return jsonify(app_to_delete), 200
         except:
             return jsonify({"error": "Internal server error"}), 500
 
