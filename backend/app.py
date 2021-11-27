@@ -1,5 +1,5 @@
 # importing required python libraries
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_file
 from flask_mongoengine import MongoEngine
 from flask_cors import CORS, cross_origin
 from selenium import webdriver
@@ -15,7 +15,8 @@ import yaml
 import hashlib
 import uuid
 
-existing_endpoints = ["/applications"]
+existing_endpoints = ["/applications", "/resume"]
+
 
 
 def create_app():
@@ -294,6 +295,47 @@ def create_app():
         except:
             return jsonify({"error": "Internal server error"}), 500
 
+          
+    @app.route("/resume", methods=['POST'])
+    def upload_resume():
+        try:
+            userid = get_userid_from_token()
+            try:
+                file = request.files["resume"].read()
+            except:
+                return jsonify({'error': 'No resume file found in the input'}), 400
+
+            user = Users.objects(id=userid).first()
+            if not user.resume.read():
+                # There is no file
+                user.resume.put(file)
+                user.save()
+                return jsonify({"message": "resume successfully uploaded"}), 200
+            else:
+                # There is a file, we are replacing it
+                user.resume.replace(file)
+                user.save()
+                return jsonify({"message": "resume successfully replaced"}), 200
+        except Exception as e:
+            print(e)
+            return jsonify({'error': 'Internal server error'}), 500
+
+    @app.route("/resume", methods=['GET'])
+    def get_resume():
+        try:
+            userid = get_userid_from_token()
+            try:
+                user = Users.objects(id=userid).first()
+                if len(user.resume.read()) == 0:
+                    raise FileNotFoundError
+                else:
+                    user.resume.seek(0)
+            except:
+                return jsonify({"error": "resume could not be found"}), 400
+            return send_file(user.resume, attachment_filename="resume.txt"), 200
+        except:
+            return jsonify({'error': 'Internal server error'}), 500
+
     return app
 
 
@@ -315,6 +357,7 @@ class Users(db.Document):
     password = db.StringField()
     authTokens = db.ListField()
     applications = db.ListField()
+    resume = db.FileField()
 
     def to_json(self):
         return {"id": self.id,
