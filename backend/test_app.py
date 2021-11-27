@@ -3,7 +3,7 @@ import json
 import datetime
 from flask_mongoengine import MongoEngine
 import yaml
-from app import create_app, Application, get_new_id
+from app import create_app, Users, get_new_user_id
 
 # Pytest fixtures are useful tools for calling resources
 # over and over, without having to manually recreate them,
@@ -39,7 +39,7 @@ def test_search(client):
 
 #3. testing if the application is getting data from database properly
 def test_get_data(client, mocker):
-    application = Application(id=1, jobTitle='Backend Engineer', companyName='Facebook', date=str(datetime.date(2021, 9, 22)))
+    application = Users(id=1, jobTitle='Backend Engineer', companyName='Facebook', date=str(datetime.date(2021, 9, 22)))
     list_application = []
     list_application.append(application)
     mocker.patch(
@@ -47,7 +47,7 @@ def test_get_data(client, mocker):
         'app.Application.objects',
         return_value = list_application
     )
-    rv = client.get('/application')
+    rv = client.get('/applications')
     print(rv.data)
     assert rv.status_code == 200
 
@@ -62,7 +62,7 @@ def test_add_application(client, mocker):
         # Dataset is in slow.py, but imported to main.py
         'app.Application.save'
     )
-    rv = client.post('/application', json={'application':{
+    rv = client.post('/applications', json={'application':{
         'jobTitle':'fakeJob12345', 'companyName':'fakeCompany', 'date':str(datetime.date(2021, 9, 23)), 'status':'1'
         }})
     jdata = json.loads(rv.data.decode("utf-8"))["jobTitle"]
@@ -70,7 +70,7 @@ def test_add_application(client, mocker):
 
 #5. testing if the application is updating data in database properly
 def test_update_application(client, mocker):
-    application = Application(id=1, jobTitle='fakeJob12345', companyName='fakeCompany', date=str(datetime.date(2021, 9, 22)))
+    application = Users(id=1, jobTitle='fakeJob12345', companyName='fakeCompany', date=str(datetime.date(2021, 9, 22)))
 
     mocker.patch(
         'app.Application.update'
@@ -80,7 +80,7 @@ def test_update_application(client, mocker):
     mocker.patch('app.Application.objects', new=mock_objects)
     mock_objects.return_value.first.return_value = application
 
-    rv = client.put('/application', json={'application':{
+    rv = client.put('/applications', json={'application':{
         'id':1, 'jobTitle':'fakeJob12345', 'companyName':'fakeCompany', 'date':str(datetime.date(2021, 9, 23)), 'status':'1'
         }})
     jdata = json.loads(rv.data.decode("utf-8"))["jobTitle"]
@@ -88,7 +88,7 @@ def test_update_application(client, mocker):
 
 #6. testing if the application is deleting data in database properly
 def test_delete_application(client, mocker):
-    application = Application(id=1, jobTitle='fakeJob12345', companyName='fakeCompany', date=str(datetime.date(2021, 9, 22)))
+    application = Users(id=1, jobTitle='fakeJob12345', companyName='fakeCompany', date=str(datetime.date(2021, 9, 22)))
     mocker.patch(
         'app.Application.delete'
     )
@@ -96,7 +96,7 @@ def test_delete_application(client, mocker):
     mocker.patch('app.Application.objects', new=mock_objects)
     mock_objects.return_value.first.return_value = application
 
-    rv = client.delete('/application', json={'application':{
+    rv = client.delete('/applications', json={'application':{
         'id':1, 'jobTitle':'fakeJob12345', 'companyName':'fakeCompany', 'date':str(datetime.date(2021, 9, 23)), 'status':'1'
         }})
     print(rv.data)
@@ -105,7 +105,7 @@ def test_delete_application(client, mocker):
 
 #7. Testing getting_new_id function returns correct next id
 def test_get_new_id(mocker):
-    application = Application(id=1, jobTitle='Backend Engineer', companyName='Facebook', date=str(datetime.date(2021, 9, 22)))
+    application = Users(id=1, jobTitle='Backend Engineer', companyName='Facebook', date=str(datetime.date(2021, 9, 22)))
     list_application = []
     list_application.append(application)
     mocker.patch(
@@ -113,7 +113,7 @@ def test_get_new_id(mocker):
         'app.Application.objects',
         return_value = list_application
     )
-    assert get_new_id() == 2
+    assert get_new_user_id() == 2
 
 #8. testing if the flask app is running properly with status code
 def test_alive_status_code(client):

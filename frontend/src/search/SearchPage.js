@@ -24,6 +24,7 @@ export default class SearchPage extends Component {
     this.state = {
       searchText: '',
       rows: [],
+      salary: '',
       addedList: []
     }
   }
@@ -37,7 +38,8 @@ export default class SearchPage extends Component {
       url: 'http://localhost:5000/search',
       method: 'get',
       data: {
-        keywords: this.state.searchText
+        keywords: this.state.searchText,
+        salary: this.state.salary
       },
       contentType: 'application/json',
       success: (data) => {
@@ -88,17 +90,23 @@ export default class SearchPage extends Component {
   addToWaitlist (job) {
     const newAddedList = this.state.addedList
     newAddedList.push(job.id)
-    console.log(job)
+    //console.log(job)
 
     $.ajax({
-      url: 'http://localhost:5000/application',
+      url: 'http://localhost:5000/applications',
       method: 'POST',
       data: JSON.stringify({
         application: job
       }),
+      headers: {
+        'Authorization': 'Bearer ' + localStorage.getItem('token'),
+        'Access-Control-Allow-Origin': 'http://localhost:3000',
+        'Access-Control-Allow-Credentials': 'true'
+      },
       contentType: 'application/json',
       success: (msg) => {
         console.log(msg)
+        alert("Added item!");
       }
     })
     this.setState({
@@ -117,6 +125,10 @@ export default class SearchPage extends Component {
 
   handleChange (event) {
     this.setState({ [event.target.id]: event.target.value })
+  }
+
+  setSalary(event) {
+        this.setState({ [event.target.id]: event.target.value });
   }
 
   render () {
@@ -140,8 +152,18 @@ export default class SearchPage extends Component {
       <div>
         <div className='container'>
           <div className='row'>
-            <div className='col-6 input-group mb-3'>
+            <div className='col-5 input-group mb-3'>
               <input type='text' id='searchText' className='form-control' placeholder='Keyword' aria-label='Username' aria-describedby='basic-addon1' value={this.state.searchText} onChange={this.handleChange.bind(this)} />
+            </div>
+            <div className="col-5 mb-3" style={{padding: 0.4 + 'em'}}>
+                <label>Salary Range Per Annum :  </label>
+                <select name="salary" id="salary" onChange={this.setSalary.bind(this)} value={this.state.salary} >
+                <option value="">Please select salary range</option>
+                <option value="$50K">$0K - $50K</option>
+                <option value="$75K">$51K - $100K</option>
+                <option value="$125K">$101K - $150K</option>
+                <option value="$175K">$151K - $200K</option>
+                </select>
             </div>
             <div>
               <button type='button' className='btn btn-secondary' onClick={this.search.bind(this)}>Search</button>

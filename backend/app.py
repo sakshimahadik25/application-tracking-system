@@ -3,6 +3,7 @@ from flask import Flask, jsonify, request, send_file
 from flask_mongoengine import MongoEngine
 from flask_cors import CORS, cross_origin
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 from itertools import islice
 from webdriver_manager.chrome import ChromeDriverManager
@@ -15,6 +16,7 @@ import hashlib
 import uuid
 
 existing_endpoints = ["/applications", "/resume"]
+
 
 
 def create_app():
@@ -38,6 +40,8 @@ def create_app():
     @app.before_request
     def middleware():
         try:
+            if request.method == 'OPTIONS':
+                return jsonify({'success': 'OPTIONS'}), 200
             if request.path in existing_endpoints:
                 headers = request.headers
                 try:
@@ -57,18 +61,35 @@ def create_app():
                         expiry_time_object = datetime.strptime(expiry, "%m/%d/%Y, %H:%M:%S")
                         if datetime.now() <= expiry_time_object:
                             expiry_flag = True
-                            break
+                        else:
+                            delete_auth_token(tokens, userid)
+                        break
 
                 if not expiry_flag:
                     return jsonify({"error": "Unauthorized"}), 401
+
+
         except:
             return jsonify({"error": "Internal server error"}), 500
 
-    def get_userid_from_token():
+    def get_token_from_header():
+        headers = request.headers
+        token = headers['Authorization'].split(" ")[1]
+        return token
+
+    def get_userid_from_header():
         headers = request.headers
         token = headers['Authorization'].split(" ")[1]
         userid = token.split(".")[0]
         return userid
+
+    def delete_auth_token(token_to_delete, user_id):
+        user = Users.objects(id=user_id).first()
+        auth_tokens = []
+        for token in user['authTokens']:
+            if token != token_to_delete:
+                auth_tokens.append(token)
+        user.update(authTokens=auth_tokens)
 
     @app.route("/")
     @cross_origin()
@@ -78,7 +99,9 @@ def create_app():
     @app.route("/users/signup", methods=['POST'])
     def sign_up():
         try:
+            # print(request.data)
             data = json.loads(request.data)
+            print(data)
             try:
                 _ = data['username']
                 _ = data['password']
@@ -124,22 +147,49 @@ def create_app():
         except:
             return jsonify({'error': 'Internal server error'}), 500
 
+    @app.route("/users/logout", methods=['POST'])
+    def logout():
+        try:
+            userid = get_userid_from_header()
+            user = Users.objects(id=userid).first()
+            auth_tokens = []
+            incoming_token = get_token_from_header()
+            for token in user['authTokens']:
+                if token['token'] != incoming_token:
+                    auth_tokens.append(token)
+            user.update(authTokens=auth_tokens)
+
+            return jsonify({"success": ""}), 200
+
+        except:
+            return jsonify({'error': 'Internal server error'}), 500
+
     # search function
     # params:
     #   -keywords: string
     @app.route("/search")
     def search():
         keywords = request.args.get('keywords') if request.args.get('keywords') else 'random_test_keyword'
+        salary = request.args.get('salary') if request.args.get('salary') else ''
         keywords = keywords.replace(' ', '+')
         if keywords == 'random_test_keyword':
             return json.dumps({'label': str("successful test search")})
         # create a url for a crawler to fetch job information
-        url = "https://www.google.com/search?q=" + keywords + "&ibp=htl;jobs"
+        if salary:
+            url = "https://www.google.com/search?q=" + keywords + "%20salary%20" + salary + "&ibp=htl;jobs"
+        else:
+            url = "https://www.google.com/search?q=" + keywords + "&ibp=htl;jobs"
 
         # webdriver can run the javascript and then render the page first.
         # This prevent websites don't provide Server-side rendering 
         # leading to crawlers cannot fetch the page
-        driver = webdriver.Chrome(ChromeDriverManager().install())
+        chrome_options = Options()
+        # chrome_options.add_argument("--no-sandbox") # linux only
+        chrome_options.add_argument("--headless")
+        user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) " \
+                     "Chrome/71.0.3578.98 Safari/537.36 "
+        chrome_options.add_argument(f"user-agent={user_agent}")
+        driver = webdriver.Chrome(ChromeDriverManager().install(), chrome_options=chrome_options)
         driver.get(url)
         content = driver.page_source
         driver.close()
@@ -158,7 +208,7 @@ def create_app():
     @app.route("/applications", methods=['GET'])
     def get_data():
         try:
-            userid = get_userid_from_token()
+            userid = get_userid_from_header()
             user = Users.objects(id=userid).first()
             applications = user['applications']
             return jsonify(applications)
@@ -168,12 +218,11 @@ def create_app():
     @app.route("/applications", methods=['POST'])
     def add_application():
         try:
-            userid = get_userid_from_token()
+            userid = get_userid_from_header()
             try:
-                request_data = json.loads(request.data)
+                request_data = json.loads(request.data)['application']
                 _ = request_data['jobTitle']
                 _ = request_data['companyName']
-                _ = request_data['date']
             except:
                 return jsonify({'error': 'Missing fields in input'}), 400
 
@@ -182,7 +231,8 @@ def create_app():
                 'id': get_new_application_id(userid),
                 'jobTitle': request_data['jobTitle'],
                 'companyName': request_data['companyName'],
-                'date': request_data['date'],
+                'date': request_data.get('date'),
+                'status': request_data.get('status', "1")
             }
             applications = user['applications'] + [current_application]
 
@@ -194,9 +244,9 @@ def create_app():
     @app.route('/applications/<int:application_id>', methods=['PUT'])
     def update_application(application_id):
         try:
-            userid = get_userid_from_token()
+            userid = get_userid_from_header()
             try:
-                request_data = json.loads(request.data)
+                request_data = json.loads(request.data)['application']
             except:
                 return jsonify({'error': 'No fields found in input'}), 400
 
@@ -225,7 +275,7 @@ def create_app():
     @app.route("/applications/<int:application_id>", methods=['DELETE'])
     def delete_application(application_id):
         try:
-            userid = get_userid_from_token()
+            userid = get_userid_from_header()
             user = Users.objects(id=userid).first()
 
             current_applications = user['applications']
@@ -245,6 +295,7 @@ def create_app():
         except:
             return jsonify({"error": "Internal server error"}), 500
 
+          
     @app.route("/resume", methods=['POST'])
     def upload_resume():
         try:

@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 import Card from './Card'
 import CardModal from './CardModal'
 import $ from 'jquery'
@@ -22,16 +22,26 @@ export default class CardBoard extends Component {
   // get initial data to render the root page
   getData () {
     return $.ajax({
-      url: 'http://localhost:5000/application',
-      method: 'GET'
+      url: 'http://localhost:5000/applications',
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer ' + localStorage.getItem('token'),
+        'Access-Control-Allow-Origin': 'http://localhost:3000',
+        'Access-Control-Allow-Credentials': 'true'
+      },
+      credentials: 'include'
     })
+    // getApplications().then((res) => {
+
+    // }).catch((error) => {
+    //         alert("Error while retrieving applications");
+    //     })
   }
 
   componentDidMount () {
     // fetch the data only after this component is mounted
     this.getData()
       .done((data) => {
-        data = JSON.parse(data)
         // console.log(data);
         const result = this.groupApplication(data)
         const cardTitles = this.createCardTitle(result)
@@ -65,10 +75,14 @@ export default class CardBoard extends Component {
     const newApplications = this.state.applications
     if (application.id == null) {
       // current application is a new application, create a new one and save in the backend.
-      console.log('new application')
       $.ajax({
-        url: 'http://localhost:5000/application', // TODO: will have to replace with production URL
+        url: 'http://localhost:5000/applications', // TODO: will have to replace with production URL
         method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + localStorage.getItem('token'),
+          'Access-Control-Allow-Origin': 'http://localhost:3000',
+          'Access-Control-Allow-Credentials': 'true'
+        },
         async: false,
         data: JSON.stringify({
           application: application
@@ -84,12 +98,17 @@ export default class CardBoard extends Component {
     } else {
       console.log('updating id=' + application.id)
       $.ajax({
-        url: 'http://localhost:5000/application',
+        url: 'http://localhost:5000/applications/' + application.id,
         method: 'PUT',
         async: false,
         data: JSON.stringify({
           application: application
         }),
+        headers: {
+          'Authorization': 'Bearer ' + localStorage.getItem('token'),
+          'Access-Control-Allow-Origin': 'http://localhost:3000',
+          'Access-Control-Allow-Credentials': 'true'
+        },
         contentType: 'application/json',
         success: (msg) => {
           console.log(msg)
@@ -108,7 +127,7 @@ export default class CardBoard extends Component {
     const newApplications = this.state.applications
     console.log('deleting id=' + application.id)
     $.ajax({
-      url: 'http://localhost:5000/application',
+      url: 'http://localhost:5000/applications/' + application.id,
       method: 'DELETE',
       async: false,
       data: JSON.stringify({
@@ -117,6 +136,11 @@ export default class CardBoard extends Component {
       contentType: 'application/json',
       success: (msg) => {
         console.log(msg)
+      },
+      headers: {
+        'Authorization': 'Bearer ' + localStorage.getItem('token'),
+        'Access-Control-Allow-Origin': 'http://localhost:3000',
+        'Access-Control-Allow-Credentials': 'true'
       },
       complete: function (data) {
         const idx = newApplications.indexOf(data.responseJSON)
