@@ -16,3 +16,8 @@ export const signUp = (params) => {
     body: params
   })
 }
+
+export const storeToken = (obj) => {
+  localStorage.setItem('token', obj.token)
+  localStorage.setItem('expiry', obj.expiry)
+}

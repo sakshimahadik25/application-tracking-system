@@ -1,5 +1,5 @@
 # importing required python libraries
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_file
 from flask_mongoengine import MongoEngine
 from flask_cors import CORS, cross_origin
 from selenium import webdriver
@@ -15,7 +15,8 @@ import yaml
 import hashlib
 import uuid
 
-existing_endpoints = ["/applications"]
+existing_endpoints = ["/applications", "/resume"]
+
 
 
 def create_app():
@@ -39,6 +40,8 @@ def create_app():
     @app.before_request
     def middleware():
         try:
+            if request.method == 'OPTIONS':
+                return jsonify({'success': 'OPTIONS'}), 200
             if request.path in existing_endpoints:
                 headers = request.headers
                 try:
@@ -58,10 +61,9 @@ def create_app():
                         expiry_time_object = datetime.strptime(expiry, "%m/%d/%Y, %H:%M:%S")
                         if datetime.now() <= expiry_time_object:
                             expiry_flag = True
-                            break
                         else:
                             delete_auth_token(tokens, userid)
-
+                        break
 
                 if not expiry_flag:
                     return jsonify({"error": "Unauthorized"}), 401
@@ -218,10 +220,9 @@ def create_app():
         try:
             userid = get_userid_from_header()
             try:
-                request_data = json.loads(request.data)
+                request_data = json.loads(request.data)['application']
                 _ = request_data['jobTitle']
                 _ = request_data['companyName']
-                _ = request_data['date']
             except:
                 return jsonify({'error': 'Missing fields in input'}), 400
 
@@ -230,7 +231,9 @@ def create_app():
                 'id': get_new_application_id(userid),
                 'jobTitle': request_data['jobTitle'],
                 'companyName': request_data['companyName'],
-                'date': request_data['date'],
+                'date': request_data.get('date'),
+                'jobLink': request_data.get('jobLink'),
+                'status': request_data.get('status', "1")
             }
             applications = user['applications'] + [current_application]
 
@@ -244,7 +247,7 @@ def create_app():
         try:
             userid = get_userid_from_header()
             try:
-                request_data = json.loads(request.data)
+                request_data = json.loads(request.data)['application']
             except:
                 return jsonify({'error': 'No fields found in input'}), 400
 
@@ -255,9 +258,11 @@ def create_app():
                 return jsonify({'error': 'No applications found'}), 400
             else:
                 updated_applications = []
+                app_to_update = None
                 application_updated_flag = False
                 for application in current_applications:
                     if application['id'] == application_id:
+                        app_to_update = application
                         application_updated_flag = True
                         for key, value in request_data.items():
                             application[key] = value
@@ -266,7 +271,7 @@ def create_app():
                     return jsonify({'error': 'Application not found'}), 400
                 user.update(applications=updated_applications)
 
-            return jsonify({'message': 'Application successfully edited'}), 200
+            return jsonify(app_to_update), 200
         except:
             return jsonify({'error': 'Internal server error'}), 500
 
@@ -280,18 +285,61 @@ def create_app():
 
             application_deleted_flag = False
             updated_applications = []
+            app_to_delete = None
             for application in current_applications:
                 if application['id'] != application_id:
                     updated_applications += [application]
                 else:
+                    app_to_delete = application
                     application_deleted_flag = True
 
             if not application_deleted_flag:
                 return jsonify({'error': 'Application not found'}), 400
             user.update(applications=updated_applications)
-            return jsonify({"message": "Application deleted successfully"}), 200
+            return jsonify(app_to_delete), 200
         except:
             return jsonify({"error": "Internal server error"}), 500
+
+          
+    @app.route("/resume", methods=['POST'])
+    def upload_resume():
+        try:
+            userid = get_userid_from_header()
+            try:
+                file = request.files["resume"].read()
+            except:
+                return jsonify({'error': 'No resume file found in the input'}), 400
+
+            user = Users.objects(id=userid).first()
+            if not user.resume.read():
+                # There is no file
+                user.resume.put(file)
+                user.save()
+                return jsonify({"message": "resume successfully uploaded"}), 200
+            else:
+                # There is a file, we are replacing it
+                user.resume.replace(file)
+                user.save()
+                return jsonify({"message": "resume successfully replaced"}), 200
+        except Exception as e:
+            print(e)
+            return jsonify({'error': 'Internal server error'}), 500
+
+    @app.route("/resume", methods=['GET'])
+    def get_resume():
+        try:
+            userid = get_userid_from_header()
+            try:
+                user = Users.objects(id=userid).first()
+                if len(user.resume.read()) == 0:
+                    raise FileNotFoundError
+                else:
+                    user.resume.seek(0)
+            except:
+                return jsonify({"error": "resume could not be found"}), 400
+            return send_file(user.resume, attachment_filename="resume.txt"), 200
+        except:
+            return jsonify({'error': 'Internal server error'}), 500
 
     return app
 
@@ -316,6 +364,7 @@ class Users(db.Document):
     password = db.StringField()
     authTokens = db.ListField()
     applications = db.ListField()
+    resume = db.FileField()
 
     def to_json(self):
         return {"id": self.id,

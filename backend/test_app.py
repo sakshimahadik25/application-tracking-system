@@ -7,7 +7,6 @@ from flask_mongoengine import MongoEngine
 import yaml
 from app import create_app, Users, get_new_user_id
 
-
 # Pytest fixtures are useful tools for calling resources
 # over and over, without having to manually recreate them,
 # eliminating the possibility of carry-over from previous tests,
@@ -111,6 +110,11 @@ def test_add_application(client, mocker, user):
     jdata = json.loads(rv.data.decode("utf-8"))["jobTitle"]
     assert jdata == 'fakeJob12345'
 
+    rv = client.post('/applications', json={'application':{
+        'jobTitle':'fakeJob12345', 'companyName':'fakeCompany', 'date':str(datetime.date(2021, 9, 23)), 'status':'1'
+        }})
+    jdata = json.loads(rv.data.decode("utf-8"))["jobTitle"]
+    assert jdata == 'fakeJob12345'
 
 # 5. testing if the application is updating data in database properly
 def test_update_application(client, mocker, user):
@@ -138,6 +142,15 @@ def test_update_application(client, mocker, user):
 def test_delete_application(client, mocker, user):
     application = {'id': 1, 'jobTitle': 'fakeJob12345', 'companyName': 'fakeCompany',
                    'date': str(datetime.date(2021, 9, 22))}
+    rv = client.put('/applications', json={'application':{
+        'id':1, 'jobTitle':'fakeJob12345', 'companyName':'fakeCompany', 'date':str(datetime.date(2021, 9, 23)), 'status':'1'
+        }})
+    jdata = json.loads(rv.data.decode("utf-8"))["jobTitle"]
+    assert jdata == 'fakeJob12345'
+
+#6. testing if the application is deleting data in database properly
+def test_delete_application(client, mocker):
+    application = Users(id=1, jobTitle='fakeJob12345', companyName='fakeCompany', date=str(datetime.date(2021, 9, 22)))
     mocker.patch(
         'app.Users.delete'
     )
@@ -152,7 +165,6 @@ def test_delete_application(client, mocker, user):
     print(rv.data)
     jdata = json.loads(rv.data.decode("utf-8"))["jobTitle"]
     assert jdata == 'fakeJob12345'
-
 
 # 7. Testing getting_new_id function returns correct next id
 def test_get_new_id(user):
