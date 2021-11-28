@@ -50,6 +50,7 @@ class Card extends Component {
                         {this.props.application.companyName}<br/>
                         {dateType.wordOfDate}: {this.props.application.date}
                     </p>
+                    <p>Job link: <a href={this.props.application.jobLink} target="_blank" onClick={"event.stopPropagation();"}>{this.props.application.jobLink}</a></p>
                 </div>
             </div>
         );

@@ -12,6 +12,7 @@ export default class SearchCard extends Component {
       jobTitle: props.application.jobTitle,
       companyName: props.application.companyName,
       date: props.application.date,
+      jobLink: props.application.jobLink,
       class: '1'
     }
   }
@@ -25,14 +26,18 @@ export default class SearchCard extends Component {
   submitAction () {
     alert("Submitted !");
     this.state.handleCloseEditModal()
-    const application = {
+    let application = {
       id: this.state.id,
       companyName: this.state.companyName,
       jobTitle: this.state.jobTitle,
       date: this.state.date,
+      jobLink: this.state.jobLink,
       status: this.state.class
     }
-    //console.log(application)
+    if (!application.jobLink.startsWith("http")) {
+        application.jobLink = "http://" + application.jobLink
+    }
+    console.log(application)
     // call parent function to handle data change
     this.state.submitFunc(application)
   }
@@ -74,6 +79,13 @@ export default class SearchCard extends Component {
               <label htmlFor='date' className='col-form-label'>Date</label>
               <input
                 type='date' className='form-control' id='date' value={this.state.date}
+                onChange={this.handleChange.bind(this)}
+              />
+            </div>
+            <div className='form-group'>
+              <label htmlFor='jobLink' className='col-form-label'>Job link</label>
+              <input
+                type='text' className='form-control' id='jobLink' value={this.state.jobLink}
                 onChange={this.handleChange.bind(this)}
               />
             </div>

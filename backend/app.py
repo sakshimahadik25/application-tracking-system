@@ -232,6 +232,7 @@ def create_app():
                 'jobTitle': request_data['jobTitle'],
                 'companyName': request_data['companyName'],
                 'date': request_data.get('date'),
+                'jobLink': request_data.get('jobLink'),
                 'status': request_data.get('status', "1")
             }
             applications = user['applications'] + [current_application]
@@ -303,7 +304,7 @@ def create_app():
     @app.route("/resume", methods=['POST'])
     def upload_resume():
         try:
-            userid = get_userid_from_token()
+            userid = get_userid_from_header()
             try:
                 file = request.files["resume"].read()
             except:
@@ -327,7 +328,7 @@ def create_app():
     @app.route("/resume", methods=['GET'])
     def get_resume():
         try:
-            userid = get_userid_from_token()
+            userid = get_userid_from_header()
             try:
                 user = Users.objects(id=userid).first()
                 if len(user.resume.read()) == 0:

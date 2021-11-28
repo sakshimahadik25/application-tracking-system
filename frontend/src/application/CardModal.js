@@ -11,6 +11,7 @@ export default class CardEdit extends Component {
             jobTitle: props.application.jobTitle,
             companyName: props.application.companyName,
             date: props.application.date,
+            jobLink: props.application.jobLink,
             class: props.application.status
         }
     }
@@ -29,7 +30,11 @@ export default class CardEdit extends Component {
             companyName: this.state.companyName,
             jobTitle: this.state.jobTitle,
             date: this.state.date,
+            jobLink: this.state.jobLink,
             status: this.state.class
+        }
+        if (!application.jobLink.startsWith("http")) {
+            application.jobLink = "http://" + application.jobLink
         }
         console.log(application)
         // call parent function to handle data change
@@ -44,6 +49,7 @@ export default class CardEdit extends Component {
             companyName: this.state.companyName,
             jobTitle: this.state.jobTitle,
             date: this.state.date,
+            jobLink: this.state.jobLink,
             status: this.state.class
         }
         this.state.deleteApplication(application)
@@ -81,6 +87,10 @@ export default class CardEdit extends Component {
                     <div className="form-group">
                         <label htmlFor="date" className="col-form-label">Date</label>
                         <input type="date" className="form-control" id="date" value={this.state.date} onChange={this.handleChange.bind(this)}/>
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="jobLink" className="col-form-label">Job Link</label>
+                        <input type="text" className="form-control" id="jobLink" value={this.state.jobLink} onChange={this.handleChange.bind(this)}/>
                     </div>
                     <div className="input-group mb-3">
                         <div className="input-group-prepend">
