@@ -137,7 +137,7 @@ def test_delete_application(client, user):
 
 # 7. Testing getting_new_id function returns correct next id
 def test_get_new_id(user):
-    assert get_new_user_id() == 2
+    assert get_new_user_id() == 3
 
 
 # 8. testing if the flask app is running properly with status code
