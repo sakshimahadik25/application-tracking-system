@@ -144,3 +144,11 @@ def test_get_new_id(user):
 def test_alive_status_code(client):
     rv = client.get('/')
     assert rv.status_code == 200
+
+# Testing logging out does not return error
+def test_logout(client, user):
+    user, auth = user
+    rv = client.post('/users/logout', headers=auth)
+    # assert no error occured
+    assert rv.status_code == 200
+
