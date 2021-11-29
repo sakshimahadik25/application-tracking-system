@@ -5,7 +5,7 @@ import json
 import datetime
 from flask_mongoengine import MongoEngine
 import yaml
-from app import create_app, Users, get_new_user_id
+from app import create_app, Users, get_new_user_id, app
 
 # Pytest fixtures are useful tools for calling resources
 # over and over, without having to manually recreate them,
@@ -15,21 +15,21 @@ from app import create_app, Users, get_new_user_id
 # in app.py
 @pytest.fixture
 def client():
-    app = create_app()
-    with open('application.yml') as f:
-        info = yaml.load(f, Loader=yaml.FullLoader)
-        username = info['username']
-        password = info['password']
-        app.config['MONGODB_SETTINGS'] = {
-            'db': 'appTracker',
-            'host': f'mongodb+srv://{username}:{password}@applicationtracker.287am.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
-        }
-    db = MongoEngine()
-    db.disconnect()
-    db.init_app(app)
+    # app = create_app()
+    # with open('application.yml') as f:
+    #     info = yaml.load(f, Loader=yaml.FullLoader)
+    #     username = info['username']
+    #     password = info['password']
+    #     app.config['MONGODB_SETTINGS'] = {
+    #         'db': 'appTracker',
+    #         'host': f'mongodb+srv://{username}:{password}@applicationtracker.287am.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
+    #     }
+    # db = MongoEngine()
+    # # db.disconnect()
+    # db.init_app(app)
     client = app.test_client()
     yield client
-    db.disconnect()
+    # db.disconnect()
 
 
 @pytest.fixture
