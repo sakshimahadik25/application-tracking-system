@@ -33,7 +33,7 @@ export default class CardEdit extends Component {
             jobLink: this.state.jobLink,
             status: this.state.class
         }
-        if (!application.jobLink.startsWith("http")) {
+        if (application.jobLink && !application.jobLink.startsWith("http")) {
             application.jobLink = "http://" + application.jobLink
         }
         console.log(application)

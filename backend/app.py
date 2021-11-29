@@ -347,9 +347,11 @@ def create_app():
 app = create_app()
 with open('application.yml') as f:
     info = yaml.load(f, Loader=yaml.FullLoader)
+    username = info['username']
+    password = info['password']
     app.config['MONGODB_SETTINGS'] = {
         'db': 'appTracker',
-        'host': 'localhost'
+        'host': f'mongodb+srv://{username}:{password}@applicationtracker.287am.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
     }
 db = MongoEngine()
 db.init_app(app)
