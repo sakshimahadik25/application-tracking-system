@@ -38,17 +38,8 @@ def user(client):
     data = {'username': 'testUser', 'password': 'test', 'fullName': 'fullName'}
 
     user = Users.objects(username=data['username'])
-    if len(user) == 0:
-        password = data['password']
-        password_hash = hashlib.md5(password.encode())
-        user_id = get_new_user_id()
-        user = Users(id=user_id,
-                     fullName=data['fullName'],
-                     username=data['username'],
-                     password=password_hash.hexdigest(),
-                     authTokens=[],
-                     applications=[])
-        user.save()
+    user.first()['applications'] = []
+    user.first().save()
     rv = client.post('/users/login', json=data)
     jdata = json.loads(rv.data.decode("utf-8"))
     header = {'Authorization': 'Bearer ' + jdata['token']}
@@ -100,71 +91,49 @@ def test_add_application(client, mocker, user):
         return_value=-1
     )
     user, header = user
-    mocker.patch(
-        # Dataset is in slow.py, but imported to main.py
-        'app.Users.save'
-    )
+    user['applications'] = []
+    user.save()
+    # mocker.patch(
+    #     # Dataset is in slow.py, but imported to main.py
+    #     'app.Users.save'
+    # )
     rv = client.post('/applications', headers=header, json={'application': {
         'jobTitle': 'fakeJob12345', 'companyName': 'fakeCompany', 'date': str(datetime.date(2021, 9, 23)), 'status': '1'
     }})
+    assert rv.status_code == 200
     jdata = json.loads(rv.data.decode("utf-8"))["jobTitle"]
     assert jdata == 'fakeJob12345'
 
-    rv = client.post('/applications', json={'application':{
-        'jobTitle':'fakeJob12345', 'companyName':'fakeCompany', 'date':str(datetime.date(2021, 9, 23)), 'status':'1'
-        }})
-    jdata = json.loads(rv.data.decode("utf-8"))["jobTitle"]
-    assert jdata == 'fakeJob12345'
 
 # 5. testing if the application is updating data in database properly
-def test_update_application(client, mocker, user):
+def test_update_application(client, user):
     user, auth = user
-    application = {'jobTitle': 'fakeJob12345', 'companyName': 'fakeCompany', 'date': str(datetime.date(2021, 9, 23)),
+    application = {"id": 3,'jobTitle': 'test_edit', 'companyName': 'test_edit', 'date': str(datetime.date(2021, 9, 23)),
                    'status': '1'}
     user['applications'] = [application]
     user.save()
-    new_application = {'id':1, 'jobTitle':'fakeJob12345', 'companyName':'fakeCompany', 'date':str(datetime.date(2021, 9, 22))}
+    new_application = {'id':3, 'jobTitle':'fakeJob12345', 'companyName':'fakeCompany', 'date':str(datetime.date(2021, 9, 22))}
 
-    # mocker.patch(
-    #     'app.Users.update'
-    # )
-    #
-    # mock_objects = mocker.MagicMock(name='objects')
-    # mocker.patch('app.Users.objects', new=mock_objects)
-    # mock_objects.return_value.first.return_value = new_application
-
-    rv = client.put('/applications/1', json={'application': new_application }, headers=auth)
+    rv = client.put('/applications/3', json={'application': new_application }, headers=auth)
+    assert rv.status_code == 200
     jdata = json.loads(rv.data.decode("utf-8"))["jobTitle"]
     assert jdata == 'fakeJob12345'
 
 
 # 6. testing if the application is deleting data in database properly
-def test_delete_application(client, mocker, user):
-    application = {'id': 1, 'jobTitle': 'fakeJob12345', 'companyName': 'fakeCompany',
-                   'date': str(datetime.date(2021, 9, 22))}
-    rv = client.put('/applications', json={'application':{
-        'id':1, 'jobTitle':'fakeJob12345', 'companyName':'fakeCompany', 'date':str(datetime.date(2021, 9, 23)), 'status':'1'
-        }})
+def test_delete_application(client, user):
+    user, auth = user
+
+    application = {'id': 3, 'jobTitle': 'fakeJob12345', 'companyName': 'fakeCompany', 'date': str(datetime.date(2021, 9, 23)),
+                   'status': '1'}
+    user['applications'] = [application]
+    user.save()
+
+
+    rv = client.delete('/applications/3', headers=auth)
     jdata = json.loads(rv.data.decode("utf-8"))["jobTitle"]
     assert jdata == 'fakeJob12345'
 
-#6. testing if the application is deleting data in database properly
-def test_delete_application(client, mocker):
-    application = Users(id=1, jobTitle='fakeJob12345', companyName='fakeCompany', date=str(datetime.date(2021, 9, 22)))
-    mocker.patch(
-        'app.Users.delete'
-    )
-    mock_objects = mocker.MagicMock(name='objects')
-    mocker.patch('app.Application.objects', new=mock_objects)
-    mock_objects.return_value.first.return_value = application
-
-    rv = client.delete('/application', json={'application': {
-        'id': 1, 'jobTitle': 'fakeJob12345', 'companyName': 'fakeCompany', 'date': str(datetime.date(2021, 9, 23)),
-        'status': '1'
-    }})
-    print(rv.data)
-    jdata = json.loads(rv.data.decode("utf-8"))["jobTitle"]
-    assert jdata == 'fakeJob12345'
 
 # 7. Testing getting_new_id function returns correct next id
 def test_get_new_id(user):
