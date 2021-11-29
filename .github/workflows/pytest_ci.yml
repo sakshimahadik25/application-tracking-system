@@ -30,7 +30,6 @@ jobs:
     - name: Test with pytest, upload to codecov
       run: |
         cd ./backend
-        printf 'username: $MONGO_USER\npassword: $MONGO_PASS' > application.yml
         echo 'Created application.yml'
         pwd
         pytest --cov-report xml:cov.xml --cov=./ ./
