@@ -13,11 +13,11 @@ export default class ManageResumePage extends Component {
 
     console.log("***");
     console.log(localStorage.getItem('token'));
-    this.getData = this.getFiles.bind(this)
+    this.getFiles.bind(this);
 
   }
 
-  getData () {
+  getFiles () {
     $.ajax({
           url: 'http://localhost:5000/resume',
           method: 'GET',
