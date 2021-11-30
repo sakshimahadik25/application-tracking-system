@@ -1,12 +1,12 @@
-import fetch from './handler';
+import fetch from './handler'
 
 export const getApplications = () => {
-    // console.log(params)
+  // console.log(params)
   return fetch({
     method: 'GET',
     url: '/applications',
     headers: {
-        'Authorization': 'Bearer ' + localStorage.getItem('token')
+      Authorization: 'Bearer ' + localStorage.getItem('token')
     }
   })
-};
+}
