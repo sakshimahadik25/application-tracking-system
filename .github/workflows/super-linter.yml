@@ -20,6 +20,8 @@ jobs:
     - name: Lint Code Base
       uses: github/super-linter@v4
       env:
+          LINTER_RULES_PATH: /
+          JSCPD_CONFIG_FILE: .jscpd.json
           VALIDATE_ALL_CODEBASE: false
           VALIDATE_MARKDOWN: false
           VALIDATE_JAVASCRIPT_STANDARD: false
