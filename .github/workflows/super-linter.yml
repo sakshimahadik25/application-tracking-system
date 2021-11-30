@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - "main"
+      - "fixlint"
   pull_request:
     branches: [main]    
 
