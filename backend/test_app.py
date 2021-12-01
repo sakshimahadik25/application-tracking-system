@@ -1,4 +1,5 @@
 import hashlib
+from io import BytesIO
 
 import pytest
 import json
@@ -6,6 +7,7 @@ import datetime
 from flask_mongoengine import MongoEngine
 import yaml
 from app import create_app, Users, get_new_user_id
+
 
 # Pytest fixtures are useful tools for calling resources
 # over and over, without having to manually recreate them,
@@ -108,13 +110,15 @@ def test_add_application(client, mocker, user):
 # 5. testing if the application is updating data in database properly
 def test_update_application(client, user):
     user, auth = user
-    application = {"id": 3,'jobTitle': 'test_edit', 'companyName': 'test_edit', 'date': str(datetime.date(2021, 9, 23)),
+    application = {"id": 3, 'jobTitle': 'test_edit', 'companyName': 'test_edit',
+                   'date': str(datetime.date(2021, 9, 23)),
                    'status': '1'}
     user['applications'] = [application]
     user.save()
-    new_application = {'id':3, 'jobTitle':'fakeJob12345', 'companyName':'fakeCompany', 'date':str(datetime.date(2021, 9, 22))}
+    new_application = {'id': 3, 'jobTitle': 'fakeJob12345', 'companyName': 'fakeCompany',
+                       'date': str(datetime.date(2021, 9, 22))}
 
-    rv = client.put('/applications/3', json={'application': new_application }, headers=auth)
+    rv = client.put('/applications/3', json={'application': new_application}, headers=auth)
     assert rv.status_code == 200
     jdata = json.loads(rv.data.decode("utf-8"))["jobTitle"]
     assert jdata == 'fakeJob12345'
@@ -124,11 +128,11 @@ def test_update_application(client, user):
 def test_delete_application(client, user):
     user, auth = user
 
-    application = {'id': 3, 'jobTitle': 'fakeJob12345', 'companyName': 'fakeCompany', 'date': str(datetime.date(2021, 9, 23)),
+    application = {'id': 3, 'jobTitle': 'fakeJob12345', 'companyName': 'fakeCompany',
+                   'date': str(datetime.date(2021, 9, 23)),
                    'status': '1'}
     user['applications'] = [application]
     user.save()
-
 
     rv = client.delete('/applications/3', headers=auth)
     jdata = json.loads(rv.data.decode("utf-8"))["jobTitle"]
@@ -140,6 +144,7 @@ def test_alive_status_code(client):
     rv = client.get('/')
     assert rv.status_code == 200
 
+
 # Testing logging out does not return error
 def test_logout(client, user):
     user, auth = user
@@ -147,3 +152,20 @@ def test_logout(client, user):
     # assert no error occured
     assert rv.status_code == 200
 
+
+def test_resume(client, mocker, user):
+    mocker.patch(
+        # Dataset is in slow.py, but imported to main.py
+        'app.get_new_user_id',
+        return_value=-1
+    )
+    user, header = user
+    user['applications'] = []
+    user.save()
+    data = dict(
+        file=(BytesIO(b'testing resume'), "resume.txt"),
+    )
+    rv = client.post('/resume', headers=header, content_type='multipart/form-data', data=data)
+    assert rv.status_code == 200
+    rv = client.get('/resume', headers=header)
+    assert rv.status_code == 200
