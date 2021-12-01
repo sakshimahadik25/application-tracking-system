@@ -306,7 +306,7 @@ def create_app():
         try:
             userid = get_userid_from_header()
             try:
-                file = request.files["resume"].read()
+                file = request.files["file"].read()
             except:
                 return jsonify({'error': 'No resume file found in the input'}), 400
 
@@ -337,7 +337,12 @@ def create_app():
                     user.resume.seek(0)
             except:
                 return jsonify({"error": "resume could not be found"}), 400
-            return send_file(user.resume, attachment_filename="resume.txt"), 200
+
+            response = send_file(user.resume, mimetype='application/pdf', attachment_filename="resume.pdf",
+                                 as_attachment=True)
+            response.headers["x-filename"] = "resume.pdf"
+            response.headers["Access-Control-Expose-Headers"] = 'x-filename'
+            return response, 200
         except:
             return jsonify({'error': 'Internal server error'}), 500
 
