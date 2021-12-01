@@ -169,4 +169,3 @@ def test_resume(client, mocker, user):
     assert rv.status_code == 200
     rv = client.get('/resume', headers=header)
     assert rv.status_code == 200
- 
