@@ -24,9 +24,9 @@ export default class SearchCard extends Component {
   }
 
   submitAction () {
-    alert("Submitted !");
+    alert('Submitted !')
     this.state.handleCloseEditModal()
-    let application = {
+    const application = {
       id: this.state.id,
       companyName: this.state.companyName,
       jobTitle: this.state.jobTitle,
@@ -34,8 +34,8 @@ export default class SearchCard extends Component {
       jobLink: this.state.jobLink,
       status: this.state.class
     }
-    if (application.jobLink && !application.jobLink.startsWith("http")) {
-        application.jobLink = "http://" + application.jobLink
+    if (application.jobLink && !application.jobLink.startsWith('http')) {
+      application.jobLink = 'http://' + application.jobLink
     }
     console.log(application)
     // call parent function to handle data change

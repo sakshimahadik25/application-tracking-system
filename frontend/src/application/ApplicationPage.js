@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import Card from './Card'
 import CardModal from './CardModal'
 import $ from 'jquery'
@@ -25,7 +25,7 @@ export default class CardBoard extends Component {
       url: 'http://localhost:5000/applications',
       method: 'GET',
       headers: {
-        'Authorization': 'Bearer ' + localStorage.getItem('token'),
+        Authorization: 'Bearer ' + localStorage.getItem('token'),
         'Access-Control-Allow-Origin': 'http://localhost:3000',
         'Access-Control-Allow-Credentials': 'true'
       },
@@ -79,7 +79,7 @@ export default class CardBoard extends Component {
         url: 'http://localhost:5000/applications', // TODO: will have to replace with production URL
         method: 'POST',
         headers: {
-          'Authorization': 'Bearer ' + localStorage.getItem('token'),
+          Authorization: 'Bearer ' + localStorage.getItem('token'),
           'Access-Control-Allow-Origin': 'http://localhost:3000',
           'Access-Control-Allow-Credentials': 'true'
         },
@@ -105,7 +105,7 @@ export default class CardBoard extends Component {
           application: application
         }),
         headers: {
-          'Authorization': 'Bearer ' + localStorage.getItem('token'),
+          Authorization: 'Bearer ' + localStorage.getItem('token'),
           'Access-Control-Allow-Origin': 'http://localhost:3000',
           'Access-Control-Allow-Credentials': 'true'
         },
@@ -138,12 +138,12 @@ export default class CardBoard extends Component {
         console.log(msg)
       },
       headers: {
-        'Authorization': 'Bearer ' + localStorage.getItem('token'),
+        Authorization: 'Bearer ' + localStorage.getItem('token'),
         'Access-Control-Allow-Origin': 'http://localhost:3000',
         'Access-Control-Allow-Credentials': 'true'
       },
       complete: function (data) {
-        let deletedApp = data.responseJSON
+        const deletedApp = data.responseJSON
         const idx = newApplications.findIndex(a => a.id === deletedApp.id)
         newApplications.splice(idx, 1)
       }
