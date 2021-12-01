@@ -16,7 +16,6 @@ export default class App extends React.Component {
       'SearchPage': <SearchPage/>,
       'ApplicationPage' : <ApplicationPage/>,
       'LoginPage': <LoginPage/>,
-      'LoginPage': <LoginPage/>,
       'ManageResumePage': <ManageResumePage/>
 
     }
