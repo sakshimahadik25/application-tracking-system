@@ -24,6 +24,12 @@ export default class App extends React.Component {
     this.sidebarHandler = this.sidebarHandler.bind(this);
   };
 
+  componentDidMount() {
+    if(localStorage.getItem('token')) {
+      this.sidebarHandler()
+    }
+  }
+
   sidebarHandler = () => {
     this.setState({
       currentPage: this.state.mapRouter['ApplicationPage'],
@@ -32,6 +38,7 @@ export default class App extends React.Component {
   }
 
   handleLogout = () => {
+    localStorage.removeItem('token')
     this.setState({
       sidebar:false
     })
