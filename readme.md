@@ -22,10 +22,37 @@ Our application keeps track of the jobs you've added to your wish list. It also 
 
 This application is created as a part of our SE project for Fall 2021
 
+## Table of contents
+
+- [Whats New](#whats-new)
+- [Basic Design](#basic-design)
+- [Demo](#demo)
+- [Improvements](#improvements)
+- [Roadmap](#roadmap)
+- [Future Scope](#future-scope)
+- [Explanation](#explanation)
+- [Technologies Used](#technologies-used)
+- [Installation](#installation)
+    + [Requirements](#requirements)
+    + [Strongly Recommended](#strongly-recommended)
+- [Getting Started](#getting-started)
+    + [Boot](#boot)
+    + [Shutdown](#shutdown)
+- [Hosting the Database](#hosting-the-database)
+    + [Local MongoDB](#local-mongodb)
+    + [Hosted database with MongoDB Atlas](#hosted-database-with-mongodb-atlas)
+- [License](#license)
+- [How to Contribute](#how-to-contribute)
+- [Team Members](#team-members)
+
+
+## Whats New
+
+
 ## Basic Design:
 ![Basic Design](https://github.com/prithvish-doshi-17/application-tracking-system/blob/main/resources/Overall%20Design.PNG)
 
-### Here's how the application looks:
+### Demo:
 https://user-images.githubusercontent.com/43064854/135554649-9f5e8f21-ff12-45c9-82b4-37078e88709d.mp4
 
 
