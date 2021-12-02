@@ -34,7 +34,7 @@ def create_app():
 
     @app.errorhandler(405)
     # pylint: disable=C0103
-    def page_not_found(e):
+    def page_not_allowed(e):
         return jsonify({"error": "Method not Allowed"}), 405
 
     @app.before_request
