@@ -73,7 +73,7 @@ https://user-images.githubusercontent.com/89696745/140273086-a03a6c7b-2d06-47c5-
 
 #### Version 1.0.3
 
-- Updated badges for repo
+- Updated badges for repository
 - Users database implementation
 - Add logout endpoint and update middleware
 - Implementing search based on salary functionality
