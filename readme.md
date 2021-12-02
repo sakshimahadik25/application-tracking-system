@@ -178,8 +178,9 @@ Please see our CONTRIBUTING.md for instructions on how to contribute to the repo
 
 
 ## Team Members
-* [Setu Kumar Basak](https://github.com/setu1421)  
-* [Conor Thomason](https://github.com/ConorThomason)  
-* [Keertana Vellanki](https://github.com/KeertanaVellanki)  
-* [Muntasir Hoq](https://github.com/muntasirhoq)  
-* [Matthew Sohacki](https://github.com/msohacki)  
+- Ashley King
+- Manoj Kumar
+- Rakesh Muppala
+- Sayali Parab
+- Ashwin Das
+- Renji Joseph Sabu 
