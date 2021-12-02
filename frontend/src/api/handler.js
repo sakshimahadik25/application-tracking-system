@@ -12,7 +12,8 @@ export default function fetch (options) {
       resolve(response.data)
     }).catch((e) => {
       if (e.status === 401) {
-        window.location.href = '/'
+        window.location.href = "/";
+        localStorage.removeItem('token')
       }
       reject(e)
     })
