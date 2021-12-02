@@ -480,6 +480,7 @@ class Users(db.Document):
     """
     Users class. Holds full name, username, password, as well as applications and resumes
     """
+
     id = db.IntField(primary_key=True)
     fullName = db.StringField()
     username = db.StringField()
