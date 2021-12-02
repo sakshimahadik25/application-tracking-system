@@ -20,6 +20,10 @@ existing_endpoints = ["/applications", "/resume"]
 
 
 def create_app():
+    """
+    Creates a server hosted on localhost
+    :return: Flask object
+    """
     app = Flask(__name__)
     # make flask support CORS
     CORS(app)
@@ -31,14 +35,26 @@ def create_app():
 
     @app.errorhandler(404)
     def page_not_found(e):
+        """
+        Returns a json object to indicate error 404
+        :return: JSON object
+        """
         return jsonify({'error': 'Not Found'}), 404
 
     @app.errorhandler(405)
     def page_not_found(e):
+        """
+        Returns a json object to indicate error 405
+        :return: JSON object
+        """
         return jsonify({'error': 'Method not Allowed'}), 405
 
     @app.before_request
     def middleware():
+        """
+        Checks for user authorization tokens and returns message
+        :return: JSON object
+        """
         try:
             if request.method == 'OPTIONS':
                 return jsonify({'success': 'OPTIONS'}), 200
@@ -73,17 +89,31 @@ def create_app():
             return jsonify({"error": "Internal server error"}), 500
 
     def get_token_from_header():
+        """
+        Evaluates token from the request header
+        :return: string
+        """
         headers = request.headers
         token = headers['Authorization'].split(" ")[1]
         return token
 
     def get_userid_from_header():
+        """
+        Evaluates user id from the request header
+        :return: string
+        """
         headers = request.headers
         token = headers['Authorization'].split(" ")[1]
         userid = token.split(".")[0]
         return userid
 
     def delete_auth_token(token_to_delete, user_id):
+        """
+        Deletes authorization token of the given user from the database
+        :param token_to_delete: token to be deleted
+        :param user_id: user id of the current active user
+        :return: string
+        """
         user = Users.objects(id=user_id).first()
         auth_tokens = []
         for token in user['authTokens']:
@@ -98,6 +128,10 @@ def create_app():
 
     @app.route("/users/signup", methods=['POST'])
     def sign_up():
+        """
+        Creates a new user profile and adds the user to the database and returns the message
+        :return: JSON object
+        """
         try:
             # print(request.data)
             data = json.loads(request.data)
@@ -127,6 +161,10 @@ def create_app():
 
     @app.route("/users/login", methods=['POST'])
     def login():
+        """
+        Logs in the user and creates a new authorization token and stores in the database
+        :return: JSON object with status and message
+        """
         try:
             try:
                 data = json.loads(request.data)
@@ -149,6 +187,10 @@ def create_app():
 
     @app.route("/users/logout", methods=['POST'])
     def logout():
+        """
+        Logs out the user and deletes the existing token from the database
+        :return: JSON object with status and message
+        """
         try:
             userid = get_userid_from_header()
             user = Users.objects(id=userid).first()
@@ -169,6 +211,10 @@ def create_app():
     #   -keywords: string
     @app.route("/search")
     def search():
+        """
+        Searches the web and returns the job postings for the given search filters
+        :return: JSON object with job results
+        """
         keywords = request.args.get('keywords') if request.args.get('keywords') else 'random_test_keyword'
         salary = request.args.get('salary') if request.args.get('salary') else ''
         keywords = keywords.replace(' ', '+')
@@ -198,15 +244,21 @@ def create_app():
         # parsing searching results to DataFrame and return
         df = pd.DataFrame(columns=["jobTitle", "companyName", "location"])
         mydivs = soup.find_all("div", {"class": "PwjeAc"})
+        print(mydivs)
         for i, div in enumerate(mydivs):
             df.at[i, "jobTitle"] = div.find("div", {"class": "BjJfJf PUpOsf"}).text
             df.at[i, "companyName"] = div.find("div", {"class": "vNEEBe"}).text
             df.at[i, "location"] = div.find("div", {"class": "Qk80Jf"}).text
+            df.at[i, "date"] = div.find_all("span", class_="SuWscb", limit=1)[0].text
         return jsonify(df.to_dict('records'))
 
     # get data from the CSV file for rendering root page
     @app.route("/applications", methods=['GET'])
     def get_data():
+        """
+        Gets user's applications data from the database
+        :return: JSON object with application data
+        """
         try:
             userid = get_userid_from_header()
             user = Users.objects(id=userid).first()
@@ -217,6 +269,10 @@ def create_app():
 
     @app.route("/applications", methods=['POST'])
     def add_application():
+        """
+        Add a new job application for the user
+        :return: JSON object with status and message
+        """
         try:
             userid = get_userid_from_header()
             try:
@@ -244,6 +300,11 @@ def create_app():
 
     @app.route('/applications/<int:application_id>', methods=['PUT'])
     def update_application(application_id):
+        """
+        Updates the existing job application for the user
+        :param application_id: Application id to be modified
+        :return: JSON object with status and message
+        """
         try:
             userid = get_userid_from_header()
             try:
@@ -277,6 +338,11 @@ def create_app():
 
     @app.route("/applications/<int:application_id>", methods=['DELETE'])
     def delete_application(application_id):
+        """
+        Deletes the given job application for the user
+        :param application_id: Application id to be modified
+        :return: JSON object with status and message
+        """
         try:
             userid = get_userid_from_header()
             user = Users.objects(id=userid).first()
@@ -303,6 +369,10 @@ def create_app():
           
     @app.route("/resume", methods=['POST'])
     def upload_resume():
+        """
+        Uploads resume file or updates an existing resume for the user
+        :return: JSON object with status and message
+        """
         try:
             userid = get_userid_from_header()
             try:
@@ -327,6 +397,10 @@ def create_app():
 
     @app.route("/resume", methods=['GET'])
     def get_resume():
+        """
+        Retrieves the resume file for the user
+        :return: response with file
+        """
         try:
             userid = get_userid_from_header()
             try:
@@ -350,6 +424,7 @@ def create_app():
 
 
 app = create_app()
+print(type(app))
 with open('application.yml') as f:
     info = yaml.load(f, Loader=yaml.FullLoader)
     username = info['username']
@@ -372,12 +447,20 @@ class Users(db.Document):
     resume = db.FileField()
 
     def to_json(self):
+        """
+        Returns the user details in JSON object
+        :return: JSON object
+        """
         return {"id": self.id,
                 "fullName": self.fullName,
                 "username": self.username}
 
 
 def get_new_user_id():
+    """
+    Returns the next value to be used for new user
+    :return: key with new user_id
+    """
     user_objects = Users.objects()
     if len(user_objects) == 0:
         return 1
@@ -390,6 +473,11 @@ def get_new_user_id():
 
 
 def get_new_application_id(user_id):
+    """
+    Returns the next value to be used for new application
+    :param: user_id: User id of the active user
+    :return: key with new application_id
+    """
     user = Users.objects(id=user_id).first()
 
     if len(user['applications']) == 0:
