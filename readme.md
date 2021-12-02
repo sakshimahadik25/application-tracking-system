@@ -24,10 +24,10 @@ This application is created as a part of our SE project for Fall 2021
 
 ## Table of contents
 
-- [Whats New](#whats-new)
 - [Basic Design](#basic-design)
 - [Demo](#demo)
 - [Improvements](#improvements)
+    + [Whats New](#whats-new)
 - [Roadmap](#roadmap)
 - [Future Scope](#future-scope)
 - [Explanation](#explanation)
@@ -46,8 +46,6 @@ This application is created as a part of our SE project for Fall 2021
 - [Team Members](#team-members)
 
 
-## Whats New
-
 
 ## Basic Design:
 ![Basic Design](https://github.com/prithvish-doshi-17/application-tracking-system/blob/main/resources/Overall%20Design.PNG)
@@ -62,6 +60,7 @@ https://user-images.githubusercontent.com/43064854/135554649-9f5e8f21-ff12-45c9-
 https://user-images.githubusercontent.com/89696745/140273086-a03a6c7b-2d06-47c5-a7d4-a27ec4e99c3e.mp4
 
 
+### Whats New
 
 * Easier setup instructions and Installation process
 * Restructuring the Flask application
