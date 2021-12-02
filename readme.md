@@ -62,14 +62,23 @@ https://user-images.githubusercontent.com/89696745/140273086-a03a6c7b-2d06-47c5-
 
 ### Whats New
 
-* Easier setup instructions and Installation process
-* Restructuring the Flask application
-* Writing unit tests
-* Introducing Database
-* Removing unused codes and updating Gitignore
-* CI/CD Pipeline for Frontend app
-* Adding Linters, Code formatters
-* Adding Software documentation
+#### Version 1.1
+
+- Add headless feature for selenium
+- Fix shutdown.sh
+- Login frontend
+- Add resume storage for users
+- Updated reloading issues
+- Fix linting issues
+
+#### Version 1.0.3
+
+- Updated badges for repo
+- Users database implementation
+- Add logout endpoint and update middleware
+- Implementing search based on salary functionality
+- Login frontend for login and signup functionality
+- Search custom date
 
 
 
