@@ -28,7 +28,6 @@ def create_app():
     CORS(app)
     app.config["CORS_HEADERS"] = "Content-Type"
 
-
     @app.errorhandler(404)
     def page_not_found(e):
         """
@@ -44,7 +43,7 @@ def create_app():
         Returns a json object to indicate error 405
         :return: JSON object
         """
-        return jsonify({'error': 'Method not Allowed'}), 405
+        return jsonify({"error": "Method not Allowed"}), 405
 
     @app.before_request
     def middleware():
@@ -219,11 +218,15 @@ def create_app():
         Searches the web and returns the job postings for the given search filters
         :return: JSON object with job results
         """
-        keywords = request.args.get('keywords') if request.args.get('keywords') else 'random_test_keyword'
-        salary = request.args.get('salary') if request.args.get('salary') else ''
-        keywords = keywords.replace(' ', '+')
-        if keywords == 'random_test_keyword':
-            return json.dumps({'label': str("successful test search")})
+        keywords = (
+            request.args.get("keywords")
+            if request.args.get("keywords")
+            else "random_test_keyword"
+        )
+        salary = request.args.get("salary") if request.args.get("salary") else ""
+        keywords = keywords.replace(" ", "+")
+        if keywords == "random_test_keyword":
+            return json.dumps({"label": str("successful test search")})
         # create a url for a crawler to fetch job information
         if salary:
             url = (
@@ -436,6 +439,7 @@ def create_app():
             return response, 200
         except:
             return jsonify({"error": "Internal server error"}), 500
+
     return app
 
 
@@ -446,10 +450,11 @@ with open("application.yml") as f:
     password = info["password"]
     app.config["MONGODB_SETTINGS"] = {
         "db": "appTracker",
-        "host": 'localhost'#'#f"mongodb+srv://{username}:{password}@applicationtracker.287am.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+        "host": "localhost",  #'#f"mongodb+srv://{username}:{password}@applicationtracker.287am.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
     }
 db = MongoEngine()
 db.init_app(app)
+
 
 class Users(db.Document):
     id = db.IntField(primary_key=True)
@@ -465,9 +470,7 @@ class Users(db.Document):
         Returns the user details in JSON object
         :return: JSON object
         """
-        return {"id": self.id,
-                "fullName": self.fullName,
-                "username": self.username}
+        return {"id": self.id, "fullName": self.fullName, "username": self.username}
 
 
 def get_new_user_id():
