@@ -62,8 +62,8 @@ export default class App extends React.Component {
             </div>
             {this.state.currentPage}
             <button style={{position: 'absolute',
-                         bottom: '3vh',
-                         left:'35vw'}}
+                         top: '2vh',
+                         left:'90vw'}}
                     onClick={this.handleLogout}>Logout
 
             </button>
