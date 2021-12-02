@@ -18,7 +18,7 @@ export default class Sidebar extends Component {
             <i className='fas fa-search left-nav-icon' />
           </div>
           <div onClick={() => this.props.switchPage('ManageResumePage')}>
-            <i className="fas fa-search left-nav-icon"></i>
+            <i className="fas fa-folder left-nav-icon"></i>
           </div>
         </div>
       </div>

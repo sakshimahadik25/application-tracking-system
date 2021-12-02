@@ -28,7 +28,8 @@ export default class ManageResumePage extends Component {
           },
           xhrFields: {
             responseType: 'blob'
-        },
+            },
+      credentials: 'include',
           success: (message, textStatus, response) => {
             console.log(response.getResponseHeader('x-fileName'))
             this.setState({ fileName: response.getResponseHeader('x-fileName')});
@@ -99,6 +100,11 @@ export default class ManageResumePage extends Component {
           }
           })
  }
+
+ componentDidMount () {
+    // fetch the data only after this component is mounted
+    this.getFiles()
+  }
 
   render () {
     return (
