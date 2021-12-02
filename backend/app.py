@@ -1,3 +1,6 @@
+"""
+The flask application for our program
+"""
 # importing required python libraries
 from flask import Flask, jsonify, request, send_file
 from flask_mongoengine import MongoEngine
@@ -21,6 +24,7 @@ existing_endpoints = ["/applications", "/resume"]
 def create_app():
     """
     Creates a server hosted on localhost
+
     :return: Flask object
     """
     app = Flask(__name__)
@@ -32,6 +36,7 @@ def create_app():
     def page_not_found(e):
         """
         Returns a json object to indicate error 404
+
         :return: JSON object
         """
         return jsonify({"error": "Not Found"}), 404
@@ -41,6 +46,7 @@ def create_app():
     def page_not_allowed(e):
         """
         Returns a json object to indicate error 405
+
         :return: JSON object
         """
         return jsonify({"error": "Method not Allowed"}), 405
@@ -49,6 +55,7 @@ def create_app():
     def middleware():
         """
         Checks for user authorization tokens and returns message
+
         :return: JSON object
         """
         try:
@@ -88,6 +95,7 @@ def create_app():
     def get_token_from_header():
         """
         Evaluates token from the request header
+
         :return: string
         """
         headers = request.headers
@@ -97,6 +105,7 @@ def create_app():
     def get_userid_from_header():
         """
         Evaluates user id from the request header
+
         :return: string
         """
         headers = request.headers
@@ -107,6 +116,7 @@ def create_app():
     def delete_auth_token(token_to_delete, user_id):
         """
         Deletes authorization token of the given user from the database
+
         :param token_to_delete: token to be deleted
         :param user_id: user id of the current active user
         :return: string
@@ -127,6 +137,7 @@ def create_app():
     def sign_up():
         """
         Creates a new user profile and adds the user to the database and returns the message
+
         :return: JSON object
         """
         try:
@@ -162,6 +173,7 @@ def create_app():
     def login():
         """
         Logs in the user and creates a new authorization token and stores in the database
+
         :return: JSON object with status and message
         """
         try:
@@ -192,6 +204,7 @@ def create_app():
     def logout():
         """
         Logs out the user and deletes the existing token from the database
+
         :return: JSON object with status and message
         """
         try:
@@ -216,6 +229,7 @@ def create_app():
     def search():
         """
         Searches the web and returns the job postings for the given search filters
+
         :return: JSON object with job results
         """
         keywords = (
@@ -273,6 +287,7 @@ def create_app():
     def get_data():
         """
         Gets user's applications data from the database
+
         :return: JSON object with application data
         """
         try:
@@ -287,6 +302,7 @@ def create_app():
     def add_application():
         """
         Add a new job application for the user
+
         :return: JSON object with status and message
         """
         try:
@@ -319,6 +335,7 @@ def create_app():
     def update_application(application_id):
         """
         Updates the existing job application for the user
+
         :param application_id: Application id to be modified
         :return: JSON object with status and message
         """
@@ -357,6 +374,7 @@ def create_app():
     def delete_application(application_id):
         """
         Deletes the given job application for the user
+
         :param application_id: Application id to be modified
         :return: JSON object with status and message
         """
@@ -387,6 +405,7 @@ def create_app():
     def upload_resume():
         """
         Uploads resume file or updates an existing resume for the user
+
         :return: JSON object with status and message
         """
         try:
@@ -415,6 +434,7 @@ def create_app():
     def get_resume():
         """
         Retrieves the resume file for the user
+
         :return: response with file
         """
         try:
@@ -457,6 +477,9 @@ db.init_app(app)
 
 
 class Users(db.Document):
+    """
+    Users class. Holds full name, username, password, as well as applications and resumes
+    """
     id = db.IntField(primary_key=True)
     fullName = db.StringField()
     username = db.StringField()
@@ -468,6 +491,7 @@ class Users(db.Document):
     def to_json(self):
         """
         Returns the user details in JSON object
+
         :return: JSON object
         """
         return {"id": self.id, "fullName": self.fullName, "username": self.username}
@@ -476,6 +500,7 @@ class Users(db.Document):
 def get_new_user_id():
     """
     Returns the next value to be used for new user
+
     :return: key with new user_id
     """
     user_objects = Users.objects()
@@ -492,6 +517,7 @@ def get_new_user_id():
 def get_new_application_id(user_id):
     """
     Returns the next value to be used for new application
+
     :param: user_id: User id of the active user
     :return: key with new application_id
     """

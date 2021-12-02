@@ -1,3 +1,6 @@
+"""
+Test module for the backend
+"""
 import hashlib
 from io import BytesIO
 
@@ -6,7 +9,7 @@ import json
 import datetime
 from flask_mongoengine import MongoEngine
 import yaml
-from app import create_app, Users, get_new_user_id
+from app import create_app, Users
 
 
 # Pytest fixtures are useful tools for calling resources
@@ -17,6 +20,11 @@ from app import create_app, Users, get_new_user_id
 # in app.py
 @pytest.fixture
 def client():
+    """
+    Creates a client fixture for tests to use
+
+    :return: client fixture
+    """
     app = create_app()
     with open("application.yml") as f:
         info = yaml.load(f, Loader=yaml.FullLoader)
@@ -36,6 +44,12 @@ def client():
 
 @pytest.fixture
 def user(client):
+    """
+    Creates a user with test data
+
+    :param client: the mongodb client
+    :return: the user object and auth token
+    """
     # print(request.data)
     data = {"username": "testUser", "password": "test", "fullName": "fullName"}
 
@@ -52,12 +66,22 @@ def user(client):
 
 # 1. testing if the flask app is running properly
 def test_alive(client):
+    """
+    Tests that the application is running properly
+
+    :param client: mongodb client
+    """
     rv = client.get("/")
     assert rv.data.decode("utf-8") == '{"message":"Server up and running"}\n'
 
 
 # 2. testing if the search function running properly
 def test_search(client):
+    """
+    Tests that the search is running properly
+
+    :param client: mongodb client
+    """
     rv = client.get("/search")
     jdata = json.loads(rv.data.decode("utf-8"))["label"]
     assert jdata == "successful test search"
@@ -65,6 +89,12 @@ def test_search(client):
 
 # 3. testing if the application is getting data from database properly
 def test_get_data(client, user):
+    """
+    Tests that using the application GET endpoint returns data
+
+    :param client: mongodb client
+    :param user: the test user object
+    """
     user, header = user
     user["applications"] = []
     user.save()
@@ -91,6 +121,12 @@ def test_get_data(client, user):
 
 # 4. testing if the application is saving data in database properly
 def test_add_application(client, mocker, user):
+    """
+    Tests that using the application POST endpoint saves data
+
+    :param client: mongodb client
+    :param user: the test user object
+    """
     mocker.patch(
         # Dataset is in slow.py, but imported to main.py
         "app.get_new_user_id",
@@ -122,6 +158,12 @@ def test_add_application(client, mocker, user):
 
 # 5. testing if the application is updating data in database properly
 def test_update_application(client, user):
+    """
+    Tests that using the application PUT endpoint functions
+
+    :param client: mongodb client
+    :param user: the test user object
+    """
     user, auth = user
     application = {
         "id": 3,
@@ -149,6 +191,12 @@ def test_update_application(client, user):
 
 # 6. testing if the application is deleting data in database properly
 def test_delete_application(client, user):
+    """
+    Tests that using the application DELETE endpoint deletes data
+
+    :param client: mongodb client
+    :param user: the test user object
+    """
     user, auth = user
 
     application = {
@@ -168,12 +216,23 @@ def test_delete_application(client, user):
 
 # 8. testing if the flask app is running properly with status code
 def test_alive_status_code(client):
+    """
+    Tests that / returns 200
+
+    :param client: mongodb client
+    """
     rv = client.get("/")
     assert rv.status_code == 200
 
 
 # Testing logging out does not return error
 def test_logout(client, user):
+    """
+    Tests that using the logout function does not return an error
+
+    :param client: mongodb client
+    :param user: the test user object
+    """
     user, auth = user
     rv = client.post("/users/logout", headers=auth)
     # assert no error occured
@@ -181,6 +240,13 @@ def test_logout(client, user):
 
 
 def test_resume(client, mocker, user):
+    """
+    Tests that using the resume endpoint returns data
+
+    :param client: mongodb client
+    :param mocker: pytest mocker
+    :param user: the test user object
+    """
     mocker.patch(
         # Dataset is in slow.py, but imported to main.py
         "app.get_new_user_id",
