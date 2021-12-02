@@ -3,54 +3,34 @@
 The flask application for our program
 
 
-### class app.Users(\*args, \*\*values)
+### class app.Users
 Bases: `flask_mongoengine.Document`
 
 Users class. Holds full name, username, password, as well as applications and resumes
 
 
-#### exception DoesNotExist()
-Bases: `mongoengine.errors.DoesNotExist`
-
-
-#### exception MultipleObjectsReturned()
-Bases: `mongoengine.errors.MultipleObjectsReturned`
-
-
 #### applications()
-A list field that wraps a standard field, allowing multiple instances
-of the field to be used as a list in the database.
-
-If using with ReferenceFields see: many-to-many-with-listfields
-
-**NOTE**: Required means it cannot be empty - as the default for ListFields is []
++  A list field that wraps a standard field, allowing multiple instances of the field to be used as a list in the database.
 
 
 #### authTokens()
-A list field that wraps a standard field, allowing multiple instances
-of the field to be used as a list in the database.
-
-If using with ReferenceFields see: many-to-many-with-listfields
-
-**NOTE**: Required means it cannot be empty - as the default for ListFields is []
++ A list field that wraps a standard field, allowing multiple instances of the field to be used as a list in the database.
 
 
 #### fullName()
-A unicode string field.
++ A unicode string field.
 
 
 #### id()
-32-bit integer field.
++ 32-bit integer field.
 
-
-#### objects( = [<Users: Users object>, <Users: Users object>])
 
 #### password()
-A unicode string field.
++ A unicode string field.
 
 
 #### resume()
-A GridFS storage field.
++ A GridFS storage field.
 
 
 #### to_json()
