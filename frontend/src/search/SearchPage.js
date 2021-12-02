@@ -77,6 +77,7 @@ export default class SearchPage extends Component {
 
   // open the card modal according to the application in parameter
   showEditModal (job, mode) {
+    // console.log(job)
     this.setState({
       showModal: true,
       job: job,

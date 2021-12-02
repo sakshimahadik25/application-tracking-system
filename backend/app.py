@@ -28,10 +28,6 @@ def create_app():
     CORS(app)
     app.config["CORS_HEADERS"] = "Content-Type"
 
-    # testing API, you can try to access http://localhost:5000/ on your browser after starting the server
-    # params:
-    #   -name: string
-    return app
 
     @app.errorhandler(404)
     def page_not_found(e):
@@ -262,7 +258,6 @@ def create_app():
         # parsing searching results to DataFrame and return
         df = pd.DataFrame(columns=["jobTitle", "companyName", "location"])
         mydivs = soup.find_all("div", {"class": "PwjeAc"})
-        print(mydivs)
         for i, div in enumerate(mydivs):
             df.at[i, "jobTitle"] = div.find("div", {"class": "BjJfJf PUpOsf"}).text
             df.at[i, "companyName"] = div.find("div", {"class": "vNEEBe"}).text
@@ -307,6 +302,7 @@ def create_app():
                 "companyName": request_data["companyName"],
                 "date": request_data.get("date"),
                 "jobLink": request_data.get("jobLink"),
+                "location": request_data.get("location"),
                 "status": request_data.get("status", "1"),
             }
             applications = user["applications"] + [current_application]
@@ -440,6 +436,7 @@ def create_app():
             return response, 200
         except:
             return jsonify({"error": "Internal server error"}), 500
+    return app
 
 
 app = create_app()
