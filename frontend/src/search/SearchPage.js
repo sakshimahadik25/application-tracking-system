@@ -10,6 +10,9 @@ const columns = [
     label: 'Job title',
     id: 'jobTitle'
   }, {
+    label: 'Location',
+    id: 'location'
+  }, {
     label: 'Date',
     id: 'date'
   }, {
@@ -48,7 +51,8 @@ export default class SearchPage extends Component {
             id: i,
             jobTitle: d.jobTitle,
             companyName: d.companyName,
-            location: d.location
+            location: d.location,
+            date:d.date
           }
         })
         this.setState({
