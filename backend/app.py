@@ -18,12 +18,11 @@ import uuid
 existing_endpoints = ["/applications", "/resume"]
 
 
-
 def create_app():
     app = Flask(__name__)
     # make flask support CORS
     CORS(app)
-    app.config['CORS_HEADERS'] = 'Content-Type'
+    app.config["CORS_HEADERS"] = "Content-Type"
 
     # testing API, you can try to access http://localhost:5000/ on your browser after starting the server
     # params:
@@ -31,21 +30,21 @@ def create_app():
 
     @app.errorhandler(404)
     def page_not_found(e):
-        return jsonify({'error': 'Not Found'}), 404
+        return jsonify({"error": "Not Found"}), 404
 
     @app.errorhandler(405)
     def page_not_found(e):
-        return jsonify({'error': 'Method not Allowed'}), 405
+        return jsonify({"error": "Method not Allowed"}), 405
 
     @app.before_request
     def middleware():
         try:
-            if request.method == 'OPTIONS':
-                return jsonify({'success': 'OPTIONS'}), 200
+            if request.method == "OPTIONS":
+                return jsonify({"success": "OPTIONS"}), 200
             if request.path in existing_endpoints:
                 headers = request.headers
                 try:
-                    token = headers['Authorization'].split(" ")[1]
+                    token = headers["Authorization"].split(" ")[1]
                 except:
                     return jsonify({"error": "Unauthorized"}), 401
                 userid = token.split(".")[0]
@@ -55,10 +54,12 @@ def create_app():
                     return jsonify({"error": "Unauthorized"}), 401
 
                 expiry_flag = False
-                for tokens in user['authTokens']:
-                    if tokens['token'] == token:
-                        expiry = tokens['expiry']
-                        expiry_time_object = datetime.strptime(expiry, "%m/%d/%Y, %H:%M:%S")
+                for tokens in user["authTokens"]:
+                    if tokens["token"] == token:
+                        expiry = tokens["expiry"]
+                        expiry_time_object = datetime.strptime(
+                            expiry, "%m/%d/%Y, %H:%M:%S"
+                        )
                         if datetime.now() <= expiry_time_object:
                             expiry_flag = True
                         else:
@@ -68,25 +69,24 @@ def create_app():
                 if not expiry_flag:
                     return jsonify({"error": "Unauthorized"}), 401
 
-
         except:
             return jsonify({"error": "Internal server error"}), 500
 
     def get_token_from_header():
         headers = request.headers
-        token = headers['Authorization'].split(" ")[1]
+        token = headers["Authorization"].split(" ")[1]
         return token
 
     def get_userid_from_header():
         headers = request.headers
-        token = headers['Authorization'].split(" ")[1]
+        token = headers["Authorization"].split(" ")[1]
         userid = token.split(".")[0]
         return userid
 
     def delete_auth_token(token_to_delete, user_id):
         user = Users.objects(id=user_id).first()
         auth_tokens = []
-        for token in user['authTokens']:
+        for token in user["authTokens"]:
             if token != token_to_delete:
                 auth_tokens.append(token)
         user.update(authTokens=auth_tokens)
@@ -96,100 +96,120 @@ def create_app():
     def health_check():
         return jsonify({"message": "Server up and running"}), 200
 
-    @app.route("/users/signup", methods=['POST'])
+    @app.route("/users/signup", methods=["POST"])
     def sign_up():
         try:
             # print(request.data)
             data = json.loads(request.data)
             print(data)
             try:
-                _ = data['username']
-                _ = data['password']
-                _ = data['fullName']
+                _ = data["username"]
+                _ = data["password"]
+                _ = data["fullName"]
             except:
-                return jsonify({'error': 'Missing fields in input'}), 400
+                return jsonify({"error": "Missing fields in input"}), 400
 
-            username_exists = Users.objects(username=data['username'])
+            username_exists = Users.objects(username=data["username"])
             if len(username_exists) != 0:
-                return jsonify({'error': 'Username already exists'}), 400
-            password = data['password']
+                return jsonify({"error": "Username already exists"}), 400
+            password = data["password"]
             password_hash = hashlib.md5(password.encode())
-            user = Users(id=get_new_user_id(),
-                         fullName=data['fullName'],
-                         username=data['username'],
-                         password=password_hash.hexdigest(),
-                         authTokens=[],
-                         applications=[])
+            user = Users(
+                id=get_new_user_id(),
+                fullName=data["fullName"],
+                username=data["username"],
+                password=password_hash.hexdigest(),
+                authTokens=[],
+                applications=[],
+            )
             user.save()
             return jsonify(user.to_json()), 200
         except:
-            return jsonify({'error': 'Internal server error'}), 500
+            return jsonify({"error": "Internal server error"}), 500
 
-    @app.route("/users/login", methods=['POST'])
+    @app.route("/users/login", methods=["POST"])
     def login():
         try:
             try:
                 data = json.loads(request.data)
-                _ = data['username']
-                _ = data['password']
+                _ = data["username"]
+                _ = data["password"]
             except:
-                return jsonify({'error': 'Username or password missing'}), 400
-            password_hash = hashlib.md5(data['password'].encode()).hexdigest()
-            user = Users.objects(username=data['username'], password=password_hash).first()
+                return jsonify({"error": "Username or password missing"}), 400
+            password_hash = hashlib.md5(data["password"].encode()).hexdigest()
+            user = Users.objects(
+                username=data["username"], password=password_hash
+            ).first()
             if user is None:
                 return jsonify({"error": "Wrong username or password"})
-            token = str(user['id']) + "." + str(uuid.uuid4())
+            token = str(user["id"]) + "." + str(uuid.uuid4())
             expiry = datetime.now() + timedelta(days=1)
             expiry_str = expiry.strftime("%m/%d/%Y, %H:%M:%S")
-            auth_tokens_new = user['authTokens'] + [{'token': token, 'expiry': expiry_str}]
+            auth_tokens_new = user["authTokens"] + [
+                {"token": token, "expiry": expiry_str}
+            ]
             user.update(authTokens=auth_tokens_new)
-            return jsonify({'token': token, 'expiry': expiry_str})
+            return jsonify({"token": token, "expiry": expiry_str})
         except:
-            return jsonify({'error': 'Internal server error'}), 500
+            return jsonify({"error": "Internal server error"}), 500
 
-    @app.route("/users/logout", methods=['POST'])
+    @app.route("/users/logout", methods=["POST"])
     def logout():
         try:
             userid = get_userid_from_header()
             user = Users.objects(id=userid).first()
             auth_tokens = []
             incoming_token = get_token_from_header()
-            for token in user['authTokens']:
-                if token['token'] != incoming_token:
+            for token in user["authTokens"]:
+                if token["token"] != incoming_token:
                     auth_tokens.append(token)
             user.update(authTokens=auth_tokens)
 
             return jsonify({"success": ""}), 200
 
         except:
-            return jsonify({'error': 'Internal server error'}), 500
+            return jsonify({"error": "Internal server error"}), 500
 
     # search function
     # params:
     #   -keywords: string
     @app.route("/search")
     def search():
-        keywords = request.args.get('keywords') if request.args.get('keywords') else 'random_test_keyword'
-        salary = request.args.get('salary') if request.args.get('salary') else ''
-        keywords = keywords.replace(' ', '+')
-        if keywords == 'random_test_keyword':
-            return json.dumps({'label': str("successful test search")})
+        keywords = (
+            request.args.get("keywords")
+            if request.args.get("keywords")
+            else "random_test_keyword"
+        )
+        salary = request.args.get("salary") if request.args.get("salary") else ""
+        keywords = keywords.replace(" ", "+")
+        if keywords == "random_test_keyword":
+            return json.dumps({"label": str("successful test search")})
         # create a url for a crawler to fetch job information
         if salary:
-            url = "https://www.google.com/search?q=" + keywords + "%20salary%20" + salary + "&ibp=htl;jobs"
+            url = (
+                "https://www.google.com/search?q="
+                + keywords
+                + "%20salary%20"
+                + salary
+                + "&ibp=htl;jobs"
+            )
         else:
             url = "https://www.google.com/search?q=" + keywords + "&ibp=htl;jobs"
 
         # webdriver can run the javascript and then render the page first.
-        # This prevent websites don't provide Server-side rendering 
+        # This prevent websites don't provide Server-side rendering
         # leading to crawlers cannot fetch the page
         chrome_options = Options()
         # chrome_options.add_argument("--no-sandbox") # linux only
         chrome_options.add_argument("--headless")
-        user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) " \
-                     "Chrome/71.0.3578.98 Safari/537.36 "
+        user_agent = (
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/71.0.3578.98 Safari/537.36 "
+        )
         chrome_options.add_argument(f"user-agent={user_agent}")
-        driver = webdriver.Chrome(ChromeDriverManager().install(), chrome_options=chrome_options)
+        driver = webdriver.Chrome(
+            ChromeDriverManager().install(), chrome_options=chrome_options
+        )
         driver.get(url)
         content = driver.page_source
         driver.close()
@@ -202,113 +222,112 @@ def create_app():
             df.at[i, "jobTitle"] = div.find("div", {"class": "BjJfJf PUpOsf"}).text
             df.at[i, "companyName"] = div.find("div", {"class": "vNEEBe"}).text
             df.at[i, "location"] = div.find("div", {"class": "Qk80Jf"}).text
-        return jsonify(df.to_dict('records'))
+        return jsonify(df.to_dict("records"))
 
     # get data from the CSV file for rendering root page
-    @app.route("/applications", methods=['GET'])
+    @app.route("/applications", methods=["GET"])
     def get_data():
         try:
             userid = get_userid_from_header()
             user = Users.objects(id=userid).first()
-            applications = user['applications']
+            applications = user["applications"]
             return jsonify(applications)
         except:
-            return jsonify({'error': 'Internal server error'}), 500
+            return jsonify({"error": "Internal server error"}), 500
 
-    @app.route("/applications", methods=['POST'])
+    @app.route("/applications", methods=["POST"])
     def add_application():
         try:
             userid = get_userid_from_header()
             try:
-                request_data = json.loads(request.data)['application']
-                _ = request_data['jobTitle']
-                _ = request_data['companyName']
+                request_data = json.loads(request.data)["application"]
+                _ = request_data["jobTitle"]
+                _ = request_data["companyName"]
             except:
-                return jsonify({'error': 'Missing fields in input'}), 400
+                return jsonify({"error": "Missing fields in input"}), 400
 
             user = Users.objects(id=userid).first()
             current_application = {
-                'id': get_new_application_id(userid),
-                'jobTitle': request_data['jobTitle'],
-                'companyName': request_data['companyName'],
-                'date': request_data.get('date'),
-                'jobLink': request_data.get('jobLink'),
-                'status': request_data.get('status', "1")
+                "id": get_new_application_id(userid),
+                "jobTitle": request_data["jobTitle"],
+                "companyName": request_data["companyName"],
+                "date": request_data.get("date"),
+                "jobLink": request_data.get("jobLink"),
+                "status": request_data.get("status", "1"),
             }
-            applications = user['applications'] + [current_application]
+            applications = user["applications"] + [current_application]
 
             user.update(applications=applications)
             return jsonify(current_application), 200
         except:
-            return jsonify({'error': 'Internal server error'}), 500
+            return jsonify({"error": "Internal server error"}), 500
 
-    @app.route('/applications/<int:application_id>', methods=['PUT'])
+    @app.route("/applications/<int:application_id>", methods=["PUT"])
     def update_application(application_id):
         try:
             userid = get_userid_from_header()
             try:
-                request_data = json.loads(request.data)['application']
+                request_data = json.loads(request.data)["application"]
             except:
-                return jsonify({'error': 'No fields found in input'}), 400
+                return jsonify({"error": "No fields found in input"}), 400
 
             user = Users.objects(id=userid).first()
-            current_applications = user['applications']
+            current_applications = user["applications"]
 
             if len(current_applications) == 0:
-                return jsonify({'error': 'No applications found'}), 400
+                return jsonify({"error": "No applications found"}), 400
             else:
                 updated_applications = []
                 app_to_update = None
                 application_updated_flag = False
                 for application in current_applications:
-                    if application['id'] == application_id:
+                    if application["id"] == application_id:
                         app_to_update = application
                         application_updated_flag = True
                         for key, value in request_data.items():
                             application[key] = value
                     updated_applications += [application]
                 if not application_updated_flag:
-                    return jsonify({'error': 'Application not found'}), 400
+                    return jsonify({"error": "Application not found"}), 400
                 user.update(applications=updated_applications)
 
             return jsonify(app_to_update), 200
         except:
-            return jsonify({'error': 'Internal server error'}), 500
+            return jsonify({"error": "Internal server error"}), 500
 
-    @app.route("/applications/<int:application_id>", methods=['DELETE'])
+    @app.route("/applications/<int:application_id>", methods=["DELETE"])
     def delete_application(application_id):
         try:
             userid = get_userid_from_header()
             user = Users.objects(id=userid).first()
 
-            current_applications = user['applications']
+            current_applications = user["applications"]
 
             application_deleted_flag = False
             updated_applications = []
             app_to_delete = None
             for application in current_applications:
-                if application['id'] != application_id:
+                if application["id"] != application_id:
                     updated_applications += [application]
                 else:
                     app_to_delete = application
                     application_deleted_flag = True
 
             if not application_deleted_flag:
-                return jsonify({'error': 'Application not found'}), 400
+                return jsonify({"error": "Application not found"}), 400
             user.update(applications=updated_applications)
             return jsonify(app_to_delete), 200
         except:
             return jsonify({"error": "Internal server error"}), 500
 
-          
-    @app.route("/resume", methods=['POST'])
+    @app.route("/resume", methods=["POST"])
     def upload_resume():
         try:
             userid = get_userid_from_header()
             try:
                 file = request.files["file"].read()
             except:
-                return jsonify({'error': 'No resume file found in the input'}), 400
+                return jsonify({"error": "No resume file found in the input"}), 400
 
             user = Users.objects(id=userid).first()
             if not user.resume.read():
@@ -323,9 +342,9 @@ def create_app():
                 return jsonify({"message": "resume successfully replaced"}), 200
         except Exception as e:
             print(e)
-            return jsonify({'error': 'Internal server error'}), 500
+            return jsonify({"error": "Internal server error"}), 500
 
-    @app.route("/resume", methods=['GET'])
+    @app.route("/resume", methods=["GET"])
     def get_resume():
         try:
             userid = get_userid_from_header()
@@ -338,25 +357,29 @@ def create_app():
             except:
                 return jsonify({"error": "resume could not be found"}), 400
 
-            response = send_file(user.resume, mimetype='application/pdf', attachment_filename="resume.pdf",
-                                 as_attachment=True)
+            response = send_file(
+                user.resume,
+                mimetype="application/pdf",
+                attachment_filename="resume.pdf",
+                as_attachment=True,
+            )
             response.headers["x-filename"] = "resume.pdf"
-            response.headers["Access-Control-Expose-Headers"] = 'x-filename'
+            response.headers["Access-Control-Expose-Headers"] = "x-filename"
             return response, 200
         except:
-            return jsonify({'error': 'Internal server error'}), 500
+            return jsonify({"error": "Internal server error"}), 500
 
     return app
 
 
 app = create_app()
-with open('application.yml') as f:
+with open("application.yml") as f:
     info = yaml.load(f, Loader=yaml.FullLoader)
-    username = info['username']
-    password = info['password']
-    app.config['MONGODB_SETTINGS'] = {
-        'db': 'appTracker',
-        'host': f'mongodb+srv://{username}:{password}@applicationtracker.287am.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
+    username = info["username"]
+    password = info["password"]
+    app.config["MONGODB_SETTINGS"] = {
+        "db": "appTracker",
+        "host": f"mongodb+srv://{username}:{password}@applicationtracker.287am.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
     }
 db = MongoEngine()
 db.init_app(app)
@@ -372,9 +395,7 @@ class Users(db.Document):
     resume = db.FileField()
 
     def to_json(self):
-        return {"id": self.id,
-                "fullName": self.fullName,
-                "username": self.username}
+        return {"id": self.id, "fullName": self.fullName, "username": self.username}
 
 
 def get_new_user_id():
@@ -384,7 +405,7 @@ def get_new_user_id():
 
     new_id = 0
     for a in user_objects:
-        new_id = max(new_id, a['id'])
+        new_id = max(new_id, a["id"])
 
     return new_id + 1
 
@@ -392,12 +413,12 @@ def get_new_user_id():
 def get_new_application_id(user_id):
     user = Users.objects(id=user_id).first()
 
-    if len(user['applications']) == 0:
+    if len(user["applications"]) == 0:
         return 1
 
     new_id = 0
-    for a in user['applications']:
-        new_id = max(new_id, a['id'])
+    for a in user["applications"]:
+        new_id = max(new_id, a["id"])
 
     return new_id + 1
 
