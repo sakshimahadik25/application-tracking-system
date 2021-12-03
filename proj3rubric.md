@@ -7,9 +7,9 @@
 |3|Docs: doco generated , format not ugly  | Readme.md, docs/app.md, test_app.md |
 |3|evidence that the whole team is using the same tools (e.g. config files in the repo, updated by lots of different people) | commits are across the codebase, in github actions |
 |3|evidence that the members of the team are working across multiple places in the code base |commits are across the codebase. |
-|3|Docs: what: point descriptions of each class/function (in isolation)  |in Software Documentation |
+|3|Docs: what: point descriptions of each class/function (in isolation)  |in Readme.md, docs/app.md, test_app.md |
 |3|Number of commits: by different people  | https://github.com/kingan1/application-tracking-system/graphs/contributors|
-|3|issues are being closed | https://github.com/kingan1/application-tracking-system/issues |
+|3|issues are being closed | https://github.com/kingan1/application-tracking-system/issues 23 issues closed|
 |3|issues are discussed before they are closed | in issue comments ex: https://github.com/kingan1/application-tracking-system/issues/2, https://github.com/kingan1/application-tracking-system/issues/2|
 |3|Use of syntax checkers. | Super Linter in Github actions|
 |3|Issues reports: there are many  |in GH |
