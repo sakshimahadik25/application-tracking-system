@@ -83,7 +83,7 @@ export default class LoginPage extends Component{
                             </div>
 
                             <div className="form-group">
-                                <label>Usename</label>
+                                <label>Username</label>
                                 <input type="text" className="form-control" id="suname" placeholder="Enter username" />
                             </div>
 
