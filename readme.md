@@ -50,15 +50,6 @@ This application is created as a part of our SE project for Fall 2021
 ## Basic Design:
 ![Basic Design](https://github.com/prithvish-doshi-17/application-tracking-system/blob/main/resources/Overall%20Design.PNG)
 
-### Demo:
-https://user-images.githubusercontent.com/43064854/135554649-9f5e8f21-ff12-45c9-82b4-37078e88709d.mp4
-
-
-## Improvements:
-
-
-https://user-images.githubusercontent.com/89696745/140273086-a03a6c7b-2d06-47c5-a7d4-a27ec4e99c3e.mp4
-
 ## Samples:
 
 ### Login Page / Signup Page
@@ -100,7 +91,7 @@ The interface through which a user is able to search for specific jobs based on 
 ### ResumePage
 
 1. Navigate to resume Section
-2. Upload any resume file with .pdf extension by selecting the file from local storage. Click Upload.
+2. Upload any resume file with .PDF extension by selecting the file from local storage. Click Upload.
 3. Click on download button to Download the uploaded file.
 
 <p align="center"><img width="700" src="./resources/resume.png"></p>
