@@ -18,7 +18,7 @@
 |3|Docs: short video, animated, hosted on your repository. That convinces people why they want to work on your code. |in README.md https://github.com/kingan1/application-tracking-system/blob/main/readme.md|
 |3|test cases exist  | in test_app.py. Code coverage is 74 percent|
 |3|Use of code coverage  | in GH Code coverage is 74 percent|
-|3|other automated analysis tools  | Pylint, CodeCoverage, Github Actions, Pytest.|
+|3|other automated analysis tools  | Pylint, CodeCoverage, GitHub Actions, Pytest.|
 |3|test cases:.a large proportion of the issues related to handling failing cases. | in GH|
 |3|test cases are routinely executed | GitHub actions|
 |3|Documentation describing how this version improves on the older version|Readme.md https://github.com/kingan1/application-tracking-system/blob/main/readme.md| 
