@@ -59,6 +59,52 @@ https://user-images.githubusercontent.com/43064854/135554649-9f5e8f21-ff12-45c9-
 
 https://user-images.githubusercontent.com/89696745/140273086-a03a6c7b-2d06-47c5-a7d4-a27ec4e99c3e.mp4
 
+## Samples:
+
+### Login Page / Signup Page
+
+The introductory visual interface displayed from which a user is able to register and log into the application.
+
+<p align="center"><img width="700" src="./resources/login.png"></p>
+
+
+### HomeScreen
+
+The introductory visual interface displayed from which a user is able to access different cards - Waitlisted applications, Waiting for Refereals, Applied Jobs, Application Status.The user can also add cards through this screen.
+
+<p align="center"><img width="700" src="./resources/home_screen.png"></p>
+
+
+### SearchPage
+
+The interface through which a user is able to search for specific jobs and add them to Waitlisted Applications.
+
+1. Navigate to Job search page, search for particular Job.
+2. Click on Add button. Fill in the Details.
+3. Click on Create buttop.
+4. The application will then be saved as per the selected category.
+
+<p align="center"><img width="700" src="./resources/search.png"></p>
+<p align="center"><img width="700" src="./resources/newjobdetails1.PNG"></p>
+
+
+### SearchPage with Salary filter
+
+The interface through which a user is able to search for specific jobs based on the salary range selected.
+
+1. Navigate to Job search page, search for particular Job and select the salary range from the dropdown.
+2. Click on Search button.
+
+<p align="center"><img width="700" src="./resources/salaryfilter1.png"></p>
+
+### ResumePage
+
+1. Navigate to resume Section
+2. Upload any resume file with .pdf extension by selecting the file from local storage. Click Upload.
+3. Click on download button to Download the uploaded file.
+
+<p align="center"><img width="700" src="./resources/resume.png"></p>
+
 
 ### Whats New
 
