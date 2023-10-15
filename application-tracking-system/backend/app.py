@@ -2,6 +2,8 @@
 The flask application for our program
 """
 # importing required python libraries
+import os
+# from exceptiongroup import catch
 from flask import Flask, jsonify, request, send_file
 from flask_mongoengine import MongoEngine
 from flask_cors import CORS, cross_origin
@@ -11,7 +13,7 @@ from bs4 import BeautifulSoup
 from itertools import islice
 from webdriver_manager.chrome import ChromeDriverManager
 from bson.json_util import dumps
-from io import BytesIO 
+from io import BytesIO
 import pandas as pd
 import json
 from datetime import datetime, timedelta
@@ -20,19 +22,20 @@ import hashlib
 import uuid
 import certifi
 import requests
-#import urllib
+# import urllib
 
-#db_url="mongodb+srv://smahadi:" + urllib.parse.quote("Hello@123")+ "@cluster0.r0056lg.mongodb.net/?retryWrites=true&w=majority"
-#connect(host=db_url)
+# db_url="mongodb+srv://smahadi:" + urllib.parse.quote("Hello@123")+ "@cluster0.r0056lg.mongodb.net/?retryWrites=true&w=majority"
+# connect(host=db_url)
 
 existing_endpoints = ["/applications", "/resume"]
 
-#app = Flask(__name__)
+# app = Flask(__name__)
 
 # make flask support CORS
-#CORS(app)
-#CORS(app, resources={r'/*': {"origins": "*", "send_wildcard" : True}})
-#app.config["CORS_HEADERS"] = "Content-Type"
+# CORS(app)
+# CORS(app, resources={r'/*': {"origins": "*", "send_wildcard" : True}})
+# app.config["CORS_HEADERS"] = "Content-Type"
+
 
 def create_app():
     """
@@ -146,10 +149,10 @@ def create_app():
     @cross_origin()
     def health_check():
         return jsonify({"message": "Server up and running"}), 200
-    
+
     @app.route('/test')
     def test():
-        users=Users.objects()
+        users = Users.objects()
         return jsonify(users), 200
 
     @app.route("/users/signup", methods=["POST"])
@@ -161,7 +164,7 @@ def create_app():
         :return: JSON object
         """
         try:
-            #print(request.data)
+            # print(request.data)
             data = json.loads(request.data)
             print(data)
             try:
@@ -170,8 +173,8 @@ def create_app():
                 _ = data["fullName"]
             except:
                 return jsonify({"error": "Missing fields in input"}), 400
-
             username_exists = Users.objects(username=data["username"])
+            print(username_exists)
 
             if len(username_exists) != 0:
                 return jsonify({"error": "Username already exists"}), 400
@@ -185,9 +188,13 @@ def create_app():
                 authTokens=[],
                 applications=[],
             )
+            print("User created")
             user.save()
+            print("User saved")
             return jsonify(user.to_json()), 200
-        except:
+
+        except Exception as e:
+            print(e)
             return jsonify({"error": "Internal server error"}), 500
 
     @app.route("/users/login", methods=["POST"])
@@ -258,7 +265,8 @@ def create_app():
             if request.args.get("keywords")
             else "random_test_keyword"
         )
-        salary = request.args.get("salary") if request.args.get("salary") else ""
+        salary = request.args.get(
+            "salary") if request.args.get("salary") else ""
         keywords = keywords.replace(" ", "+")
         if keywords == "random_test_keyword":
             return json.dumps({"label": str("successful test search")})
@@ -277,38 +285,41 @@ def create_app():
         # webdriver can run the javascript and then render the page first.
         # This prevent websites don't provide Server-side rendering
         # leading to crawlers cannot fetch the page
-        #chrome_options = Options()
+        # chrome_options = Options()
         # chrome_options.add_argument("--no-sandbox") # linux only
-        #chrome_options.add_argument("--headless")
-        #user_agent = (
+        # chrome_options.add_argument("--headless")
+        # user_agent = (
         #    "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_5_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
-        #)
-        headers={ "User-Agent":
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_5_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
-        }
+        # )
+        headers = {"User-Agent":
+                   "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_5_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
+                   }
 
-        #chrome_options.add_argument(f"user-agent={user_agent}")
-        #driver = webdriver.Chrome(executable_path=
+        # chrome_options.add_argument(f"user-agent={user_agent}")
+        # driver = webdriver.Chrome(executable_path=
         #    ChromeDriverManager().install(), chrome_options=chrome_options
-        #)
-        #driver.get(url)
-        #content = driver.page_source
-        #driver.close()
-        page=requests.get(url, headers=headers)
-        #print(page.status_code)
-        #soup = BeautifulSoup(content, "html.parser")
+        # )
+        # driver.get(url)
+        # content = driver.page_source
+        # driver.close()
+        page = requests.get(url, headers=headers)
+        # print(page.status_code)
+        # soup = BeautifulSoup(content, "html.parser")
         soup = BeautifulSoup(page.text, "html.parser")
 
         # parsing searching results to DataFrame and return
-        df = pd.DataFrame(columns=["jobTitle", "companyName", "location", "date"])
-        mydivs = soup.find_all("div", class_= "PwjeAc")
-        
+        df = pd.DataFrame(
+            columns=["jobTitle", "companyName", "location", "date"])
+        mydivs = soup.find_all("div", class_="PwjeAc")
+
         for i, div in enumerate(mydivs):
-            df.at[i, "jobTitle"] = div.find("div", {"class": "BjJfJf PUpOsf"}).text
+            df.at[i, "jobTitle"] = div.find(
+                "div", {"class": "BjJfJf PUpOsf"}).text
             df.at[i, "companyName"] = div.find("div", {"class": "vNEEBe"}).text
             df.at[i, "location"] = div.find("div", {"class": "Qk80Jf"}).text
-            df.at[i, "date"] = div.find_all("span", {"class": "LL4CDc"}, limit=1)[0].text
-        
+            df.at[i, "date"] = div.find_all(
+                "span", {"class": "LL4CDc"}, limit=1)[0].text
+
         print(df)
         return jsonify(df.to_dict("records"))
 
@@ -441,19 +452,21 @@ def create_app():
         try:
             userid = get_userid_from_header()
             try:
-                file = request.files["file"]#.read()
+                file = request.files["file"]  # .read()
             except:
                 return jsonify({"error": "No resume file found in the input"}), 400
 
             user = Users.objects(id=userid).first()
             if not user.resume.read():
                 # There is no file
-                user.resume.put(file, filename=file.filename, content_type="application/pdf")
+                user.resume.put(file, filename=file.filename,
+                                content_type="application/pdf")
                 user.save()
                 return jsonify({"message": "resume successfully uploaded"}), 200
             else:
                 # There is a file, we are replacing it
-                user.resume.replace(file, filename=file.filename, content_type="application/pdf")
+                user.resume.replace(
+                    file, filename=file.filename, content_type="application/pdf")
                 user.save()
                 return jsonify({"message": "resume successfully replaced"}), 200
         except Exception as e:
@@ -479,8 +492,8 @@ def create_app():
             except:
                 return jsonify({"error": "resume could not be found"}), 400
 
-            filename=user.resume.filename
-            content_type=user.resume.contentType
+            filename = user.resume.filename
+            content_type = user.resume.contentType
             response = send_file(
                 user.resume,
                 mimetype=content_type,
@@ -495,6 +508,7 @@ def create_app():
 
     return app
 
+
 app = create_app()
 
 
@@ -502,23 +516,20 @@ with open("application.yml") as f:
     info = yaml.load(f, Loader=yaml.FullLoader)
     username = info["username"]
     password = info["password"]
-    #ca=certifi.where()
     app.config["MONGODB_SETTINGS"] = {
         "db": "appTracker",
-        "host": f"mongodb+srv://{username}:{password}@cluster0.r0056lg.mongodb.net/appTracker?tls=true&tlsCAFile={certifi.where()}&retryWrites=true&w=majority",
-        #"tlsCAFile": certifi.where()
-        #"host": f"mongodb+srv://cluster0.r0056lg.mongodb.net/?authSource=%24external&authMechanism=MONGODB-X509&retryWrites=true&w=majority",
-        #"tls":True,
-        #"tlsCertificateKeyFile":'/Users/sakshimahadik/Downloads/'
+        "host": f"mongodb+srv://{username}:{password}@cluster0.r0056lg.mongodb.net/appTracker?retryWrites=true&w=majority"
     }
 db = MongoEngine()
 db.init_app(app)
+print("Database connected successfully")
+
 
 class Users(db.Document):
     """
     Users class. Holds full name, username, password, as well as applications and resumes
     """
-    
+
     id = db.IntField(primary_key=True)
     fullName = db.StringField()
     username = db.StringField()
@@ -534,6 +545,7 @@ class Users(db.Document):
         :return: JSON object
         """
         return {"id": self.id, "fullName": self.fullName, "username": self.username}
+
 
 def get_new_user_id():
     """
@@ -570,15 +582,16 @@ def get_new_application_id(user_id):
 
     return new_id + 1
 
-#def build_preflight_response():
-    #response = make_response()
-    #response.headers.add("Access-Control-Allow-Origin", "*")
-    #response.headers.add('Access-Control-Allow-Headers', "*")
-    #response.headers.add('Access-Control-Allow-Methods', "*")
-    #return response
-#def build_actual_response(response):
-    #response.headers.add("Access-Control-Allow-Origin", "*")
-    #return response
+# def build_preflight_response():
+    # response = make_response()
+    # response.headers.add("Access-Control-Allow-Origin", "*")
+    # response.headers.add('Access-Control-Allow-Headers', "*")
+    # response.headers.add('Access-Control-Allow-Methods', "*")
+    # return response
+# def build_actual_response(response):
+    # response.headers.add("Access-Control-Allow-Origin", "*")
+    # return response
+
 
 if __name__ == "__main__":
     app.run()
