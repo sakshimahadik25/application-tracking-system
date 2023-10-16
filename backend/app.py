@@ -237,7 +237,8 @@ def create_app():
             if request.args.get("keywords")
             else "random_test_keyword"
         )
-        salary = request.args.get("salary") if request.args.get("salary") else ""
+        salary = request.args.get(
+            "salary") if request.args.get("salary") else ""
         keywords = keywords.replace(" ", "+")
         if keywords == "random_test_keyword":
             return json.dumps({"label": str("successful test search")})
@@ -276,10 +277,12 @@ def create_app():
         df = pd.DataFrame(columns=["jobTitle", "companyName", "location"])
         mydivs = soup.find_all("div", {"class": "PwjeAc"})
         for i, div in enumerate(mydivs):
-            df.at[i, "jobTitle"] = div.find("div", {"class": "BjJfJf PUpOsf"}).text
+            df.at[i, "jobTitle"] = div.find(
+                "div", {"class": "BjJfJf PUpOsf"}).text
             df.at[i, "companyName"] = div.find("div", {"class": "vNEEBe"}).text
             df.at[i, "location"] = div.find("div", {"class": "Qk80Jf"}).text
-            df.at[i, "date"] = div.find_all("span", class_="SuWscb", limit=1)[0].text
+            df.at[i, "date"] = div.find_all(
+                "span", class_="SuWscb", limit=1)[0].text
         return jsonify(df.to_dict("records"))
 
     # get data from the CSV file for rendering root page
@@ -470,7 +473,7 @@ with open("application.yml") as f:
     password = info["password"]
     app.config["MONGODB_SETTINGS"] = {
         "db": "appTracker",
-        "host": f"mongodb+srv://{username}:{password}@applicationtracker.287am.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+        "host": f"mongodb+srv://{username}:{password}@cluster0.r0056lg.mongodb.net/appTracker?retryWrites=true&w=majority",
     }
 db = MongoEngine()
 db.init_app(app)

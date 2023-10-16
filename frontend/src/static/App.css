@@ -14,13 +14,13 @@
   color: white;
 }
 
-.col {
+/* .col {
   border: 1px solid;
   padding-left: unset;
   padding-right: unset;
   margin-left: 5px;
   margin-top: 1px;
-}
+} */
 
 .header-table {
   padding: 0.5rem 1rem;
@@ -31,7 +31,7 @@
 .main {
   overflow: auto;
   min-height: 100vh;
-  background-color: #ebf0f7;
+  /* background-color: #ebf0f7; */
 }
 .content {
   padding-right: 7.5rem;
@@ -65,14 +65,14 @@
   opacity: 1;
   display: contents;
 }
-.card-body {
+/* .card-body {
   flex: 1 1 auto;
   background-color: #fff;
   padding: 1rem;
   border-radius: 8px;
   box-shadow: rgb(99 99 99 / 10%) 0px 2px 8px 0px;
   width: 100%;
-}
+} */
 .card-body:active {
   /* cursor: move;
   outline: 3px dashed #7b7b7b;
