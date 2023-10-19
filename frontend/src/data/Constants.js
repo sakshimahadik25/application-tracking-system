@@ -6,8 +6,8 @@ const PROFILE = {
   CONTACT: "contact",
   PREFERRED_LOCATIONS: "locations",
   SKILLS: "skills",
-  EXPERIENCE_LEVEL: "experience_level",
-  JOB_MODE: "modes",
+  EXPERIENCE_LEVEL: "job_levels",
+  // JOB_MODE: "modes",
 };
 
 const COUNTRIES = [
