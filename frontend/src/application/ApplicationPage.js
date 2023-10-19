@@ -28,7 +28,7 @@ const ApplicationsList = ({ applicationList, handleCardClick, selectedApplicatio
 
   return (
     <>
-      <Button variant="primary" style={{ marginLeft: "115px" }} size="lg" onClick={() => {
+      <Button style={{ marginLeft: "11%", marginTop: "4%", backgroundColor: "#296E85" }} size="lg" onClick={() => {
         handleCardClick(null);
         setCloseModal(false);
         setIsCreate(true);
@@ -52,7 +52,7 @@ const ApplicationsList = ({ applicationList, handleCardClick, selectedApplicatio
             >
               <Card
                 style={{
-                  marginLeft: "100px",
+                  marginLeft: "10%",
                   borderColor: "#ccc",
                   borderRadius: "5px",
                   boxShadow: "0 4px 8px 0 rgba(0, 0, 0, 0.2)",

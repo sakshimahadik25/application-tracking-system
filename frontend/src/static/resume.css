@@ -10,16 +10,41 @@
 
 .tablecol1 {
     padding: 1rem;
-    border: 1px solid black;
-    width:80%;
+    border-width: 1px 0px 1px 1px;
+    border-style: solid;
+    border-color: black;
+    background-color: white;
+    width:70%;
+    text-align: center;
 }
 
 .tablecol2 {
     padding: 1rem;
-    border: 1px solid black;
-    width:20%;
+    border-width: 1px 1px 1px 0px;
+    border-style: solid;
+    border-color: black;
+    background-color: white;
+    width:30%;
+    text-align: center;
 }
 
 .pagelayout{
     margin-top:6%;
+    margin-left: 10%;
+}
+
+#download{
+    background-color: #2A6E85;
+    padding: 5%;
+    color: white;
+    border-radius: 3px;
+    width: 150px;
+}
+
+#upload-file-btn{
+    background-color: #2A6E85;
+    padding: 0.5%;
+    color: white;
+    border-radius: 3px;
+    width: 210px;
 }

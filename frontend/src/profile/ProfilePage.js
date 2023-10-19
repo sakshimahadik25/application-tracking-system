@@ -33,7 +33,7 @@ const ProfilePage = () => {
   });
 
   return (
-    <div className="container">
+    <div className="container" style={{marginLeft:"8%", marginTop: "4%"}}>
       <div className="row gx-5">
         <div className="col-4 my-3">
           <div
@@ -56,7 +56,7 @@ const ProfilePage = () => {
                   height: "200px",
                   width: "200px",
                   borderRadius: "100%",
-                  backgroundColor: "#1d3557",
+                  backgroundColor: "#296E85",
                   color: "#fff",
                   boxShadow: "0px 5px 12px 10px rgba(0,0,0,0.1)",
                 }}

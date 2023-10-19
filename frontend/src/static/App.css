@@ -172,7 +172,7 @@ input:focus-visible {
 
 .custom-btn {
   /* background-color: #006494; */
-  background-color: #355070;
+  background-color: #296E85;
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -180,7 +180,7 @@ input:focus-visible {
 }
 
 .custom-btn:hover {
-  background-color: #1d3557;
+  background-color: #1e4c5b;
   transition: all ease-in-out 0.3s;
 }
 

@@ -62,14 +62,14 @@ export default class App extends React.Component {
           <div className="main">
             <div className="content">
               <div className="">
-                <h1 className="text-center">My applications</h1>
+                <h1 className="text-center" style={{marginTop: "2%"}}>My applications</h1>
                 {/* <span className="btn-icon ">
                 <button className="btn btn-danger btn-icon"><i className="fas fa-plus"></i>&nbsp;New</button>
               </span> */}
               </div>
               {this.state.currentPage}
               <button
-                style={{ position: "absolute", top: "2vh", left: "90vw" }}
+                style={{ position: "absolute", top: "2vh", left: "90vw", marginTop: "1%", color: "white", backgroundColor: "#2a6e85" }}
                 onClick={this.handleLogout}
               >
                 Logout
@@ -90,12 +90,12 @@ export default class App extends React.Component {
                 {/* <span className="btn-icon ">
               <button className="btn btn-danger btn-icon"><i className="fas fa-plus"></i>&nbsp;New</button>
             </span> */}
-              </div>
-              <LoginPage side={this.sidebarHandler} />
-            </div>
           </div>
+            <LoginPage side={this.sidebarHandler} />
         </div>
-      );
+      </div>
+    </div>
+    );
     }
     return app;
   }

@@ -7,7 +7,7 @@ const JobDescription = (props) => {
   const { qualifications, responsibilities, benefits } = selectedJob;
   return (
     <Modal centered show={true} scrollable size="xl">
-      <ModalHeader style={{ backgroundColor: "#1d3557", color: "#fff" }}>
+      <ModalHeader style={{ backgroundColor: "#296E85", color: "#fff" }}>
         <h4 className="mb-0 p-2">Job Description</h4>
       </ModalHeader>
       <ModalBody className="p-4">
