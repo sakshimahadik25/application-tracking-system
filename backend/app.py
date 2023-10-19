@@ -21,6 +21,7 @@ import hashlib
 import uuid
 import certifi
 import requests
+import random
 from authlib.integrations.flask_client import OAuth
 from authlib.common.security import generate_token
 import os
@@ -281,9 +282,7 @@ def create_app():
             user = Users.objects(id=userid).first()
             data = json.loads(request.data)
             print(user.fullName)
-            institution, phone_number, address = "", "", ""
-
-            skills, job_levels, locations = [], [], []
+            
             if data["skills"]:
                 user.skills = data["skills"]
 
@@ -303,19 +302,61 @@ def create_app():
                 user.address = data["address"]
 
             user.save()
-            # Users.modify(user, id = userid, skills = skills)
-
-            # db.users.update_one({'_id': 3},{'$set': {'skills': skills, 'job_levels': job_levels, 'locations': locations}})
-            # user.update({'skills': skills, 'job_levels': job_levels, 'locations': locations})
-            # Users.save()
-
-            # user.skills.put(skills)
-            # user.save()
-            # user.job_levels.put(job_levels)
-            # user.locations.put(locations)
-
             return jsonify(user.to_json()), 200
 
+        except Exception as err:
+            print(err)
+            return jsonify({"error": "Internal server error"}), 500
+
+    @app.route("/getRecommendations", methods=["GET"])
+    def getRecommendations():
+        """
+        Update the user profile with preferences: skills, job-level and location
+        """
+        try:
+            userid = get_userid_from_header()
+            user = Users.objects(id=userid).first()
+            skill_sets = user["skills"]
+            job_levels_sets = user["job_levels"]
+            locations_set = user["locations"]
+            recommendedJobs = []
+            headers = {"User-Agent":
+                   #    "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_5_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
+                   user_agent.random,
+                   "Referrer": "https://www.google.com/"
+                   }
+            if len(skill_sets)>0 or len(job_levels_sets)>0 or len(locations_set)>0:
+                random_skill = random.choice(skill_sets)
+                random_job_level = random.choice(job_levels_sets)
+                random_location = random.choice(locations_set)
+                query = "https://www.google.com/search?q=" + random_skill + random_job_level + random_location + "&ibp=htl;jobs" 
+                print(query)            
+
+                # inner_div = mydivs[0].find("div", class_="KGjGe")
+                # if inner_div:
+                #     data_share_url = inner_div.get("data-share-url")
+                #     print(data_share_url)
+          
+            else:
+                query = "https://www.google.com/search?q=" + "sde usa" + "&ibp=htl;jobs"
+                
+            page = requests.get(query, headers=headers)
+            soup = BeautifulSoup(page.text, "html.parser")
+            #KGjGe - div class to get url
+            mydivs = soup.find_all("div", class_="PwjeAc")
+            for div in mydivs:
+                job={}
+                inner_div = div.find("div", class_="KGjGe")
+                if inner_div:
+                    job["data-share-url"] = inner_div.get("data-share-url")
+                job["jobTitle"] = div.find("div", {"class": "BjJfJf PUpOsf"}).text
+                print(job["jobTitle"])
+                job["companyName"] = div.find("div", {"class": "vNEEBe"}).text
+                job["location"] = div.find("div", {"class": "Qk80Jf"}).text
+                recommendedJobs.append(job)
+            print(recommendedJobs)
+            return jsonify(recommendedJobs)
+        
         except Exception as err:
             print(err)
             return jsonify({"error": "Internal server error"}), 500
@@ -347,7 +388,10 @@ def create_app():
                 {"token": token, "expiry": expiry_str}
             ]
             user.update(authTokens=auth_tokens_new)
-            return jsonify({"token": token, "expiry": expiry_str})
+            profileInfo = {
+                "fullName": user.fullName
+            }
+            return jsonify({"profile":profileInfo, "token": token, "expiry": expiry_str})
         except:
             return jsonify({"error": "Internal server error"}), 500
 
@@ -443,7 +487,6 @@ def create_app():
             df.loc[df[col].isnull(), [col]] = df.loc[df[col].isnull(
             ), col].apply(lambda x: [])
         # df.loc[df["benefits"].isnull(), ["benefits"]] = df.loc[df["benefits"].isnull(), "benefits"].apply(lambda x: [])
-
         return jsonify(df.to_dict("records"))
 
     # get data from the CSV file for rendering root page
