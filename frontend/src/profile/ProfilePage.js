@@ -50,7 +50,7 @@ const ProfilePage = () => {
               cursor="pointer"
               style={{ position: "absolute", top: "15", right: "15" }}
             />
-            <div className="text-center mt-3">
+            {/* <div className="text-center mt-3">
               <img
                 src={require("../assets/profile.jpg")}
                 style={{
@@ -60,7 +60,7 @@ const ProfilePage = () => {
                 }}
                 alt="profile"
               />
-            </div>
+            </div> */}
             <div className="text-center mt-3">
               <h3 className="card-title mb-1">{profile.name}</h3>
               <span style={{ fontSize: 20 }}>{profile.university}</span>

@@ -110,6 +110,7 @@ def create_app():
         """
         headers = request.headers
         token = headers["Authorization"].split(" ")[1]
+        print(token)
         userid = token.split(".")[0]
         return userid
 
@@ -167,6 +168,78 @@ def create_app():
             user.save()
             return jsonify(user.to_json()), 200
         except:
+            return jsonify({"error": "Internal server error"}), 500
+
+    @app.route("/getProfile", methods=["GET"])
+    def get_profile_data():
+        """
+        Gets user's profile data from the database
+
+        :return: JSON object with application data
+        """
+        try:
+            userid = get_userid_from_header()
+            user = Users.objects(id=userid).first()
+            profileInformation = {}
+            profileInformation["skills"] = user["skills"] 
+            profileInformation["job_levels"] = user["job_levels"] 
+            profileInformation["locations"] = user["locations"] 
+            profileInformation["institution"] = user["institution"] 
+            profileInformation["phone_number"] = user["phone_number"] 
+            profileInformation["address"] = user["address"] 
+            
+            return jsonify(profileInformation)
+        except:
+            return jsonify({"error": "Internal server error"}), 500
+
+    @app.route("/updateProfile", methods=["POST"])
+    def updateProfilePreferences():
+        """
+        Update the user profile with preferences: skills, job-level and location
+        """
+        try:
+            print(request.data)
+            userid = get_userid_from_header()
+            user = Users.objects(id=userid).first()
+            data = json.loads(request.data)
+            print(user.fullName)
+            institution, phone_number, address = "","",""
+
+            skills, job_levels, locations = [],[],[]
+            if data["skills"]:
+                user.skills = data["skills"]
+                
+            if data["job_levels"]:
+                user.job_levels = data["job_levels"]
+
+            if data["locations"]:
+                user.locations = data["locations"]
+            
+            if data["institution"]:
+                user.institution = data["institution"]
+            
+            if data["phone_number"]:
+                user.phone_number = data["phone_number"]
+
+            if data["address"]:
+                user.address = data["address"]
+            
+            user.save()
+            # Users.modify(user, id = userid, skills = skills)
+            
+            # db.users.update_one({'_id': 3},{'$set': {'skills': skills, 'job_levels': job_levels, 'locations': locations}})
+            # user.update({'skills': skills, 'job_levels': job_levels, 'locations': locations})
+            # Users.save()
+
+            # user.skills.put(skills)
+            # user.save()
+            # user.job_levels.put(job_levels)
+            # user.locations.put(locations)
+            
+            return jsonify(user.to_json()), 200
+
+        except Exception as err:
+            print(err)
             return jsonify({"error": "Internal server error"}), 500
 
     @app.route("/users/login", methods=["POST"])
@@ -491,7 +564,13 @@ class Users(db.Document):
     authTokens = db.ListField()
     applications = db.ListField()
     resume = db.FileField()
-
+    skills = db.ListField()
+    job_levels = db.ListField()
+    locations = db.ListField()
+    institution = db.StringField() 
+    phone_number = db.StringField()
+    address = db.StringField()
+    
     def to_json(self):
         """
         Returns the user details in JSON object
