@@ -11,14 +11,31 @@ from bs4 import BeautifulSoup
 from itertools import islice
 from webdriver_manager.chrome import ChromeDriverManager
 from bson.json_util import dumps
+from io import BytesIO
+from fake_useragent import UserAgent
 import pandas as pd
 import json
 from datetime import datetime, timedelta
 import yaml
 import hashlib
 import uuid
+import certifi
+import requests
+# import urllib
+
+# db_url="mongodb+srv://smahadi:" + urllib.parse.quote("Hello@123")+ "@cluster0.r0056lg.mongodb.net/?retryWrites=true&w=majority"
+# connect(host=db_url)
 
 existing_endpoints = ["/applications", "/resume"]
+
+# app = Flask(__name__)
+
+# make flask support CORS
+# CORS(app)
+# CORS(app, resources={r'/*': {"origins": "*", "send_wildcard" : True}})
+# app.config["CORS_HEADERS"] = "Content-Type"
+
+user_agent = UserAgent()
 
 
 def create_app():
@@ -28,8 +45,9 @@ def create_app():
     :return: Flask object
     """
     app = Flask(__name__)
-    # make flask support CORS
+    # # make flask support CORS
     CORS(app)
+    # #CORS(app, resources={r'/*': {"origins": "*", "send_wildcard" : True}})
     app.config["CORS_HEADERS"] = "Content-Type"
 
     @app.errorhandler(404)
@@ -133,8 +151,14 @@ def create_app():
     def health_check():
         return jsonify({"message": "Server up and running"}), 200
 
+    @app.route('/test')
+    def test():
+        users = Users.objects()
+        return jsonify(users), 200
+
     @app.route("/users/signup", methods=["POST"])
     def sign_up():
+        print("Inside signup")
         """
         Creates a new user profile and adds the user to the database and returns the message
 
@@ -152,6 +176,7 @@ def create_app():
                 return jsonify({"error": "Missing fields in input"}), 400
 
             username_exists = Users.objects(username=data["username"])
+
             if len(username_exists) != 0:
                 return jsonify({"error": "Username already exists"}), 400
             password = data["password"]
@@ -257,32 +282,60 @@ def create_app():
         # webdriver can run the javascript and then render the page first.
         # This prevent websites don't provide Server-side rendering
         # leading to crawlers cannot fetch the page
-        chrome_options = Options()
+        # chrome_options = Options()
         # chrome_options.add_argument("--no-sandbox") # linux only
-        chrome_options.add_argument("--headless")
-        user_agent = (
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) "
-            "Chrome/71.0.3578.98 Safari/537.36 "
-        )
-        chrome_options.add_argument(f"user-agent={user_agent}")
-        driver = webdriver.Chrome(
-            ChromeDriverManager().install(), chrome_options=chrome_options
-        )
-        driver.get(url)
-        content = driver.page_source
-        driver.close()
-        soup = BeautifulSoup(content)
+        # chrome_options.add_argument("--headless")
+        # user_agent = (
+        #    "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_5_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
+        # )
+        print(user_agent.random)
+        headers = {"User-Agent":
+                   #    "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_5_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
+                   user_agent.random,
+                   "Referrer": "https://www.google.com/"
+                   }
+
+        # chrome_options.add_argument(f"user-agent={user_agent}")
+        # driver = webdriver.Chrome(executable_path=
+        #    ChromeDriverManager().install(), chrome_options=chrome_options
+        # )
+        # driver.get(url)
+        # content = driver.page_source
+        # driver.close()
+        page = requests.get(url, headers=headers)
+        # print(page.status_code)
+        # soup = BeautifulSoup(content, "html.parser")
+        soup = BeautifulSoup(page.text, "html.parser")
 
         # parsing searching results to DataFrame and return
-        df = pd.DataFrame(columns=["jobTitle", "companyName", "location"])
-        mydivs = soup.find_all("div", {"class": "PwjeAc"})
+        df = pd.DataFrame(
+            columns=["jobTitle", "companyName", "location", "date", "qualifications", "responsibilities", "benefits"])
+        mydivs = soup.find_all("div", class_="PwjeAc")
+
         for i, div in enumerate(mydivs):
             df.at[i, "jobTitle"] = div.find(
                 "div", {"class": "BjJfJf PUpOsf"}).text
             df.at[i, "companyName"] = div.find("div", {"class": "vNEEBe"}).text
             df.at[i, "location"] = div.find("div", {"class": "Qk80Jf"}).text
             df.at[i, "date"] = div.find_all(
-                "span", class_="SuWscb", limit=1)[0].text
+                "span", {"class": "LL4CDc"}, limit=1)[0].text
+
+            # Collect Job Description Details
+            desc = div.find_all("div", {"class": "JxVj3d"})
+            for ele in desc:
+                arr = list(x.text for x in ele.find_all(
+                    "div", {"class": "nDgy9d"}))
+                title = ele.find("div", {"class": "iflMsb"}).text
+                if arr:
+                    df.at[i, str(title).lower()] = arr
+        missingCols = list(
+            (df.loc[:, df.isnull().sum(axis=0).astype(bool)]).columns)
+        # print(df.columns[df.isnull().sum(axis=0)])
+        for col in missingCols:
+            df.loc[df[col].isnull(), [col]] = df.loc[df[col].isnull(
+            ), col].apply(lambda x: [])
+        # df.loc[df["benefits"].isnull(), ["benefits"]] = df.loc[df["benefits"].isnull(), "benefits"].apply(lambda x: [])
+
         return jsonify(df.to_dict("records"))
 
     # get data from the CSV file for rendering root page
@@ -414,19 +467,21 @@ def create_app():
         try:
             userid = get_userid_from_header()
             try:
-                file = request.files["file"].read()
+                file = request.files["file"]  # .read()
             except:
                 return jsonify({"error": "No resume file found in the input"}), 400
 
             user = Users.objects(id=userid).first()
             if not user.resume.read():
                 # There is no file
-                user.resume.put(file)
+                user.resume.put(file, filename=file.filename,
+                                content_type="application/pdf")
                 user.save()
                 return jsonify({"message": "resume successfully uploaded"}), 200
             else:
                 # There is a file, we are replacing it
-                user.resume.replace(file)
+                user.resume.replace(
+                    file, filename=file.filename, content_type="application/pdf")
                 user.save()
                 return jsonify({"message": "resume successfully replaced"}), 200
         except Exception as e:
@@ -448,16 +503,19 @@ def create_app():
                     raise FileNotFoundError
                 else:
                     user.resume.seek(0)
+
             except:
                 return jsonify({"error": "resume could not be found"}), 400
 
+            filename = user.resume.filename
+            content_type = user.resume.contentType
             response = send_file(
                 user.resume,
-                mimetype="application/pdf",
-                attachment_filename="resume.pdf",
+                mimetype=content_type,
+                download_name=filename,
                 as_attachment=True,
             )
-            response.headers["x-filename"] = "resume.pdf"
+            response.headers["x-filename"] = filename
             response.headers["Access-Control-Expose-Headers"] = "x-filename"
             return response, 200
         except:
@@ -467,13 +525,20 @@ def create_app():
 
 
 app = create_app()
+
+
 with open("application.yml") as f:
     info = yaml.load(f, Loader=yaml.FullLoader)
     username = info["username"]
     password = info["password"]
+    # ca=certifi.where()
     app.config["MONGODB_SETTINGS"] = {
         "db": "appTracker",
-        "host": f"mongodb+srv://{username}:{password}@cluster0.r0056lg.mongodb.net/appTracker?retryWrites=true&w=majority",
+        "host": f"mongodb+srv://{username}:{password}@cluster0.r0056lg.mongodb.net/appTracker?tls=true&tlsCAFile={certifi.where()}&retryWrites=true&w=majority",
+        # "tlsCAFile": certifi.where()
+        # "host": f"mongodb+srv://cluster0.r0056lg.mongodb.net/?authSource=%24external&authMechanism=MONGODB-X509&retryWrites=true&w=majority",
+        # "tls":True,
+        # "tlsCertificateKeyFile":'/Users/sakshimahadik/Downloads/'
     }
 db = MongoEngine()
 db.init_app(app)
@@ -535,6 +600,16 @@ def get_new_application_id(user_id):
         new_id = max(new_id, a["id"])
 
     return new_id + 1
+
+# def build_preflight_response():
+    # response = make_response()
+    # response.headers.add("Access-Control-Allow-Origin", "*")
+    # response.headers.add('Access-Control-Allow-Headers', "*")
+    # response.headers.add('Access-Control-Allow-Methods', "*")
+    # return response
+# def build_actual_response(response):
+    # response.headers.add("Access-Control-Allow-Origin", "*")
+    # return response
 
 
 if __name__ == "__main__":

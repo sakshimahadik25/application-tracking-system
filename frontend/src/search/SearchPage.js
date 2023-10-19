@@ -1,50 +1,84 @@
-import React, { Component } from 'react'
-import $ from 'jquery'
-import SearchCard from './SearchCard'
+import React, { Component } from "react";
+import $ from "jquery";
+import SearchCard from "./SearchCard";
+import fakeUa from "fake-useragent";
+import JobDescription from "../Modals/JobDescription";
+import { Spinner } from "react-bootstrap";
 
 const columns = [
   {
-    label: 'Company Name',
-    id: 'companyName'
-  }, {
-    label: 'Job title',
-    id: 'jobTitle'
-  }, {
-    label: 'Location',
-    id: 'location'
-  }, {
-    label: 'Date',
-    id: 'date'
-  }, {
-    label: '',
-    id: 'func'
-  }
-]
+    label: "Company Name",
+    id: "companyName",
+  },
+  {
+    label: "Job Title",
+    id: "jobTitle",
+  },
+  {
+    label: "Location",
+    id: "location",
+  },
+  {
+    label: "Date",
+    id: "date",
+  },
+  {
+    label: "",
+    id: "func",
+  },
+];
 
 export default class SearchPage extends Component {
-  constructor (props) {
-    super(props)
+  constructor(props) {
+    super(props);
     this.state = {
-      searchText: '',
-      rows: [],
-      salary: '',
-      addedList: []
-    }
+      searchText: "",
+      rows: [
+        // {
+        //   benefits: [
+        //     "A stipend of $8,000 for ten weeks is available for up to two summer legal interns, but candidates are required to document attempts to secure funding through their law schools or external sources",
+        //     "Any final stipend amount will be offset by amounts received through these external funding sources",
+        //   ],
+        //   companyName: "ACLU - Internships",
+        //   date: "3 days ago",
+        //   jobTitle: "Legal Internship Program",
+        //   location: "  Raleigh, NC   ",
+        //   qualifications: [
+        //     "Completed first year of law school before the internship commences",
+        //     "Ability to conduct thorough legal and factual research in a fast-paced litigation environment on short deadline, identify relevant authorities, and succinctly summarize findings",
+        //     "Clear, direct writing and oral communication style, and ability to explain complex legal concepts in plain language",
+        //     "Ability to take direction well and work collaboratively as part of a multidisciplinary team of other law students, supervising attorneys, and non-attorney staff members",
+        //     "Deep respect for others' lived experiences, humility, and ability to work with, learn from, and interact respectfully with people from backgrounds different from your own",
+        //     "Commitment to civil rights and civil liberties issues and the mission of the ACLU, especially if coupled with a desire to work in the public interest after law school",
+        //   ],
+        //   responsibilities: [
+        //     "The internship is full-time and requires a 10-week commitment",
+        //     "Conducting legal and policy research on a range of topics",
+        //   ],
+        // },
+      ],
+      salary: "",
+      addedList: [],
+      showJobDesc: false,
+      selectedJob: null,
+      searching: false,
+    };
   }
 
-  search () {
+  search() {
     if (!this.state.searchText) {
-      window.alert('Search bar cannot be empty!!')
-      return
+      window.alert("Search bar cannot be empty!!");
+      return;
     }
+    this.setState({ searching: true });
     $.ajax({
-      url: 'http://localhost:5000/search',
-      method: 'get',
+      url: "http://localhost:5000/search",
+      method: "get",
       data: {
         keywords: this.state.searchText,
-        salary: this.state.salary
+        salary: this.state.salary,
       },
-      contentType: 'application/json',
+      contentType: "application/json",
       success: (data) => {
         const res = data.map((d, i) => {
           return {
@@ -52,94 +86,112 @@ export default class SearchPage extends Component {
             jobTitle: d.jobTitle,
             companyName: d.companyName,
             location: d.location,
-            date:d.date
-          }
-        })
+            date: d.date,
+            qualifications: d.qualifications,
+            benefits: d.benefits,
+            responsibilities: d.responsibilities,
+          };
+        });
         this.setState({
-          rows: res
-        })
-      }
-    })
+          searching: false,
+          rows: res,
+        });
+      },
+      error: () => {
+        window.alert("Error while fetching jobs. Please try again later");
+        this.setState({
+          searching: false,
+        });
+      },
+    });
   }
 
-  deleteTheApplication (id) {
-    const newRows = this.state.rows.filter(app => {
-      return app.id !== id
-    })
-    const newAddedList = this.state.addedList.filter(app => {
-      return app.id !== id
-    })
+  deleteTheApplication(id) {
+    const newRows = this.state.rows.filter((app) => {
+      return app.id !== id;
+    });
+    const newAddedList = this.state.addedList.filter((app) => {
+      return app.id !== id;
+    });
     this.setState({
       rows: newRows,
-      addedList: newAddedList
-    })
+      addedList: newAddedList,
+    });
   }
 
   // open the card modal according to the application in parameter
-  showEditModal (job, mode) {
+  showEditModal(job, mode) {
     // console.log(job)
     this.setState({
       showModal: true,
       job: job,
-      modalMode: mode
-    })
+      modalMode: mode,
+    });
   }
 
-  handleCloseEditModal () {
+  handleCloseEditModal() {
     this.setState({
       showModal: false,
-      job: null
-    })
+      job: null,
+    });
   }
 
-  addToWaitlist (job) {
-    const newAddedList = this.state.addedList
-    newAddedList.push(job.id)
+  addToWaitlist(job) {
+    const newAddedList = this.state.addedList;
+    newAddedList.push(job.id);
     // console.log(job)
 
     $.ajax({
-      url: 'http://localhost:5000/applications',
-      method: 'POST',
+      url: "http://localhost:5000/applications",
+      method: "POST",
       data: JSON.stringify({
-        application: job
+        application: job,
       }),
       headers: {
-        Authorization: 'Bearer ' + localStorage.getItem('token'),
-        'Access-Control-Allow-Origin': 'http://localhost:3000',
-        'Access-Control-Allow-Credentials': 'true'
+        Authorization: "Bearer " + localStorage.getItem("token"),
+        "Access-Control-Allow-Origin": "http://localhost:3000",
+        "Access-Control-Allow-Credentials": "true",
+        "User-Agent": fakeUa(),
       },
-      contentType: 'application/json',
+      contentType: "application/json",
       success: (msg) => {
-        console.log(msg)
-        alert('Added item!')
-      }
-    })
+        console.log(msg);
+        alert("Added item!");
+      },
+    });
     this.setState({
-      addedList: newAddedList
-    })
+      addedList: newAddedList,
+    });
   }
 
-  removeFromWaitlist (job) {
-    const newAddedList = this.state.addedList.filter(v => {
-      return v !== job.id
-    })
+  removeFromWaitlist(job) {
+    const newAddedList = this.state.addedList.filter((v) => {
+      return v !== job.id;
+    });
     this.setState({
-      addedList: newAddedList
-    })
+      addedList: newAddedList,
+    });
   }
 
-  handleChange (event) {
-    this.setState({ [event.target.id]: event.target.value })
+  handleChange(event) {
+    this.setState({ [event.target.id]: event.target.value });
   }
 
-  setSalary (event) {
-    this.setState({ [event.target.id]: event.target.value })
+  setSalary(event) {
+    this.setState({ [event.target.id]: event.target.value });
   }
 
-  render () {
-    const rows = this.state.rows
+  handleShowJobDesc(job) {
+    this.setState({
+      showJobDesc: !this.state.showJobDesc,
+      selectedJob: job,
+    });
+  }
 
-    let applicationModal = null
+  render() {
+    const rows = this.state.rows;
+
+    let applicationModal = null;
     if (this.state.job) {
       applicationModal = (
         <SearchCard
@@ -150,78 +202,166 @@ export default class SearchPage extends Component {
           handleCloseEditModal={this.handleCloseEditModal.bind(this)}
           deleteApplication={this.deleteTheApplication.bind(this)}
         />
-      )
+      );
     }
 
     return (
       <div>
-        <div className='container'>
-          <div className='row'>
-            <div className='col-5 input-group mb-3'>
-              <input type='text' id='searchText' className='form-control' placeholder='Keyword' aria-label='Username' aria-describedby='basic-addon1' value={this.state.searchText} onChange={this.handleChange.bind(this)} />
-            </div>
-            <div className='col-5 mb-3' style={{ padding: 0.4 + 'em' }}>
-              <label>Salary Range Per Annum :  </label>
-              <select name='salary' id='salary' onChange={this.setSalary.bind(this)} value={this.state.salary}>
-                <option value=''>Please select salary range</option>
-                <option value='$50K'>$0K - $50K</option>
-                <option value='$75K'>$51K - $100K</option>
-                <option value='$125K'>$101K - $150K</option>
-                <option value='$175K'>$151K - $200K</option>
-              </select>
-            </div>
-            <div>
-              <button type='button' className='btn btn-secondary' onClick={this.search.bind(this)}>Search</button>
-            </div>
-          </div>
+        <div className="d-flex justify-content-center my-5">
+          <input
+            type="text"
+            id="searchText"
+            className="form-control px-4 py-3 w-50"
+            placeholder="Keyword"
+            aria-label="Username"
+            aria-describedby="basic-addon1"
+            value={this.state.searchText}
+            onChange={this.handleChange.bind(this)}
+            style={{ fontSize: 18, marginRight: 20 }}
+          />
+          <button
+            type="button"
+            className="px-4 py-3 custom-btn"
+            onClick={this.search.bind(this)}
+            disabled={this.state.searching}
+          >
+            Search
+          </button>
         </div>
-        <table className='table'>
-          <thead>
-            <tr>
-              {columns.map(column => {
-                return <th key={column.id + '_th'}>{column.label}</th>
-              })}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map(row => {
-              return (
-                <tr key={row.id}>
-                  {columns.map(column => {
-                    const value = row[column.id]
-                    if (column.id !== 'func') {
-                      return <td key={column.id}>{value}</td>
-                    } else {
-                      const addButton = this.state.addedList.includes(row.id)
-                        ? <button type='button' className='btn btn-outline-secondary' onClick={this.removeFromWaitlist.bind(this, row)}> Added </button>
-                        : <button type='button' className='btn btn-secondary' onClick={this.showEditModal.bind(this, row)}> Add </button>
-                      return (
-                        <td key={row.id + '_func'}>
-                          <div className='container'>
-                            <div className='row'>
-                              <div className='col-md-4'>
-                                {addButton}
-                              </div>
-                                                    &nbsp;&nbsp;
-                              <div className='col-md-2'>
-                                <button type='button' style={{ backgroundColor: 'red' }} className='btn btn-secondary' onClick={this.deleteTheApplication.bind(this, row.id)}> Delete </button>
-                              </div>
+        {!this.state.searching && this.state.rows.length ? (
+          <table
+            className="table my-4"
+            style={{
+              boxShadow: "0px 5px 12px 0px rgba(0,0,0,0.1)",
+              marginTop: 30,
+            }}
+          >
+            <thead>
+              <tr>
+                {columns.map((column) => {
+                  return (
+                    <th
+                      className="p-3"
+                      key={column.id + "_th"}
+                      style={{
+                        fontSize: 18,
+                        fontWeight: "500",
+                        backgroundColor: "#67B7D1",
+                        color: "#fff",
+                      }}
+                    >
+                      {column.label}
+                    </th>
+                  );
+                })}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row) => {
+                return (
+                  <tr key={row.id}>
+                    {columns.map((column) => {
+                      const value = row[column.id];
+                      if (column.id !== "func") {
+                        return (
+                          <td className="p-3" key={column.id}>
+                            {value}
+                          </td>
+                        );
+                      } else {
+                        const addButton = this.state.addedList.includes(
+                          row.id
+                        ) ? (
+                          <button
+                            type="button"
+                            className="btn btn-outline-secondary"
+                            onClick={this.removeFromWaitlist.bind(this, row)}
+                          >
+                            Added
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            className="add-btn px-3 py-2"
+                            // onClick={this.showEditModal.bind(this, row)}
+                            onClick={this.handleShowJobDesc.bind(this, row)}
+                            // style={{
+                            //   backgroundColor: "#296E85",
+                            //   border: "none",
+                            // }}
+                          >
+                            {" "}
+                            Add{" "}
+                          </button>
+                        );
+                        return (
+                          <td key={row.id + "_func"} className="p-2">
+                            {/* <div className="container"> */}
+                            <div className="d-flex justify-content-evenly">
+                              {addButton}
+                              <button
+                                type="button"
+                                // style={{
+                                //   backgroundColor: "#e54b4b",
+                                //   border: "none",
+                                //   color: "#fff",
+                                //   borderRad
+                                // }}
+                                className="delete-btn px-3 py-2"
+                                onClick={this.deleteTheApplication.bind(
+                                  this,
+                                  row.id
+                                )}
+                              >
+                                {" "}
+                                Delete{" "}
+                              </button>
                             </div>
-                          </div>
-
-                        </td>
-                      )
-                    }
-                  })}
-
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-
+                            {/* <div className="row">
+                                <div className="col-md-4">{addButton}</div>
+                                &nbsp;&nbsp;
+                                <div className="col-md-2">
+                                  <button
+                                    type="button"
+                                    style={{
+                                      backgroundColor: "#e54b4b",
+                                      border: "none",
+                                    }}
+                                    className="btn btn-secondary"
+                                    onClick={this.deleteTheApplication.bind(
+                                      this,
+                                      row.id
+                                    )}
+                                  >
+                                    {" "}
+                                    Delete{" "}
+                                  </button>
+                                </div>
+                              </div> */}
+                            {/* </div> */}
+                          </td>
+                        );
+                      }
+                    })}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        ) : null}
+        {this.state.searching && (
+          <div className="d-flex justify-content-center my-5">
+            <Spinner animation="border" style={{ fontSize: 15 }} />
+          </div>
+        )}
+        {this.state.showJobDesc && (
+          <JobDescription
+            selectedJob={this.state.selectedJob}
+            setState={this.handleShowJobDesc.bind(this)}
+          />
+        )}
         {applicationModal}
       </div>
-    )
+    );
   }
 }
