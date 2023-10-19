@@ -185,7 +185,7 @@ const ApplicationsList = ({ applicationList, handleCardClick, selectedApplicatio
   );
 };
 
-const Qwerty = () => {
+const ApplicationPage = () => {
   const [applicationList, setApplicationList] = useState([]);
   const [selectedApplication, setSelectedApplication] = useState(null);
   const [isChanged, setISChanged] = useState(true);
@@ -315,4 +315,4 @@ const Qwerty = () => {
     handleDeleteApplication={handleDeleteApplication}
   />;
 };
-export default Qwerty;
+export default ApplicationPage;
