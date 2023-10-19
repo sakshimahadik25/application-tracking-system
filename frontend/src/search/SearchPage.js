@@ -232,6 +232,7 @@ export default class SearchPage extends Component {
             style={{
               boxShadow: "0px 5px 12px 0px rgba(0,0,0,0.1)",
               marginTop: 30,
+              marginLeft: '10%'
             }}
           >
             <thead>
@@ -244,7 +245,7 @@ export default class SearchPage extends Component {
                       style={{
                         fontSize: 18,
                         fontWeight: "500",
-                        backgroundColor: "#67B7D1",
+                        backgroundColor: "#2a6e85",
                         color: "#fff",
                       }}
                     >
@@ -310,6 +311,9 @@ export default class SearchPage extends Component {
                                   this,
                                   row.id
                                 )}
+                                style={{
+                                  marginLeft:'2px'
+                                }}
                               >
                                 {" "}
                                 Delete{" "}
