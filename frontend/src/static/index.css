@@ -5,7 +5,8 @@ body {
     sans-serif; */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #caf0f8 !important;
+  /* background-color: #caf0f8 !important; */
+  background-color: #eafcff !important;
   font-size: 18px;
   font-family: "Poppins", sans-serif;
 }

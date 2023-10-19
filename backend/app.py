@@ -11,7 +11,8 @@ from bs4 import BeautifulSoup
 from itertools import islice
 from webdriver_manager.chrome import ChromeDriverManager
 from bson.json_util import dumps
-from io import BytesIO 
+from io import BytesIO
+from fake_useragent import UserAgent
 import pandas as pd
 import json
 from datetime import datetime, timedelta
@@ -19,12 +20,15 @@ import yaml
 import hashlib
 import uuid
 import certifi
-import requests 
+import requests
 from authlib.integrations.flask_client import OAuth
 from authlib.common.security import generate_token
 import os
-    
+
 existing_endpoints = ["/applications", "/resume"]
+
+user_agent = UserAgent()
+
 
 def create_app():
     """
@@ -46,7 +50,6 @@ def create_app():
 
     app.config["CORS_HEADERS"] = "Content-Type"
 
-        
     oauth = OAuth(app)
 
     @app.errorhandler(404)
@@ -150,10 +153,10 @@ def create_app():
     @cross_origin()
     def health_check():
         return jsonify({"message": "Server up and running"}), 200
-    
+
     @app.route("/users/signupGoogle")
     def signupGoogle():
-        
+
         oauth.register(
             name='google',
             client_id=GOOGLE_CLIENT_ID,
@@ -168,46 +171,48 @@ def create_app():
         # Redirect to google_auth function
         redirect_uri = url_for('authorized', _external=True)
         print(redirect_uri)
-        
+
         session['nonce'] = generate_token()
         return oauth.google.authorize_redirect(redirect_uri, nonce=session['nonce'])
-    
+
     @app.route('/users/signupGoogle/authorized')
     def authorized():
         token = oauth.google.authorize_access_token()
         user = oauth.google.parse_id_token(token, nonce=session['nonce'])
         session['user'] = user
-        
-        user_exists=Users.objects(email=user["email"]).first()
-            
+
+        user_exists = Users.objects(email=user["email"]).first()
+
         users_email = user["email"]
-        full_name = user["given_name"]+ " " + user["family_name"]
-            
-        if user['email_verified']: 
+        full_name = user["given_name"] + " " + user["family_name"]
+
+        if user['email_verified']:
             if user_exists is None:
                 userSave = Users(
-                id=get_new_user_id(), 
-                fullName=full_name, 
-                email=users_email, 
-                authTokens=[],
-                applications=[]
+                    id=get_new_user_id(),
+                    fullName=full_name,
+                    email=users_email,
+                    authTokens=[],
+                    applications=[]
                 )
                 userSave.save()
-                unique_id=userSave['id']
-            else:   
-                unique_id=user_exists['id']
-                
+                unique_id = userSave['id']
+            else:
+                unique_id = user_exists['id']
+
         userSaved = Users.objects(email=user['email']).first()
         expiry = datetime.now() + timedelta(days=1)
         expiry_str = expiry.strftime("%m/%d/%Y, %H:%M:%S")
-        token_whole=str(unique_id) + "." + token['access_token']
-        auth_tokens_new = userSaved['authTokens'] + [{"token": token_whole, "expiry": expiry_str}]
+        token_whole = str(unique_id) + "." + token['access_token']
+        auth_tokens_new = userSaved['authTokens'] + \
+            [{"token": token_whole, "expiry": expiry_str}]
         userSaved.update(authTokens=auth_tokens_new)
-            
+
         return redirect(f"http://localhost:3000/?token={token_whole}&expiry={expiry_str}")
-        
+
     @app.route("/users/signup", methods=["POST"])
     def sign_up():
+        print("Inside signup")
         """
         Creates a new user profile and adds the user to the database and returns the message
 
@@ -225,6 +230,7 @@ def create_app():
                 return jsonify({"error": "Missing fields in input"}), 400
 
             username_exists = Users.objects(username=data["username"])
+
             if len(username_exists) != 0:
                 return jsonify({"error": "Username already exists"}), 400
             password = data["password"]
@@ -253,13 +259,13 @@ def create_app():
             userid = get_userid_from_header()
             user = Users.objects(id=userid).first()
             profileInformation = {}
-            profileInformation["skills"] = user["skills"] 
-            profileInformation["job_levels"] = user["job_levels"] 
-            profileInformation["locations"] = user["locations"] 
-            profileInformation["institution"] = user["institution"] 
-            profileInformation["phone_number"] = user["phone_number"] 
-            profileInformation["address"] = user["address"] 
-            
+            profileInformation["skills"] = user["skills"]
+            profileInformation["job_levels"] = user["job_levels"]
+            profileInformation["locations"] = user["locations"]
+            profileInformation["institution"] = user["institution"]
+            profileInformation["phone_number"] = user["phone_number"]
+            profileInformation["address"] = user["address"]
+
             return jsonify(profileInformation)
         except:
             return jsonify({"error": "Internal server error"}), 500
@@ -275,30 +281,30 @@ def create_app():
             user = Users.objects(id=userid).first()
             data = json.loads(request.data)
             print(user.fullName)
-            institution, phone_number, address = "","",""
+            institution, phone_number, address = "", "", ""
 
-            skills, job_levels, locations = [],[],[]
+            skills, job_levels, locations = [], [], []
             if data["skills"]:
                 user.skills = data["skills"]
-                
+
             if data["job_levels"]:
                 user.job_levels = data["job_levels"]
 
             if data["locations"]:
                 user.locations = data["locations"]
-            
+
             if data["institution"]:
                 user.institution = data["institution"]
-            
+
             if data["phone_number"]:
                 user.phone_number = data["phone_number"]
 
             if data["address"]:
                 user.address = data["address"]
-            
+
             user.save()
             # Users.modify(user, id = userid, skills = skills)
-            
+
             # db.users.update_one({'_id': 3},{'$set': {'skills': skills, 'job_levels': job_levels, 'locations': locations}})
             # user.update({'skills': skills, 'job_levels': job_levels, 'locations': locations})
             # Users.save()
@@ -307,7 +313,7 @@ def create_app():
             # user.save()
             # user.job_levels.put(job_levels)
             # user.locations.put(locations)
-            
+
             return jsonify(user.to_json()), 200
 
         except Exception as err:
@@ -399,25 +405,45 @@ def create_app():
         else:
             url = "https://www.google.com/search?q=" + keywords + "&ibp=htl;jobs"
 
-        print(url)
-        
-        headers={ "User-Agent":
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_5_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
-        }
+        print(user_agent.random)
+        headers = {"User-Agent":
+                   #    "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_5_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
+                   user_agent.random,
+                   "Referrer": "https://www.google.com/"
+                   }
 
-        page=requests.get(url, headers=headers)
+        page = requests.get(url, headers=headers)
         soup = BeautifulSoup(page.text, "html.parser")
 
         # parsing searching results to DataFrame and return
-        df = pd.DataFrame(columns=["jobTitle", "companyName", "location", "date"])
-        mydivs = soup.find_all("div", class_= "PwjeAc")
-        
+        df = pd.DataFrame(
+            columns=["jobTitle", "companyName", "location", "date", "qualifications", "responsibilities", "benefits"])
+        mydivs = soup.find_all("div", class_="PwjeAc")
+
         for i, div in enumerate(mydivs):
             df.at[i, "jobTitle"] = div.find(
                 "div", {"class": "BjJfJf PUpOsf"}).text
             df.at[i, "companyName"] = div.find("div", {"class": "vNEEBe"}).text
             df.at[i, "location"] = div.find("div", {"class": "Qk80Jf"}).text
-            df.at[i, "date"] = div.find_all("span", {"class": "LL4CDc"}, limit=1)[0].text
+            df.at[i, "date"] = div.find_all(
+                "span", {"class": "LL4CDc"}, limit=1)[0].text
+
+            # Collect Job Description Details
+            desc = div.find_all("div", {"class": "JxVj3d"})
+            for ele in desc:
+                arr = list(x.text for x in ele.find_all(
+                    "div", {"class": "nDgy9d"}))
+                title = ele.find("div", {"class": "iflMsb"}).text
+                if arr:
+                    df.at[i, str(title).lower()] = arr
+        missingCols = list(
+            (df.loc[:, df.isnull().sum(axis=0).astype(bool)]).columns)
+
+        for col in missingCols:
+            df.loc[df[col].isnull(), [col]] = df.loc[df[col].isnull(
+            ), col].apply(lambda x: [])
+        # df.loc[df["benefits"].isnull(), ["benefits"]] = df.loc[df["benefits"].isnull(), "benefits"].apply(lambda x: [])
+
         return jsonify(df.to_dict("records"))
 
     # get data from the CSV file for rendering root page
@@ -549,19 +575,21 @@ def create_app():
         try:
             userid = get_userid_from_header()
             try:
-                file = request.files["file"]#.read()
+                file = request.files["file"]  # .read()
             except:
                 return jsonify({"error": "No resume file found in the input"}), 400
 
             user = Users.objects(id=userid).first()
             if not user.resume.read():
                 # There is no file
-                user.resume.put(file, filename=file.filename, content_type="application/pdf")
+                user.resume.put(file, filename=file.filename,
+                                content_type="application/pdf")
                 user.save()
                 return jsonify({"message": "resume successfully uploaded"}), 200
             else:
                 # There is a file, we are replacing it
-                user.resume.replace(file, filename=file.filename, content_type="application/pdf")
+                user.resume.replace(
+                    file, filename=file.filename, content_type="application/pdf")
                 user.save()
                 return jsonify({"message": "resume successfully replaced"}), 200
         except Exception as e:
@@ -587,8 +615,8 @@ def create_app():
             except:
                 return jsonify({"error": "resume could not be found"}), 400
 
-            filename=user.resume.filename
-            content_type=user.resume.contentType
+            filename = user.resume.filename
+            content_type = user.resume.contentType
             response = send_file(
                 user.resume,
                 mimetype=content_type,
@@ -605,10 +633,13 @@ def create_app():
 
 
 app = create_app()
+
+
 with open("application.yml") as f:
     info = yaml.load(f, Loader=yaml.FullLoader)
     username = info["username"]
     password = info["password"]
+    # ca=certifi.where()
     app.config["MONGODB_SETTINGS"] = {
         "db": "appTracker",
         "host": f"mongodb+srv://{username}:{password}@cluster0.r0056lg.mongodb.net/appTracker?tls=true&tlsCAFile={certifi.where()}&retryWrites=true&w=majority",
@@ -616,11 +647,12 @@ with open("application.yml") as f:
 db = MongoEngine()
 db.init_app(app)
 
+
 class Users(db.Document):
     """
     Users class. Holds full name, username, password, as well as applications and resumes
     """
-    
+
     id = db.IntField(primary_key=True)
     fullName = db.StringField()
     username = db.StringField()
@@ -632,10 +664,10 @@ class Users(db.Document):
     skills = db.ListField()
     job_levels = db.ListField()
     locations = db.ListField()
-    institution = db.StringField() 
+    institution = db.StringField()
     phone_number = db.StringField()
     address = db.StringField()
-    
+
     def to_json(self):
         """
         Returns the user details in JSON object
@@ -679,6 +711,16 @@ def get_new_application_id(user_id):
         new_id = max(new_id, a["id"])
 
     return new_id + 1
+
+# def build_preflight_response():
+    # response = make_response()
+    # response.headers.add("Access-Control-Allow-Origin", "*")
+    # response.headers.add('Access-Control-Allow-Headers', "*")
+    # response.headers.add('Access-Control-Allow-Methods', "*")
+    # return response
+# def build_actual_response(response):
+    # response.headers.add("Access-Control-Allow-Origin", "*")
+    # return response
 
 
 if __name__ == "__main__":
