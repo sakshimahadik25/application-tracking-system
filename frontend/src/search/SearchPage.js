@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import $ from "jquery";
 import SearchCard from "./SearchCard";
-import fakeUa from "fake-useragent";
 import JobDescription from "../Modals/JobDescription";
 import { Spinner } from "react-bootstrap";
 
@@ -151,7 +150,6 @@ export default class SearchPage extends Component {
         Authorization: "Bearer " + localStorage.getItem("token"),
         "Access-Control-Allow-Origin": "http://localhost:3000",
         "Access-Control-Allow-Credentials": "true",
-        "User-Agent": fakeUa(),
       },
       contentType: "application/json",
       success: (msg) => {
