@@ -556,12 +556,6 @@ class Users(db.Document):
     email = db.StringField()
     applications = db.ListField()
     resume = db.FileField()
-    phone_number = db.StringField()
-    job_levels = db.ListField()
-    address = db.StringField()
-    skills = db.ListField()
-    institution = db.StringField()
-    locations = db.StringField()
 
     def to_json(self):
         """
