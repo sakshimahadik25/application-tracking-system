@@ -1,268 +1,318 @@
-import React, { Component } from 'react'
-import Card from './Card'
-import CardModal from './CardModal'
-import $ from 'jquery'
+import React, { useState, useEffect, useCallback } from 'react';
+import { Card, Col, Container, Row, Modal } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
 
-export default class CardBoard extends Component {
-  constructor (props) {
-    super(props)
+const ApplicationsList = ({ applicationList, handleCardClick, selectedApplication, handleUpdateDetails, handleDeleteApplication }) => {
+  const [closeModal, setCloseModal] = useState(true);
+  const [job, setJob] = useState();
+  const [company, setCompany] = useState();
+  const [location, setLocation] = useState();
+  const [status, setStatus] = useState();
+  const [date, setDate] = useState();
+  const [jobLink, setJobLink] = useState();
+  const [isCreate, setIsCreate] = useState();
 
-    this.state = {
-      applications: [],
-      card_titles: [],
-      card_class: [],
-      showModal: false
-    }
-    this.getData = this.getData.bind(this)
-    this.groupApplication = this.groupApplication.bind(this)
-    this.createCardTitle = this.createCardTitle.bind(this)
-    this.createCardClass = this.createCardClass.bind(this)
+  const findStatus = (value) => {
+    let status = ''
+    if (value === '1')
+      status = 'Wish List';
+    else if (value === '2')
+      status = 'Waiting for referral';
+    else if (value === '3')
+      status = 'Applied';
+    else if (value === '4')
+      status = 'Rejected';
+
+    return status;
   }
 
-  // get initial data to render the root page
-  getData () {
-    return $.ajax({
-      url: 'http://localhost:5000/applications',
-      method: 'GET',
+  return (
+    <>
+      <Button variant="primary" style={{ marginLeft: "115px" }} size="lg" onClick={() => {
+        handleCardClick(null);
+        setCloseModal(false);
+        setIsCreate(true);
+        setJob(null);
+        setCompany(null);
+        setLocation(null);
+        setStatus(null);
+        setDate(null);
+        setStatus(null);
+        setJobLink(null);
+      }}>
+        + Add New Application
+      </Button>
+      <Container style={{ marginTop: "20px" }}>
+        <Row>
+          {applicationList.map((jobListing) => (
+            <Col
+              key={jobListing.id}
+              md={12}
+              style={{ marginBottom: "20px" }}
+            >
+              <Card
+                style={{
+                  marginLeft: "100px",
+                  borderColor: "#ccc",
+                  borderRadius: "5px",
+                  boxShadow: "0 4px 8px 0 rgba(0, 0, 0, 0.2)",
+                  transition: "0.3s",
+                  cursor: "pointer",
+                }}
+                onClick={() => {
+                  handleCardClick(jobListing);
+                  setCloseModal(false);
+                  setJob(jobListing?.jobTitle);
+                  setCompany(jobListing?.companyName);
+                  setLocation(jobListing?.location);
+                  setStatus(jobListing?.status);
+                  setDate(jobListing?.date);
+                  setStatus(jobListing?.status);
+                  setJobLink(jobListing?.jobLink);
+                  setIsCreate(false);
+                }}
+              >
+                <Card.Body style={{ padding: "20px" }}>
+                  <Row>
+                    <Col sm={6} mb={3} mb-sm={0}>
+                      <Card.Title style={{ fontSize: "20px" }}>
+                        {jobListing?.jobTitle}
+                      </Card.Title>
+                      <Card.Subtitle style={{ fontSize: "16px" }}>
+                        {jobListing?.companyName}
+                      </Card.Subtitle>
+                    </Col>
+                    <Col sm={6} mb={3} mb-sm={0}>
+                      <Card.Text style={{ fontSize: "14px" }}>
+                        <div style={{ display: "flex" }}>
+                          <div>Location: </div>
+                          <div>{jobListing.location}</div>
+                        </div>
+                        <div style={{ display: "flex" }}>
+                          <div>Date: </div>
+                          <div>{jobListing.date}</div>
+                        </div>
+                        <div style={{ display: "flex" }}>
+                          <div>Status: </div>
+                          <div>{findStatus(jobListing.status)}</div>
+                        </div>
+                      </Card.Text>
+                    </Col>
+                  </Row>
+                </Card.Body>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      </Container>
+
+      {/* Modal for updating details */}
+      <Modal show={!closeModal} onHide={() => setCloseModal(true)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Update Details</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {
+            (
+              <>
+                <div className="form-group">
+                  <label className='col-form-label'>Job Title</label>
+                  <input type="text" className="form-control" id="jobTitle" placeholder="Job Title" value={job} onChange={(e) => setJob(e.target.value)} />
+                </div>
+
+                <div className="form-group">
+                  <label className='col-form-label'>Company Name</label>
+                  <input type="text" className="form-control" id="companyName" placeholder="Company Name" value={company} onChange={(e) => setCompany(e.target.value)} />
+                </div>
+
+                <div className='form-group'>
+                  <label className='col-form-label'>Date</label>
+                  <input type='date' className='form-control' id='date' value={date} onChange={(e) => setDate(e.target.value)} />
+                </div>
+
+                <div className='form-group'>
+                  <label className='col-form-label'>Job Link</label>
+                  <input type='text' className='form-control' id='jobLink' placeholder='Job Link' value={jobLink} onChange={(e) => setJobLink(e.target.value)} />
+                </div>
+
+                <div className='form-group'>
+                  <label className='col-form-label'>Location</label>
+                  <input type='text' className='form-control' id='location' placeholder='Location' value={location} onChange={(e) => setLocation(e.target.value)} />
+                </div>
+
+                <div className='input-group mb-3'>
+                  <div className='input-group-prepend'>
+                    <label className='input-group-text'>Application Type</label>
+                  </div>
+                  <select className='custom-select' id='status' value={status} onChange={(e) => setStatus(e.target.value)}>
+                    <option>Choose...</option>
+                    <option value='1'>Wish list</option>
+                    <option value='2'>Waiting Referral</option>
+                    <option value='3'>Applied</option>
+                    <option value='4'>Rejected</option>
+                  </select>
+                </div>
+              </>
+            )}
+        </Modal.Body>
+        <Modal.Footer>
+          {!isCreate && (
+            <>
+              <Button variant="danger" onClick={(e) => {
+                e.preventDefault();
+                handleDeleteApplication(selectedApplication);
+                setCloseModal(true);
+              }}>
+                Delete
+              </Button> </>)}
+          <Button variant="success" onClick={(e) => {
+            e.preventDefault();
+            let jobTitle = document.querySelector("#jobTitle").value
+            let companyName = document.querySelector("#companyName").value
+            let location = document.querySelector("#location").value
+            let date = document.querySelector("#date").value
+            let status = document.querySelector("#status").value
+            let jobLink = document.querySelector("#jobLink").value
+            handleUpdateDetails(selectedApplication?.id, jobTitle, companyName, location, date, status, jobLink);
+            setCloseModal(true);
+          }
+          }>
+            Save Changes
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
+  );
+};
+
+const Qwerty = () => {
+  const [applicationList, setApplicationList] = useState([]);
+  const [selectedApplication, setSelectedApplication] = useState(null);
+  const [isChanged, setISChanged] = useState(true);
+
+  useEffect(() => {
+    // Fetch the list of applications from the backend API
+    if (isChanged) {
+      fetch('http://127.0.0.1:5000/applications', {
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('token'),
+          'Access-Control-Allow-Origin': 'http://localhost:3000',
+          'Access-Control-Allow-Credentials': 'true',
+        },
+        method: 'GET',
+      })
+        .then((response) => response.json())
+        .then((data) => setApplicationList(data));
+    }
+  }, [isChanged]);
+
+  var handleCardClick = (jobListing) => {
+    setSelectedApplication(jobListing);
+  };
+
+  const handleUpdateDetails = useCallback(
+    (id, job, company, location, date, status, jobLink) => {
+      let application = {
+        id: id ? id : null,
+        jobTitle: job,
+        companyName: company,
+        location: location,
+        date: date,
+        status: status,
+        jobLink: jobLink
+      }
+
+      if (application.id === null) {
+        fetch('http://127.0.0.1:5000/applications', {
+          headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('token'),
+            'Access-Control-Allow-Origin': 'http://localhost:3000',
+            'Access-Control-Allow-Credentials': 'true',
+          },
+          method: 'POST',
+          body: JSON.stringify({
+            application: {
+              ...application,
+            },
+          }),
+          contentType: 'application/json',
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            // Update the application id
+            application.id = data.id;
+            setApplicationList((prevApplicationList) => [...prevApplicationList, application]);
+          })
+          .catch((error) => {
+            // Handle error
+            console.error('Error:', error);
+            alert('Adding application failed!')
+          });
+      } else {
+        fetch('http://127.0.0.1:5000/applications/' + application.id, {
+          headers: {
+            Authorization: 'Bearer ' + localStorage.getItem('token'),
+            'Access-Control-Allow-Origin': 'http://localhost:3000',
+            'Access-Control-Allow-Credentials': 'true',
+          },
+          method: 'PUT',
+          body: JSON.stringify({
+            application: application,
+          }),
+          contentType: 'application/json',
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            setApplicationList((prevApplicationList) => {
+              const updatedApplicationList = prevApplicationList.map((jobListing) =>
+                jobListing.id === application.id ? application : jobListing
+              );
+              return updatedApplicationList;
+            });
+          })
+          .catch((error) => {
+            // Handle error
+            console.error('Error:', error);
+            alert('Update Failed!')
+          });
+      }
+      setSelectedApplication(null);
+    },
+    []
+  );
+
+  const handleDeleteApplication = (application) => {
+    fetch('http://127.0.0.1:5000/applications/' + application?.id, {
       headers: {
         Authorization: 'Bearer ' + localStorage.getItem('token'),
         'Access-Control-Allow-Origin': 'http://localhost:3000',
-        'Access-Control-Allow-Credentials': 'true'
+        'Access-Control-Allow-Credentials': 'true',
       },
-      credentials: 'include'
-    })
-    // getApplications().then((res) => {
-
-    // }).catch((error) => {
-    //         alert("Error while retrieving applications");
-    //     })
-  }
-
-  componentDidMount () {
-    // fetch the data only after this component is mounted
-    this.getData()
-      .done((data) => {
-        // console.log(data);
-        const result = this.groupApplication(data)
-        const cardTitles = this.createCardTitle(result)
-        const cardClass = this.createCardClass(result)
-        this.setState({
-          applications: data,
-          card_titles: cardTitles,
-          card_class: cardClass
-        })
-      })
-  }
-
-  renderPage (newApplications) {
-    // helper function to render the page
-    // rerender the page to represent the update result
-    const result = this.groupApplication(newApplications)
-    const cardTitle = this.createCardTitle(result)
-    const cardClass = this.createCardClass(result)
-
-    this.setState({
-      applications: newApplications,
-      card_titles: cardTitle,
-      card_class: cardClass,
-      showModal: false,
-      application: null
-    })
-  }
-
-  // the update function for child component
-  updateCardBoard (application) {
-    const newApplications = this.state.applications
-    if (application.id == null) {
-      // current application is a new application, create a new one and save in the backend.
-      $.ajax({
-        url: 'http://localhost:5000/applications', // TODO: will have to replace with production URL
-        method: 'POST',
-        headers: {
-          Authorization: 'Bearer ' + localStorage.getItem('token'),
-          'Access-Control-Allow-Origin': 'http://localhost:3000',
-          'Access-Control-Allow-Credentials': 'true'
-        },
-        async: false,
-        data: JSON.stringify({
-          application: application
-        }),
-        contentType: 'application/json',
-        success: (msg) => {
-          console.log(msg)
-        },
-        complete: function (data) {
-          newApplications.push(data.responseJSON)
-        }
-      })
-    } else {
-      console.log('updating id=' + application.id)
-      $.ajax({
-        url: 'http://localhost:5000/applications/' + application.id,
-        method: 'PUT',
-        async: false,
-        data: JSON.stringify({
-          application: application
-        }),
-        headers: {
-          Authorization: 'Bearer ' + localStorage.getItem('token'),
-          'Access-Control-Allow-Origin': 'http://localhost:3000',
-          'Access-Control-Allow-Credentials': 'true'
-        },
-        contentType: 'application/json',
-        success: (msg) => {
-          console.log(msg)
-        },
-        complete: function (data) {
-          const updatedApp = data.responseJSON
-          const idx = newApplications.findIndex(a => a.id === updatedApp.id)
-          newApplications[idx] = updatedApp
-        }
-      })
-    }
-    this.renderPage(newApplications)
-  }
-
-  deleteApplication (application) {
-    const newApplications = this.state.applications
-    console.log('deleting id=' + application.id)
-    $.ajax({
-      url: 'http://localhost:5000/applications/' + application.id,
       method: 'DELETE',
-      async: false,
-      data: JSON.stringify({
-        application: application
+      body: JSON.stringify({
+        application: application,
       }),
       contentType: 'application/json',
-      success: (msg) => {
-        console.log(msg)
-      },
-      headers: {
-        Authorization: 'Bearer ' + localStorage.getItem('token'),
-        'Access-Control-Allow-Origin': 'http://localhost:3000',
-        'Access-Control-Allow-Credentials': 'true'
-      },
-      complete: function (data) {
-        const deletedApp = data.responseJSON
-        const idx = newApplications.findIndex(a => a.id === deletedApp.id)
-        newApplications.splice(idx, 1)
-      }
     })
-    this.renderPage(newApplications)
+      .then((response) => response.json())
+      .then((data) => {
+        setISChanged(true);
+      })
+      .catch((error) => {
+        // Handle error
+        console.error('Error:', error);
+        alert('Error while deleting the application!')
+      });
+    setISChanged(false);
+    setSelectedApplication(null);
   }
 
-  // open the card modal according to the application in parameter
-  showEditModal (application, mode) {
-    const modalMode = mode
-
-    this.setState({
-      showModal: true,
-      application: application,
-      modalMode: modalMode
-    })
-  }
-
-  closeEditModal () {
-    this.setState({
-      showModal: false,
-      application: null
-    })
-  }
-
-  // create all cards(application) and make cards having the same class in the same column
-  createCardClass (applicationsGroup) {
-    return applicationsGroup.reduce((pv, v) => {
-      const appClass = (
-        <div className='col' key={v.title + '_class'} id={v.title + '_class'}>
-          {v.applications.reduce((pv, v) => {
-            const card = <Card application={v} key={v.id} showEditModal={this.showEditModal.bind(this, v, 'update')} />
-            pv.push(card)
-            return pv
-          }, [])}
-          {/* add function not implement */}
-          <div className='card card-col'>
-            <div className='card-body new-col' onClick={this.showEditModal.bind(this, { class: v.class }, 'create')}>
-              <i className='fas fa-plus text-center' />
-            </div>
-          </div>
-        </div>
-      )
-      pv.push(appClass)
-      return pv
-    }, [])
-  }
-
-  // create the class title
-  createCardTitle (applicationsGroup) {
-    return applicationsGroup.reduce((pv, v) => {
-      const title = (
-        <div className='col' key={v.title + '_title'}>
-          <div className='card card-col'>
-            <div className='card-body noPadding'>
-              <div type='text' className='text-center title-col form-control-lg'>
-                {v.title}
-              </div>
-            </div>
-          </div>
-        </div>
-      )
-      pv.push(title)
-      return pv
-    }, [])
-  }
-
-  // initialize the data, classify data according to their class
-  groupApplication (applications) {
-    const result = [
-      {
-        title: 'Wish list',
-        applications: [],
-        class: '1'
-      }, {
-        title: 'Waiting for referral',
-        applications: [],
-        class: '2'
-      }, {
-        title: 'Applied',
-        applications: [],
-        class: '3'
-      }, {
-        title: 'Rejected',
-        applications: [],
-        class: '4'
-      }
-    ]
-    applications?.forEach(app => {
-      const appClass = result.find(v => { return v.class === app.status })
-      appClass?.applications.push(app)
-    })
-    return result
-  }
-
-  render () {
-    let applicationModal = null
-    if (this.state.application) {
-      applicationModal = (
-        <CardModal
-          show={this.state.showModal}
-          submitFunc={this.updateCardBoard.bind(this)}
-          mode={this.state.modalMode}
-          application={this.state.application}
-          closeEditModal={this.closeEditModal.bind(this)}
-          deleteApplication={this.deleteApplication.bind(this)}
-        />
-      )
-    }
-    return (
-      <span id='tab'>
-        <div className='row'>
-          {this.state.card_titles}
-        </div>
-        <div className='row'>
-          {this.state.card_class}
-        </div>
-        {applicationModal}
-      </span>
-    )
-  }
-}
+  return <ApplicationsList
+    applicationList={applicationList}
+    handleCardClick={handleCardClick}
+    selectedApplication={selectedApplication}
+    handleUpdateDetails={handleUpdateDetails}
+    handleDeleteApplication={handleDeleteApplication}
+  />;
+};
+export default Qwerty;
