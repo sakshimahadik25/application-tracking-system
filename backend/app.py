@@ -2,7 +2,7 @@
 The flask application for our program
 """
 # importing required python libraries
-from flask import Flask, jsonify, request, send_file
+from flask import Flask, jsonify, request, send_file, redirect, url_for, session
 from flask_mongoengine import MongoEngine
 from flask_cors import CORS, cross_origin
 from selenium import webdriver
@@ -11,15 +11,20 @@ from bs4 import BeautifulSoup
 from itertools import islice
 from webdriver_manager.chrome import ChromeDriverManager
 from bson.json_util import dumps
+from io import BytesIO 
 import pandas as pd
 import json
 from datetime import datetime, timedelta
 import yaml
 import hashlib
 import uuid
-
+import certifi
+import requests 
+from authlib.integrations.flask_client import OAuth
+from authlib.common.security import generate_token
+import os
+    
 existing_endpoints = ["/applications", "/resume"]
-
 
 def create_app():
     """
@@ -28,9 +33,21 @@ def create_app():
     :return: Flask object
     """
     app = Flask(__name__)
-    # make flask support CORS
+    # # make flask support CORS
     CORS(app)
+
+    # get all the variables from the application.yml file
+    with open("application.yml") as f:
+        info = yaml.load(f, Loader=yaml.FullLoader)
+        GOOGLE_CLIENT_ID = info["GOOGLE_CLIENT_ID"]
+        GOOGLE_CLIENT_SECRET = info["GOOGLE_CLIENT_SECRET"]
+        CONF_URL = info["CONF_URL"]
+        app.secret_key = info['SECRET_KEY']
+
     app.config["CORS_HEADERS"] = "Content-Type"
+
+        
+    oauth = OAuth(app)
 
     @app.errorhandler(404)
     def page_not_found(e):
@@ -132,7 +149,62 @@ def create_app():
     @cross_origin()
     def health_check():
         return jsonify({"message": "Server up and running"}), 200
+    
+    @app.route("/users/signupGoogle")
+    def signupGoogle():
+        
+        oauth.register(
+            name='google',
+            client_id=GOOGLE_CLIENT_ID,
+            client_secret=GOOGLE_CLIENT_SECRET,
+            server_metadata_url=CONF_URL,
+            client_kwargs={
+                'scope': 'openid email profile'
+            },
+            nonce='foobar'
+        )
 
+        # Redirect to google_auth function
+        redirect_uri = url_for('authorized', _external=True)
+        print(redirect_uri)
+        
+        session['nonce'] = generate_token()
+        return oauth.google.authorize_redirect(redirect_uri, nonce=session['nonce'])
+    
+    @app.route('/users/signupGoogle/authorized')
+    def authorized():
+        token = oauth.google.authorize_access_token()
+        user = oauth.google.parse_id_token(token, nonce=session['nonce'])
+        session['user'] = user
+        
+        user_exists=Users.objects(email=user["email"]).first()
+            
+        users_email = user["email"]
+        full_name = user["given_name"]+ " " + user["family_name"]
+            
+        if user['email_verified']: 
+            if user_exists is None:
+                userSave = Users(
+                id=get_new_user_id(), 
+                fullName=full_name, 
+                email=users_email, 
+                authTokens=[],
+                applications=[]
+                )
+                userSave.save()
+                unique_id=userSave['id']
+            else:   
+                unique_id=user_exists['id']
+                
+        userSaved = Users.objects(email=user['email']).first()
+        expiry = datetime.now() + timedelta(days=1)
+        expiry_str = expiry.strftime("%m/%d/%Y, %H:%M:%S")
+        token_whole=str(unique_id) + "." + token['access_token']
+        auth_tokens_new = userSaved['authTokens'] + [{"token": token_whole, "expiry": expiry_str}]
+        userSaved.update(authTokens=auth_tokens_new)
+            
+        return redirect(f"http://localhost:3000/?token={token_whole}&expiry={expiry_str}")
+        
     @app.route("/users/signup", methods=["POST"])
     def sign_up():
         """
@@ -254,35 +326,25 @@ def create_app():
         else:
             url = "https://www.google.com/search?q=" + keywords + "&ibp=htl;jobs"
 
-        # webdriver can run the javascript and then render the page first.
-        # This prevent websites don't provide Server-side rendering
-        # leading to crawlers cannot fetch the page
-        chrome_options = Options()
-        # chrome_options.add_argument("--no-sandbox") # linux only
-        chrome_options.add_argument("--headless")
-        user_agent = (
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) "
-            "Chrome/71.0.3578.98 Safari/537.36 "
-        )
-        chrome_options.add_argument(f"user-agent={user_agent}")
-        driver = webdriver.Chrome(
-            ChromeDriverManager().install(), chrome_options=chrome_options
-        )
-        driver.get(url)
-        content = driver.page_source
-        driver.close()
-        soup = BeautifulSoup(content)
+        print(url)
+        
+        headers={ "User-Agent":
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_5_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
+        }
+
+        page=requests.get(url, headers=headers)
+        soup = BeautifulSoup(page.text, "html.parser")
 
         # parsing searching results to DataFrame and return
-        df = pd.DataFrame(columns=["jobTitle", "companyName", "location"])
-        mydivs = soup.find_all("div", {"class": "PwjeAc"})
+        df = pd.DataFrame(columns=["jobTitle", "companyName", "location", "date"])
+        mydivs = soup.find_all("div", class_= "PwjeAc")
+        
         for i, div in enumerate(mydivs):
             df.at[i, "jobTitle"] = div.find(
                 "div", {"class": "BjJfJf PUpOsf"}).text
             df.at[i, "companyName"] = div.find("div", {"class": "vNEEBe"}).text
             df.at[i, "location"] = div.find("div", {"class": "Qk80Jf"}).text
-            df.at[i, "date"] = div.find_all(
-                "span", class_="SuWscb", limit=1)[0].text
+            df.at[i, "date"] = div.find_all("span", {"class": "LL4CDc"}, limit=1)[0].text
         return jsonify(df.to_dict("records"))
 
     # get data from the CSV file for rendering root page
@@ -414,19 +476,19 @@ def create_app():
         try:
             userid = get_userid_from_header()
             try:
-                file = request.files["file"].read()
+                file = request.files["file"]#.read()
             except:
                 return jsonify({"error": "No resume file found in the input"}), 400
 
             user = Users.objects(id=userid).first()
             if not user.resume.read():
                 # There is no file
-                user.resume.put(file)
+                user.resume.put(file, filename=file.filename, content_type="application/pdf")
                 user.save()
                 return jsonify({"message": "resume successfully uploaded"}), 200
             else:
                 # There is a file, we are replacing it
-                user.resume.replace(file)
+                user.resume.replace(file, filename=file.filename, content_type="application/pdf")
                 user.save()
                 return jsonify({"message": "resume successfully replaced"}), 200
         except Exception as e:
@@ -448,16 +510,19 @@ def create_app():
                     raise FileNotFoundError
                 else:
                     user.resume.seek(0)
+
             except:
                 return jsonify({"error": "resume could not be found"}), 400
 
+            filename=user.resume.filename
+            content_type=user.resume.contentType
             response = send_file(
                 user.resume,
-                mimetype="application/pdf",
-                attachment_filename="resume.pdf",
+                mimetype=content_type,
+                download_name=filename,
                 as_attachment=True,
             )
-            response.headers["x-filename"] = "resume.pdf"
+            response.headers["x-filename"] = filename
             response.headers["Access-Control-Expose-Headers"] = "x-filename"
             return response, 200
         except:
@@ -473,24 +538,30 @@ with open("application.yml") as f:
     password = info["password"]
     app.config["MONGODB_SETTINGS"] = {
         "db": "appTracker",
-        "host": f"mongodb+srv://{username}:{password}@cluster0.r0056lg.mongodb.net/appTracker?retryWrites=true&w=majority",
+        "host": f"mongodb+srv://{username}:{password}@cluster0.r0056lg.mongodb.net/appTracker?tls=true&tlsCAFile={certifi.where()}&retryWrites=true&w=majority",
     }
 db = MongoEngine()
 db.init_app(app)
-
 
 class Users(db.Document):
     """
     Users class. Holds full name, username, password, as well as applications and resumes
     """
-
+    
     id = db.IntField(primary_key=True)
     fullName = db.StringField()
     username = db.StringField()
     password = db.StringField()
     authTokens = db.ListField()
+    email = db.StringField()
     applications = db.ListField()
     resume = db.FileField()
+    phone_number = db.StringField()
+    job_levels = db.ListField()
+    address = db.StringField()
+    skills = db.ListField()
+    institution = db.StringField()
+    locations = db.StringField()
 
     def to_json(self):
         """
