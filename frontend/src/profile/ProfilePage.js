@@ -12,7 +12,6 @@ import {
   faPenToSquare,
   faPhone,
 } from "@fortawesome/free-solid-svg-icons";
-import JobDescription from "../Modals/JobDescription";
 
 const ProfilePage = () => {
   const [locationModalOpen, setLocationModalOpen] = useState(false);

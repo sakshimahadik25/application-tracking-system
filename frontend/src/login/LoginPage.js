@@ -46,6 +46,28 @@ export default class LoginPage extends Component {
       });
   };
 
+  handleSignupGoogle = () => {
+    window.open("http://127.0.0.1:5000/users/signupGoogle"); // Google oauth url
+  };
+
+  componentDidMount() {
+    if (localStorage.getItem("token") === null) {
+      const query = new URLSearchParams(window.location.search);
+      const token = query.get("token");
+      const expiry = query.get("expiry");
+      let obj = {
+        token: token,
+        expiry: expiry,
+      };
+      if (token) {
+        storeToken(obj);
+        window.location.assign(
+          "http://localhost:3000/application-tracking-system"
+        ); // changing back to this to avoid leaking data such as access tokens from the url
+      }
+    }
+  }
+
   render() {
     return (
       <div className="auth-wrapper" style={this.authWrapper}>
@@ -78,19 +100,30 @@ export default class LoginPage extends Component {
                     placeholder="Enter password"
                   />
                 </div>
+                <div className="d-flex justify-content-center">
+                  <button
+                    type="submit"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      let uname = document.querySelector("#uname").value;
+                      let pwd = document.querySelector("#pwd").value;
+                      this.handleLogin(uname, pwd);
+                    }}
+                    className="custom-btn px-3 py-2 mx-2"
+                    // style={{ marginRight: 10 }}
+                  >
+                    Login
+                  </button>
 
-                <button
-                  type="submit"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    let uname = document.querySelector("#uname").value;
-                    let pwd = document.querySelector("#pwd").value;
-                    this.handleLogin(uname, pwd);
-                  }}
-                  className="custom-btn px-3 py-2"
-                >
-                  Login
-                </button>
+                  <button
+                    onClick={() => {
+                      this.handleSignupGoogle();
+                    }}
+                    className="custom-btn px-3 py-2 mx-2"
+                  >
+                    Google Login
+                  </button>
+                </div>
               </form>
             </Tab>
             <Tab eventKey="signup" title="Signup">
@@ -104,7 +137,6 @@ export default class LoginPage extends Component {
                     placeholder="Full name"
                   />
                 </div>
-
                 <div className="form-group my-4">
                   <label>Username</label>
                   <input
@@ -114,7 +146,6 @@ export default class LoginPage extends Component {
                     placeholder="Enter username"
                   />
                 </div>
-
                 <div className="form-group my-4">
                   <label>Password</label>
                   <input
@@ -124,20 +155,30 @@ export default class LoginPage extends Component {
                     placeholder="Enter password"
                   />
                 </div>
+                <div className="d-flex justify-content-center">
+                  <button
+                    type="submit"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      let name = document.querySelector("#fullname").value;
+                      let uname = document.querySelector("#suname").value;
+                      let pwd = document.querySelector("#spwd").value;
+                      this.handleSignup(name, uname, pwd);
+                    }}
+                    className="custom-btn px-3 py-2 mx-2"
+                  >
+                    Sign Up
+                  </button>
 
-                <button
-                  type="submit"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    let name = document.querySelector("#fullname").value;
-                    let uname = document.querySelector("#suname").value;
-                    let pwd = document.querySelector("#spwd").value;
-                    this.handleSignup(name, uname, pwd);
-                  }}
-                  className="custom-btn px-3 py-2"
-                >
-                  Sign Up
-                </button>
+                  <button
+                    onClick={() => {
+                      this.handleSignupGoogle();
+                    }}
+                    className="custom-btn px-3 py-2 mx-2"
+                  >
+                    Google Signup
+                  </button>
+                </div>
               </form>
             </Tab>
           </Tabs>

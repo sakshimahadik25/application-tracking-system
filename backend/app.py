@@ -2,7 +2,7 @@
 The flask application for our program
 """
 # importing required python libraries
-from flask import Flask, jsonify, request, send_file
+from flask import Flask, jsonify, request, send_file, redirect, url_for, session
 from flask_mongoengine import MongoEngine
 from flask_cors import CORS, cross_origin
 from selenium import webdriver
@@ -21,19 +21,11 @@ import hashlib
 import uuid
 import certifi
 import requests
-# import urllib
-
-# db_url="mongodb+srv://smahadi:" + urllib.parse.quote("Hello@123")+ "@cluster0.r0056lg.mongodb.net/?retryWrites=true&w=majority"
-# connect(host=db_url)
+from authlib.integrations.flask_client import OAuth
+from authlib.common.security import generate_token
+import os
 
 existing_endpoints = ["/applications", "/resume"]
-
-# app = Flask(__name__)
-
-# make flask support CORS
-# CORS(app)
-# CORS(app, resources={r'/*': {"origins": "*", "send_wildcard" : True}})
-# app.config["CORS_HEADERS"] = "Content-Type"
 
 user_agent = UserAgent()
 
@@ -47,8 +39,18 @@ def create_app():
     app = Flask(__name__)
     # # make flask support CORS
     CORS(app)
-    # #CORS(app, resources={r'/*': {"origins": "*", "send_wildcard" : True}})
+
+    # get all the variables from the application.yml file
+    with open("application.yml") as f:
+        info = yaml.load(f, Loader=yaml.FullLoader)
+        GOOGLE_CLIENT_ID = info["GOOGLE_CLIENT_ID"]
+        GOOGLE_CLIENT_SECRET = info["GOOGLE_CLIENT_SECRET"]
+        CONF_URL = info["CONF_URL"]
+        app.secret_key = info['SECRET_KEY']
+
     app.config["CORS_HEADERS"] = "Content-Type"
+
+    oauth = OAuth(app)
 
     @app.errorhandler(404)
     def page_not_found(e):
@@ -128,6 +130,7 @@ def create_app():
         """
         headers = request.headers
         token = headers["Authorization"].split(" ")[1]
+        print(token)
         userid = token.split(".")[0]
         return userid
 
@@ -151,10 +154,61 @@ def create_app():
     def health_check():
         return jsonify({"message": "Server up and running"}), 200
 
-    @app.route('/test')
-    def test():
-        users = Users.objects()
-        return jsonify(users), 200
+    @app.route("/users/signupGoogle")
+    def signupGoogle():
+
+        oauth.register(
+            name='google',
+            client_id=GOOGLE_CLIENT_ID,
+            client_secret=GOOGLE_CLIENT_SECRET,
+            server_metadata_url=CONF_URL,
+            client_kwargs={
+                'scope': 'openid email profile'
+            },
+            nonce='foobar'
+        )
+
+        # Redirect to google_auth function
+        redirect_uri = url_for('authorized', _external=True)
+        print(redirect_uri)
+
+        session['nonce'] = generate_token()
+        return oauth.google.authorize_redirect(redirect_uri, nonce=session['nonce'])
+
+    @app.route('/users/signupGoogle/authorized')
+    def authorized():
+        token = oauth.google.authorize_access_token()
+        user = oauth.google.parse_id_token(token, nonce=session['nonce'])
+        session['user'] = user
+
+        user_exists = Users.objects(email=user["email"]).first()
+
+        users_email = user["email"]
+        full_name = user["given_name"] + " " + user["family_name"]
+
+        if user['email_verified']:
+            if user_exists is None:
+                userSave = Users(
+                    id=get_new_user_id(),
+                    fullName=full_name,
+                    email=users_email,
+                    authTokens=[],
+                    applications=[]
+                )
+                userSave.save()
+                unique_id = userSave['id']
+            else:
+                unique_id = user_exists['id']
+
+        userSaved = Users.objects(email=user['email']).first()
+        expiry = datetime.now() + timedelta(days=1)
+        expiry_str = expiry.strftime("%m/%d/%Y, %H:%M:%S")
+        token_whole = str(unique_id) + "." + token['access_token']
+        auth_tokens_new = userSaved['authTokens'] + \
+            [{"token": token_whole, "expiry": expiry_str}]
+        userSaved.update(authTokens=auth_tokens_new)
+
+        return redirect(f"http://localhost:3000/?token={token_whole}&expiry={expiry_str}")
 
     @app.route("/users/signup", methods=["POST"])
     def sign_up():
@@ -192,6 +246,78 @@ def create_app():
             user.save()
             return jsonify(user.to_json()), 200
         except:
+            return jsonify({"error": "Internal server error"}), 500
+
+    @app.route("/getProfile", methods=["GET"])
+    def get_profile_data():
+        """
+        Gets user's profile data from the database
+
+        :return: JSON object with application data
+        """
+        try:
+            userid = get_userid_from_header()
+            user = Users.objects(id=userid).first()
+            profileInformation = {}
+            profileInformation["skills"] = user["skills"]
+            profileInformation["job_levels"] = user["job_levels"]
+            profileInformation["locations"] = user["locations"]
+            profileInformation["institution"] = user["institution"]
+            profileInformation["phone_number"] = user["phone_number"]
+            profileInformation["address"] = user["address"]
+
+            return jsonify(profileInformation)
+        except:
+            return jsonify({"error": "Internal server error"}), 500
+
+    @app.route("/updateProfile", methods=["POST"])
+    def updateProfilePreferences():
+        """
+        Update the user profile with preferences: skills, job-level and location
+        """
+        try:
+            print(request.data)
+            userid = get_userid_from_header()
+            user = Users.objects(id=userid).first()
+            data = json.loads(request.data)
+            print(user.fullName)
+            institution, phone_number, address = "", "", ""
+
+            skills, job_levels, locations = [], [], []
+            if data["skills"]:
+                user.skills = data["skills"]
+
+            if data["job_levels"]:
+                user.job_levels = data["job_levels"]
+
+            if data["locations"]:
+                user.locations = data["locations"]
+
+            if data["institution"]:
+                user.institution = data["institution"]
+
+            if data["phone_number"]:
+                user.phone_number = data["phone_number"]
+
+            if data["address"]:
+                user.address = data["address"]
+
+            user.save()
+            # Users.modify(user, id = userid, skills = skills)
+
+            # db.users.update_one({'_id': 3},{'$set': {'skills': skills, 'job_levels': job_levels, 'locations': locations}})
+            # user.update({'skills': skills, 'job_levels': job_levels, 'locations': locations})
+            # Users.save()
+
+            # user.skills.put(skills)
+            # user.save()
+            # user.job_levels.put(job_levels)
+            # user.locations.put(locations)
+
+            return jsonify(user.to_json()), 200
+
+        except Exception as err:
+            print(err)
             return jsonify({"error": "Internal server error"}), 500
 
     @app.route("/users/login", methods=["POST"])
@@ -279,15 +405,6 @@ def create_app():
         else:
             url = "https://www.google.com/search?q=" + keywords + "&ibp=htl;jobs"
 
-        # webdriver can run the javascript and then render the page first.
-        # This prevent websites don't provide Server-side rendering
-        # leading to crawlers cannot fetch the page
-        # chrome_options = Options()
-        # chrome_options.add_argument("--no-sandbox") # linux only
-        # chrome_options.add_argument("--headless")
-        # user_agent = (
-        #    "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_5_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
-        # )
         print(user_agent.random)
         headers = {"User-Agent":
                    #    "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_5_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
@@ -295,16 +412,7 @@ def create_app():
                    "Referrer": "https://www.google.com/"
                    }
 
-        # chrome_options.add_argument(f"user-agent={user_agent}")
-        # driver = webdriver.Chrome(executable_path=
-        #    ChromeDriverManager().install(), chrome_options=chrome_options
-        # )
-        # driver.get(url)
-        # content = driver.page_source
-        # driver.close()
         page = requests.get(url, headers=headers)
-        # print(page.status_code)
-        # soup = BeautifulSoup(content, "html.parser")
         soup = BeautifulSoup(page.text, "html.parser")
 
         # parsing searching results to DataFrame and return
@@ -330,7 +438,7 @@ def create_app():
                     df.at[i, str(title).lower()] = arr
         missingCols = list(
             (df.loc[:, df.isnull().sum(axis=0).astype(bool)]).columns)
-        # print(df.columns[df.isnull().sum(axis=0)])
+
         for col in missingCols:
             df.loc[df[col].isnull(), [col]] = df.loc[df[col].isnull(
             ), col].apply(lambda x: [])
@@ -535,10 +643,6 @@ with open("application.yml") as f:
     app.config["MONGODB_SETTINGS"] = {
         "db": "appTracker",
         "host": f"mongodb+srv://{username}:{password}@cluster0.r0056lg.mongodb.net/appTracker?tls=true&tlsCAFile={certifi.where()}&retryWrites=true&w=majority",
-        # "tlsCAFile": certifi.where()
-        # "host": f"mongodb+srv://cluster0.r0056lg.mongodb.net/?authSource=%24external&authMechanism=MONGODB-X509&retryWrites=true&w=majority",
-        # "tls":True,
-        # "tlsCertificateKeyFile":'/Users/sakshimahadik/Downloads/'
     }
 db = MongoEngine()
 db.init_app(app)
@@ -554,8 +658,15 @@ class Users(db.Document):
     username = db.StringField()
     password = db.StringField()
     authTokens = db.ListField()
+    email = db.StringField()
     applications = db.ListField()
     resume = db.FileField()
+    skills = db.ListField()
+    job_levels = db.ListField()
+    locations = db.ListField()
+    institution = db.StringField()
+    phone_number = db.StringField()
+    address = db.StringField()
 
     def to_json(self):
         """
