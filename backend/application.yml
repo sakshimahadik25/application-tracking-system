@@ -1,6 +1,0 @@
-username: "se_project"
-password: "hello123"
-GOOGLE_CLIENT_ID: "955571883823-7i6eorjp2s23i8b7lc4ogcaguag79res.apps.googleusercontent.com"
-GOOGLE_CLIENT_SECRET: "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"
-CONF_URL: "https://accounts.google.com/.well-known/openid-configuration"
-SECRET_KEY: "se_project"
