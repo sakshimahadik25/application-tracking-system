@@ -48,6 +48,26 @@ export default class LoginPage extends Component{
          
     }
 
+    handleSignupGoogle = () => {
+        window.open("http://127.0.0.1:5000/users/signupGoogle") // Google oauth url
+    }
+
+    componentDidMount() {
+        if(localStorage.getItem('token')=== null){
+            const query = new URLSearchParams(window.location.search);
+            const token=query.get('token')
+            const expiry=query.get('expiry')
+            let obj = {
+                token: token,
+                expiry: expiry
+            }
+            if(token){
+              storeToken(obj)
+              window.location.assign("http://localhost:3000/application-tracking-system") // changing back to this to avoid leaking data such as access tokens from the url
+            }
+        }
+    }
+    
     render() {
         return(
             <div className="auth-wrapper" style={this.authWrapper}>
@@ -73,6 +93,12 @@ export default class LoginPage extends Component{
                                 this.handleLogin(uname, pwd)
                                 }} 
                             className="btn btn-secondary btn-block">Login</button>
+
+                            <button onClick={() => {
+                                this.handleSignupGoogle()
+                            }} className="btn btn-secondary btn-block"> Google Login
+                            </button>
+
                         </form>
                     </Tab>
                     <Tab eventKey="signup" title="Signup">
@@ -99,6 +125,11 @@ export default class LoginPage extends Component{
                                 let pwd = document.querySelector("#spwd").value
                                 this.handleSignup(name, uname, pwd)
                                 }}  className="btn btn-secondary btn-block">Sign Up</button>
+
+                            <button onClick={() => {
+                                this.handleSignupGoogle()
+                            }} className="btn btn-secondary btn-block"> Google Signup
+                            </button>
                         </form>
                     </Tab>
                 </Tabs> 
