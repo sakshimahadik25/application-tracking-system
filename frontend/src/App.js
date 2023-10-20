@@ -60,7 +60,7 @@ export default class App extends React.Component {
     if (this.state.sidebar) {
       app = (
         <div className="main-page">
-          <Sidebar switchPage={this.switchPage.bind(this)} />
+          <Sidebar switchPage={this.switchPage.bind(this)} handleLogout={this.handleLogout} />
           <div className="main">
             <div className="content">
               <div className="">
@@ -70,12 +70,6 @@ export default class App extends React.Component {
               </span> */}
               </div>
               {this.state.currentPage}
-              <button
-                style={{ position: "absolute", top: "2vh", left: "90vw", marginTop: "1%", color: "white", backgroundColor: "#2a6e85" }}
-                onClick={this.handleLogout}
-              >
-                Logout
-              </button>
             </div>
           </div>
         </div>
