@@ -71,8 +71,9 @@ The interface through which a user is able to search for specific jobs and apply
 2. Click on Details button to see the Job Details
 3. Click on Apply button which will redirect to the Job Apply link.
 
-<p align="center"><img width="700" src="./resources/search.png"></p> 
-<p align="center"><img width="700" src="./resources/newjobdetails1.PNG"></p>
+<p align="center"><img width="700" src="./resources/search_roles_companywise.png"></p> 
+<p align="center"><img width="700" src="./resources/FindJobs.PNG"></p>
+<p align="center"><img width="700" src="./resources/Job_Description.PNG"></p>
 
 ### ApplicationPage
 
@@ -98,7 +99,7 @@ On this page, user can see different jobs that would be recommended to them base
 
 ## Roadmap:
 
-<p align="center"><img width="700" src="./resources/roadmap_se.PNG"></p>
+<p align="center"><img width="700" src="./resources/Roadmapx.PNG"></p>
 
 ## Future Scope:
 
@@ -205,7 +206,7 @@ Please see our CONTRIBUTING.md for instructions on how to contribute to the repo
 
 ## Team Members
 
-- Jaiwin Shah
 - Sakshi Mahadik
+- Jaiwin Shah
 - Om Jain
 - Jay Shah
