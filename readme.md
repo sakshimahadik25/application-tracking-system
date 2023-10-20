@@ -51,18 +51,17 @@ Our application keeps track of the jobs you've added to your wish list. It also 
 
 The introductory visual interface displayed from which a user is able to register and log into the application. User can also login or sign up through Google Authorization.
 
-<p align="center"><img width="700" src="./resources/login.png"></p> //Changes karne h
-
+<p align="center"><img width="700" src="./resources/login_page.png"></p>
 The Google Authorization Login:
 
-<p align="center"><img width="700" src="./resources/login.png"></p> //Changes karne h
+<p align="center"><img width="700" src="./resources/googleauth.png"></p>
 
 ### HomeScreen - Profile Page
 
 After Logging In, the Profile page of the user is displayed where the user details such as Name, Institution, email, phone number, address, skills, and more are shown.
 Users can add or update information to their profile, such as their personal information, skills, preferred job locations, and their experience level.
 
-<p align="center"><img width="700" src="./resources/home_screen.png"></p> //change karna h
+<p align="center"><img width="700" src="./resources/profilepage.png"></p>
 
 ### SearchPage
 
@@ -72,20 +71,20 @@ The interface through which a user is able to search for specific jobs and apply
 2. Click on Details button to see the Job Details
 3. Click on Apply button which will redirect to the Job Apply link.
 
-<p align="center"><img width="700" src="./resources/search.png"></p> // change karna h
-<p align="center"><img width="700" src="./resources/newjobdetails1.PNG"></p> // change karna h
+<p align="center"><img width="700" src="./resources/search.png"></p> 
+<p align="center"><img width="700" src="./resources/newjobdetails1.PNG"></p>
 
 ### ApplicationPage
 
 The user is able to access different saved applications - Waitlisted applications, Waiting for Refereals, Applied Jobs, Application Status. The user can also add more jobs to track through this screen.
 
-<p align="center"><img width="700" src="./resources/newjobdetails1.PNG"></p> //change karna h
+<p align="center"><img width="700" src="./resources/AddApplicationpage.PNG"></p>
 
 ### MatchesPage
 
 On this page, user can see different jobs that would be recommended to them based on their profile and their preferences. User can apply for that position from this page too.
 
-<p align="center"><img width="700" src="./resources/newjobdetails1.PNG"></p> //change karna h
+<p align="center"><img width="700" src="./resources/Recommendjobspage.PNG"></p>
 
 ### Whats New
 
@@ -97,29 +96,17 @@ On this page, user can see different jobs that would be recommended to them base
 - Added Apply button and Job details on the Search page
 - Modfied and revamped the UI
 
-#### Version 1.0.3
-
-- Updated badges for repository
-- Users database implementation
-- Add logout endpoint and update middleware
-- Implementing search based on salary functionality
-- Login frontend for login and signup functionality
-- Search custom date
-
 ## Roadmap:
 
-![Roadmap](https://github.com/prithvish-doshi-17/application-tracking-system/blob/main/resources/Roadmap%20-%202.PNG)
+<p align="center"><img width="700" src="./resources/roadmap_se.PNG"></p>
 
 ## Future Scope:
 
 - Include deadline reminders for the application and interview.
 - Add a feature that allows users to attach these reminders to their Google calendar.
 - Incorporate notifications for upcoming deadlines.
-- Add a storage option for resumes and cover letters so they can be saved for future use.
-- Include a direct link to the company's application site when the wishlist item is clicked.
 - Include a link to the university’s career fair page.
 - Direct connection to Linkedin, allowing for the addition of job opportunities to the wishlist.
-- Improve keyword search to improve specifications such as pay range, employment location, and so on.
 - An option to maintain separate profiles for job tracking.
 
 ## Explanation:
