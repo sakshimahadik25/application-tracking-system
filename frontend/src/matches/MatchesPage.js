@@ -71,7 +71,13 @@ const Recommendations = () => {
                             <td className='p-3'>{job.jobTitle}</td>
                             <a target="_blank" rel="noopener noreferrer" href={job.data_share_url}>
                             <button
-                            type="button" class="btn btn-primary d-flex align-items-center"
+                            type="button" class="btn btn-primary d-flex align-items-center" 
+                            style={{
+                              backgroundColor: "#2a6e85",
+                              margin: "5px",
+                              width: "100px",
+                              verticalAlign: "middle"
+                            }}
                             
                           >
                             Job Link
