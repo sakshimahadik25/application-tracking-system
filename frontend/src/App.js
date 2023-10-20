@@ -9,6 +9,7 @@ import ManageResumePage from "./resume/ManageResumePage";
 import ProfilePage from "./profile/ProfilePage";
 import axios from "axios";
 import fetch from "./api/handler";
+import MatchesPage from "./matches/MatchesPage";
 
 export default class App extends React.Component {
   constructor(props) {
@@ -19,6 +20,7 @@ export default class App extends React.Component {
       LoginPage: <LoginPage />,
       ManageResumePage: <ManageResumePage />,
       ProfilePage: <ProfilePage />,
+      MatchesPage: <MatchesPage />,
     };
     this.state = {
       currentPage: <LoginPage />,
@@ -31,8 +33,12 @@ export default class App extends React.Component {
   }
 
   updateProfile = (profile) => {
+    console.log("Update Request: ", profile);
     this.setState({
       userProfile: profile,
+      currentPage: (
+        <ProfilePage profile={profile} updateProfile={this.updateProfile} />
+      ),
     });
   };
 
@@ -43,6 +49,7 @@ export default class App extends React.Component {
         .get("http://localhost:5000/getProfile", {
           headers: {
             userid: userId,
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         })
         .then((res) => {
@@ -55,7 +62,12 @@ export default class App extends React.Component {
   sidebarHandler = (user) => {
     console.log(user);
     this.setState({
-      currentPage: <ProfilePage profile={user} />,
+      currentPage: (
+        <ProfilePage
+          profile={user}
+          updateProfile={this.updateProfile.bind(this)}
+        />
+      ),
       sidebar: true,
       userProfile: user,
     });
@@ -63,6 +75,7 @@ export default class App extends React.Component {
 
   handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("userId");
     this.setState({
       sidebar: false,
     });
@@ -73,7 +86,7 @@ export default class App extends React.Component {
       pageName == "ProfilePage" ? (
         <ProfilePage
           profile={this.state.userProfile}
-          updateProfile={this.updateProfile}
+          updateProfile={this.updateProfile.bind(this)}
         />
       ) : (
         this.state.mapRouter[pageName]
@@ -89,31 +102,24 @@ export default class App extends React.Component {
     if (this.state.sidebar) {
       app = (
         <div className="main-page">
-          <Sidebar switchPage={this.switchPage.bind(this)} />
+          <Sidebar
+            switchPage={this.switchPage.bind(this)}
+            handleLogout={this.handleLogout}
+          />
           <div className="main">
             <div className="content">
               <div className="">
-                <h1 className="text-center" style={{ marginTop: "2%" }}>
-                  My applications
+                <h1
+                  className="text-center"
+                  style={{ marginTop: "2%", fontWeight: "300" }}
+                >
+                  Application Tracking System
                 </h1>
                 {/* <span className="btn-icon ">
                 <button className="btn btn-danger btn-icon"><i className="fas fa-plus"></i>&nbsp;New</button>
               </span> */}
               </div>
               {this.state.currentPage}
-              <button
-                style={{
-                  position: "absolute",
-                  top: "2vh",
-                  left: "90vw",
-                  marginTop: "1%",
-                  color: "white",
-                  backgroundColor: "#2a6e85",
-                }}
-                onClick={this.handleLogout}
-              >
-                Logout
-              </button>
             </div>
           </div>
         </div>
@@ -123,8 +129,15 @@ export default class App extends React.Component {
         <div className="main-page">
           <div className="main">
             <div className="content">
-              <h1 className="text-center" style={{ padding: 0.4 + "em" }}>
-                My applications
+              <h1
+                className="text-center"
+                style={{
+                  marginTop: 30,
+                  padding: 0.4 + "em",
+                  fontWeight: "300",
+                }}
+              >
+                Application Tracking System
               </h1>
               <div className="">
                 {/* <span className="btn-icon ">

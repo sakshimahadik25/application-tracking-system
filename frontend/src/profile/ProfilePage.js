@@ -21,48 +21,8 @@ const ProfilePage = (props) => {
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [jobModeModalOpen, setJobModeModalOpen] = useState(false);
 
-  // const [profile, setProfile] = useState({
-  //   name: "Adam Smith",
-  //   university: "North Carolina State University",
-  //   email: "abc@gmail.com",
-  //   address: "2376 Champion Ct.",
-  //   contact: "111-111-1111",
-  //   skills: [{ value: "C++", label: "C++" }],
-  //   locations: [{ value: "United States", label: "United States" }],
-  //   experience_level: [{ label: "Entry-Level", value: "Entry-Level" }],
-  //   modes: [{ label: "Internship", value: "Internship" }],
-  // });
-
-  const [profile, setProfile] = useState(
-    //   {
-    //   id: localStorage.getItem("userId"),
-    //   fullName: "",
-    //   institution: "",
-    //   email: "",
-    //   address: "",
-    //   phone_number: "",
-    //   skills: [],
-    //   locations: [],
-    //   job_levels: [],
-    // }
-    props.profile
-  );
-
-  // useEffect(() => {
-  //   return async () => {
-  //     await axios
-  //       .get("http://localhost:5000/getProfile", {
-  //         headers: {
-  //           userid: localStorage.getItem("userId"),
-  //           Authorization: `Bearer ${localStorage.getItem("token")}`,
-  //         },
-  //       })
-  //       .then((res) => {
-  //         setProfile(res.data);
-  //       })
-  //       .catch((err) => console.log(err.message));
-  //   };
-  // }, []);
+  // const [profile, setProfile] = useState(props.profile);
+  const profile = props.profile;
 
   return (
     <div className="container" style={{ marginLeft: "8%", marginTop: "4%" }}>
@@ -93,13 +53,12 @@ const ProfilePage = (props) => {
                   boxShadow: "0px 5px 12px 10px rgba(0,0,0,0.1)",
                 }}
               >
-                <span
-                  style={{ fontSize: 60, letterSpacing: 1.2 }}
-                >{`${profile.fullName
-                  ?.split(" ")[0]
-                  ?.substring(0, 1)}${profile.fullName
-                  ?.split(" ")[1]
-                  ?.substring(0, 1)}`}</span>
+                <span style={{ fontSize: 60, letterSpacing: 1.2 }}>
+                  {profile.fullName && profile.fullName.length > 0
+                    ? profile.fullName?.split(" ")[0]?.substring(0, 1) +
+                      profile.fullName?.split(" ")[1]?.substring(0, 1)
+                    : ""}
+                </span>
               </div>
             </div>
             <div className="text-center mt-3">
@@ -296,8 +255,8 @@ const ProfilePage = (props) => {
         <LocationModal
           name={CONSTANTS.PROFILE.PREFERRED_LOCATIONS}
           options={CONSTANTS.COUNTRIES}
-          profile={profile}
-          setProfile={setProfile}
+          profile={props.profile}
+          // setProfile={setProfile}
           setModalOpen={setLocationModalOpen}
           updateProfile={props.updateProfile}
         />
@@ -306,8 +265,8 @@ const ProfilePage = (props) => {
         <SkillsModal
           name={CONSTANTS.PROFILE.SKILLS}
           options={CONSTANTS.SKILLS}
-          profile={profile}
-          setProfile={setProfile}
+          profile={props.profile}
+          // setProfile={setProfile}
           setModalOpen={setSkillsModalOpen}
           updateProfile={props.updateProfile}
         />
@@ -316,8 +275,8 @@ const ProfilePage = (props) => {
         <ExperienceLevelModal
           name={CONSTANTS.PROFILE.EXPERIENCE_LEVEL}
           options={CONSTANTS.EXPERIENCE_LEVEL}
-          profile={profile}
-          setProfile={setProfile}
+          profile={props.profile}
+          // setProfile={setProfile}
           setModalOpen={setExpLevelModalOpen}
           updateProfile={props.updateProfile}
         />
@@ -326,16 +285,16 @@ const ProfilePage = (props) => {
         <JobModeModal
           name={CONSTANTS.PROFILE.JOB_MODE}
           options={CONSTANTS.JOB_MODES}
-          profile={profile}
-          setProfile={setProfile}
+          profile={props.profile}
+          // setProfile={setProfile}
           setModalOpen={setJobModeModalOpen}
           updateProfile={props.updateProfile}
         />
       )}
       {profileModalOpen && (
         <ProfileModal
-          profile={profile}
-          setProfile={setProfile}
+          profile={props.profile}
+          // setProfile={setProfile}
           setModalOpen={setProfileModalOpen}
           updateProfile={props.updateProfile}
         />

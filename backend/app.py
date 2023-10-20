@@ -214,7 +214,7 @@ def create_app():
             [{"token": token_whole, "expiry": expiry_str}]
         userSaved.update(authTokens=auth_tokens_new)
 
-        return redirect(f"http://localhost:3000/?token={token_whole}&expiry={expiry_str}")
+        return redirect(f"http://localhost:3000/?token={token_whole}&expiry={expiry_str}&userId={unique_id}")
 
     @app.route("/users/signup", methods=["POST"])
     def sign_up():
@@ -277,6 +277,8 @@ def create_app():
             profileInformation["institution"] = user["institution"]
             profileInformation["phone_number"] = user["phone_number"]
             profileInformation["address"] = user["address"]
+            profileInformation["email"] = user["email"]
+            profileInformation["fullName"] = user["fullName"]
 
             return jsonify(profileInformation)
         except:
@@ -292,7 +294,7 @@ def create_app():
             userid = get_userid_from_header()
             user = Users.objects(id=userid).first()
             data = json.loads(request.data)
-            print(user.fullName)
+            print(user)
 
             for key in data.keys():
                 user[key] = data[key]
@@ -330,9 +332,10 @@ def create_app():
         try:
             userid = get_userid_from_header()
             user = Users.objects(id=userid).first()
-            skill_sets = user["skills"]
-            job_levels_sets = user["job_levels"]
-            locations_set = user["locations"]
+            print(user["skills"])
+            skill_sets = [x["value"] for x in user["skills"]]
+            job_levels_sets = [x["value"] for x in user["job_levels"]]
+            locations_set = [x["value"] for x in user["locations"]]
             recommendedJobs = []
             headers = {"User-Agent":
                        #    "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_5_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
@@ -412,7 +415,7 @@ def create_app():
                 "phone_number": user.phone_number,
                 "address": user.address,
                 "locations": user.locations,
-                "job_levels": user.job_levels,
+                "jobLevels": user.job_levels,
                 "email": user.email
             }
             return jsonify({"profile": profileInfo, "token": token, "expiry": expiry_str})

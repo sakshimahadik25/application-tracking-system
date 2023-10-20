@@ -5,7 +5,7 @@ import ModalHeader from "react-bootstrap/esm/ModalHeader";
 import { CONSTANTS } from "../data/Constants";
 
 const CustomProfileModal = (props) => {
-  const { profile, setProfile, setModalOpen } = props;
+  const { profile, setProfile, setModalOpen, updateProfile } = props;
   const [data, setData] = useState(profile);
   const [error, setError] = useState(false);
 
@@ -27,7 +27,8 @@ const CustomProfileModal = (props) => {
           }
         )
         .then((res) => {
-          setProfile({ ...profile, ...data });
+          // setProfile({ ...profile, ...data });
+          updateProfile({ ...profile, ...data });
           console.log(data);
           setModalOpen(false);
         })

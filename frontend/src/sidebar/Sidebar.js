@@ -31,6 +31,10 @@ export default class Sidebar extends Component {
             <i class="fas fa-user-alt left-nav-icon"></i>
             <span class="left-nav-label">Profile</span>
           </div>
+          <div onClick={() => this.props.handleLogout()}>
+            <i class="fas fa-sign-out-alt left-nav-icon"></i>
+            <span class="left-nav-label">LogOut</span>
+          </div>
         </div>
       </div>
     )

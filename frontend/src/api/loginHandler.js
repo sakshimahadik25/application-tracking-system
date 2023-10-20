@@ -20,5 +20,5 @@ export const signUp = (params) => {
 export const storeToken = (obj) => {
   localStorage.setItem("token", obj.token);
   localStorage.setItem("expiry", obj.expiry);
-  localStorage.setItem("userId", obj.profile.id);
+  localStorage.setItem("userId", obj.userId);
 };

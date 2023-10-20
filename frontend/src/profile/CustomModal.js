@@ -10,6 +10,7 @@ const CustomModal = (props) => {
   const [data, setData] = useState(profile[name]);
 
   const handleSave = () => {
+    console.log({ [name]: data });
     axios
       .post(
         "http://localhost:5000/updateProfile",
@@ -18,13 +19,13 @@ const CustomModal = (props) => {
         },
         {
           headers: {
-            userid: profile.id,
+            userid: localStorage.getItem("userId"),
             Authorization: `Bearer ${localStorage.getItem("userId")}`,
           },
         }
       )
       .then((res) => {
-        setProfile({ ...profile, [name]: data });
+        // setProfile({ ...profile, [name]: data });
         updateProfile({ ...profile, [name]: data });
         setModalOpen(false);
       })
