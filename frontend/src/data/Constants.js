@@ -1,9 +1,9 @@
 const PROFILE = {
-  NAME: "name",
+  NAME: "fullName",
   EMAIL: "email",
-  UNIVERSITY: "university",
+  UNIVERSITY: "institution",
   ADDRESS: "address",
-  CONTACT: "contact",
+  CONTACT: "phone_number",
   PREFERRED_LOCATIONS: "locations",
   SKILLS: "skills",
   EXPERIENCE_LEVEL: "job_levels",

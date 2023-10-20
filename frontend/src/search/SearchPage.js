@@ -232,7 +232,9 @@ export default class SearchPage extends Component {
             style={{
               boxShadow: "0px 5px 12px 0px rgba(0,0,0,0.1)",
               marginTop: 30,
-              marginLeft: '10%'
+              marginLeft: "10%",
+              width: "95%",
+              paddingRight: 10,
             }}
           >
             <thead>
@@ -268,6 +270,18 @@ export default class SearchPage extends Component {
                           </td>
                         );
                       } else {
+                        <button
+                          type="button"
+                          className="add-btn px-3 py-2"
+                          // onClick={this.showEditModal.bind(this, row)}
+                          onClick={this.handleShowJobDesc.bind(this, row)}
+                          // style={{
+                          //   backgroundColor: "#296E85",
+                          //   border: "none",
+                          // }}
+                        >
+                          Details
+                        </button>;
                         const addButton = this.state.addedList.includes(
                           row.id
                         ) ? (
@@ -289,8 +303,7 @@ export default class SearchPage extends Component {
                             //   border: "none",
                             // }}
                           >
-                            {" "}
-                            Add{" "}
+                            Details
                           </button>
                         );
                         return (
@@ -298,7 +311,7 @@ export default class SearchPage extends Component {
                             {/* <div className="container"> */}
                             <div className="d-flex justify-content-evenly">
                               {addButton}
-                              <button
+                              {/* <button
                                 type="button"
                                 // style={{
                                 //   backgroundColor: "#e54b4b",
@@ -317,7 +330,7 @@ export default class SearchPage extends Component {
                               >
                                 {" "}
                                 Delete{" "}
-                              </button>
+                              </button> */}
                             </div>
                             {/* <div className="row">
                                 <div className="col-md-4">{addButton}</div>
