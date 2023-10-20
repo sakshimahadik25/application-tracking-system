@@ -7,6 +7,8 @@ import SearchPage from "./search/SearchPage";
 import LoginPage from "./login/LoginPage";
 import ManageResumePage from "./resume/ManageResumePage";
 import ProfilePage from "./profile/ProfilePage";
+import axios from "axios";
+import fetch from "./api/handler";
 
 export default class App extends React.Component {
   constructor(props) {
@@ -22,20 +24,40 @@ export default class App extends React.Component {
       currentPage: <LoginPage />,
       mapRouter: mapRouter,
       sidebar: false,
+      userProfile: null,
     };
     this.sidebarHandler = this.sidebarHandler.bind(this);
+    this.updateProfile = this.updateProfile.bind(this);
   }
 
-  componentDidMount() {
+  updateProfile = (profile) => {
+    this.setState({
+      userProfile: profile,
+    });
+  };
+
+  async componentDidMount() {
     if (localStorage.getItem("token")) {
-      this.sidebarHandler();
+      const userId = localStorage.getItem("userId");
+      await axios
+        .get("http://localhost:5000/getProfile", {
+          headers: {
+            userid: userId,
+          },
+        })
+        .then((res) => {
+          this.sidebarHandler(res.data);
+        })
+        .catch((err) => console.log(err.message));
     }
   }
 
-  sidebarHandler = () => {
+  sidebarHandler = (user) => {
+    console.log(user);
     this.setState({
-      currentPage: this.state.mapRouter["ProfilePage"],
+      currentPage: <ProfilePage profile={user} />,
       sidebar: true,
+      userProfile: user,
     });
   };
 
@@ -47,8 +69,17 @@ export default class App extends React.Component {
   };
 
   switchPage(pageName) {
+    const currentPage =
+      pageName == "ProfilePage" ? (
+        <ProfilePage
+          profile={this.state.userProfile}
+          updateProfile={this.updateProfile}
+        />
+      ) : (
+        this.state.mapRouter[pageName]
+      );
     this.setState({
-      currentPage: this.state.mapRouter[pageName],
+      currentPage: currentPage,
     });
   }
 
@@ -62,14 +93,23 @@ export default class App extends React.Component {
           <div className="main">
             <div className="content">
               <div className="">
-                <h1 className="text-center" style={{marginTop: "2%"}}>My applications</h1>
+                <h1 className="text-center" style={{ marginTop: "2%" }}>
+                  My applications
+                </h1>
                 {/* <span className="btn-icon ">
                 <button className="btn btn-danger btn-icon"><i className="fas fa-plus"></i>&nbsp;New</button>
               </span> */}
               </div>
               {this.state.currentPage}
               <button
-                style={{ position: "absolute", top: "2vh", left: "90vw", marginTop: "1%", color: "white", backgroundColor: "#2a6e85" }}
+                style={{
+                  position: "absolute",
+                  top: "2vh",
+                  left: "90vw",
+                  marginTop: "1%",
+                  color: "white",
+                  backgroundColor: "#2a6e85",
+                }}
                 onClick={this.handleLogout}
               >
                 Logout
@@ -90,12 +130,12 @@ export default class App extends React.Component {
                 {/* <span className="btn-icon ">
               <button className="btn btn-danger btn-icon"><i className="fas fa-plus"></i>&nbsp;New</button>
             </span> */}
+              </div>
+              <LoginPage side={this.sidebarHandler} />
+            </div>
           </div>
-            <LoginPage side={this.sidebarHandler} />
         </div>
-      </div>
-    </div>
-    );
+      );
     }
     return app;
   }

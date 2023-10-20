@@ -2,13 +2,36 @@ import React, { useState } from "react";
 import Select from "react-select";
 import { Modal, ModalBody, ModalDialog, ModalFooter } from "react-bootstrap";
 import ModalHeader from "react-bootstrap/esm/ModalHeader";
+import axios from "axios";
 
 const CustomModal = (props) => {
-  const { options, name, profile, setProfile, setModalOpen } = props;
+  const { options, name, profile, setProfile, setModalOpen, updateProfile } =
+    props;
   const [data, setData] = useState(profile[name]);
+
   const handleSave = () => {
-    setProfile({ ...profile, [name]: data });
-    setModalOpen(false);
+    axios
+      .post(
+        "http://localhost:5000/updateProfile",
+        {
+          [name]: data,
+        },
+        {
+          headers: {
+            userid: profile.id,
+            Authorization: `Bearer ${localStorage.getItem("userId")}`,
+          },
+        }
+      )
+      .then((res) => {
+        setProfile({ ...profile, [name]: data });
+        updateProfile({ ...profile, [name]: data });
+        setModalOpen(false);
+      })
+      .catch((err) => {
+        console.log(err.message);
+        setModalOpen(false);
+      });
   };
   return (
     <Modal show={true} centered size="lg">
