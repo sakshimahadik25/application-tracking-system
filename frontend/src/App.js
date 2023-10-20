@@ -7,6 +7,7 @@ import SearchPage from "./search/SearchPage";
 import LoginPage from "./login/LoginPage";
 import ManageResumePage from "./resume/ManageResumePage";
 import ProfilePage from "./profile/ProfilePage";
+import MatchesPage from "./matches/MatchesPage";
 
 export default class App extends React.Component {
   constructor(props) {
@@ -17,6 +18,7 @@ export default class App extends React.Component {
       LoginPage: <LoginPage />,
       ManageResumePage: <ManageResumePage />,
       ProfilePage: <ProfilePage />,
+      MatchesPage: <MatchesPage />
     };
     this.state = {
       currentPage: <LoginPage />,

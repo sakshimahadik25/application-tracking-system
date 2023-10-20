@@ -213,7 +213,7 @@ def create_app():
 
     @app.route("/users/signup", methods=["POST"])
     def sign_up():
-        print("Inside signup")
+        # print("Inside signup")
         """
         Creates a new user profile and adds the user to the database and returns the message
 
@@ -222,7 +222,7 @@ def create_app():
         try:
             # print(request.data)
             data = json.loads(request.data)
-            print(data)
+            # print(data)
             try:
                 _ = data["username"]
                 _ = data["password"]
@@ -277,11 +277,11 @@ def create_app():
         Update the user profile with preferences: skills, job-level and location
         """
         try:
-            print(request.data)
+            # print(request.data)
             userid = get_userid_from_header()
             user = Users.objects(id=userid).first()
             data = json.loads(request.data)
-            print(user.fullName)
+            # print(user.fullName)
             
             if data["skills"]:
                 user.skills = data["skills"]
@@ -324,13 +324,13 @@ def create_app():
                    #    "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_5_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
                    user_agent.random,
                    "Referrer": "https://www.google.com/"
-                   }
+            }
             if len(skill_sets)>0 or len(job_levels_sets)>0 or len(locations_set)>0:
                 random_skill = random.choice(skill_sets)
                 random_job_level = random.choice(job_levels_sets)
                 random_location = random.choice(locations_set)
                 query = "https://www.google.com/search?q=" + random_skill + random_job_level + random_location + "&ibp=htl;jobs" 
-                print(query)            
+                # print(query)            
 
                 # inner_div = mydivs[0].find("div", class_="KGjGe")
                 # if inner_div:
@@ -348,13 +348,13 @@ def create_app():
                 job={}
                 inner_div = div.find("div", class_="KGjGe")
                 if inner_div:
-                    job["data-share-url"] = inner_div.get("data-share-url")
+                    job["data_share_url"] = inner_div.get("data-share-url")
                 job["jobTitle"] = div.find("div", {"class": "BjJfJf PUpOsf"}).text
-                print(job["jobTitle"])
+                # print(job["jobTitle"])
                 job["companyName"] = div.find("div", {"class": "vNEEBe"}).text
                 job["location"] = div.find("div", {"class": "Qk80Jf"}).text
                 recommendedJobs.append(job)
-            print(recommendedJobs)
+            # print(recommendedJobs)
             return jsonify(recommendedJobs)
         
         except Exception as err:
