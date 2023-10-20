@@ -7,6 +7,8 @@ import SearchPage from "./search/SearchPage";
 import LoginPage from "./login/LoginPage";
 import ManageResumePage from "./resume/ManageResumePage";
 import ProfilePage from "./profile/ProfilePage";
+import axios from "axios";
+import fetch from "./api/handler";
 import MatchesPage from "./matches/MatchesPage";
 
 export default class App extends React.Component {
@@ -18,39 +20,79 @@ export default class App extends React.Component {
       LoginPage: <LoginPage />,
       ManageResumePage: <ManageResumePage />,
       ProfilePage: <ProfilePage />,
-      MatchesPage: <MatchesPage />
+      MatchesPage: <MatchesPage />,
     };
     this.state = {
       currentPage: <LoginPage />,
       mapRouter: mapRouter,
       sidebar: false,
+      userProfile: null,
     };
     this.sidebarHandler = this.sidebarHandler.bind(this);
+    this.updateProfile = this.updateProfile.bind(this);
   }
 
-  componentDidMount() {
+  updateProfile = (profile) => {
+    console.log("Update Request: ", profile);
+    this.setState({
+      userProfile: profile,
+      currentPage: (
+        <ProfilePage profile={profile} updateProfile={this.updateProfile} />
+      ),
+    });
+  };
+
+  async componentDidMount() {
     if (localStorage.getItem("token")) {
-      this.sidebarHandler();
+      const userId = localStorage.getItem("userId");
+      await axios
+        .get("http://localhost:5000/getProfile", {
+          headers: {
+            userid: userId,
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        })
+        .then((res) => {
+          this.sidebarHandler(res.data);
+        })
+        .catch((err) => console.log(err.message));
     }
   }
 
-  sidebarHandler = () => {
+  sidebarHandler = (user) => {
+    console.log(user);
     this.setState({
-      currentPage: this.state.mapRouter["ProfilePage"],
+      currentPage: (
+        <ProfilePage
+          profile={user}
+          updateProfile={this.updateProfile.bind(this)}
+        />
+      ),
       sidebar: true,
+      userProfile: user,
     });
   };
 
   handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("userId");
     this.setState({
       sidebar: false,
     });
   };
 
   switchPage(pageName) {
+    const currentPage =
+      pageName == "ProfilePage" ? (
+        <ProfilePage
+          profile={this.state.userProfile}
+          updateProfile={this.updateProfile.bind(this)}
+        />
+      ) : (
+        this.state.mapRouter[pageName]
+      );
     this.setState({
-      currentPage: this.state.mapRouter[pageName],
+      currentPage: currentPage,
     });
   }
 
@@ -60,11 +102,19 @@ export default class App extends React.Component {
     if (this.state.sidebar) {
       app = (
         <div className="main-page">
-          <Sidebar switchPage={this.switchPage.bind(this)} handleLogout={this.handleLogout} />
+          <Sidebar
+            switchPage={this.switchPage.bind(this)}
+            handleLogout={this.handleLogout}
+          />
           <div className="main">
             <div className="content">
               <div className="">
-                <h1 className="text-center" style={{marginTop: "2%"}}>My applications</h1>
+                <h1
+                  className="text-center"
+                  style={{ marginTop: "2%", fontWeight: "300" }}
+                >
+                  Application Tracking System
+                </h1>
                 {/* <span className="btn-icon ">
                 <button className="btn btn-danger btn-icon"><i className="fas fa-plus"></i>&nbsp;New</button>
               </span> */}
@@ -79,19 +129,26 @@ export default class App extends React.Component {
         <div className="main-page">
           <div className="main">
             <div className="content">
-              <h1 className="text-center" style={{ padding: 0.4 + "em" }}>
-                My applications
+              <h1
+                className="text-center"
+                style={{
+                  marginTop: 30,
+                  padding: 0.4 + "em",
+                  fontWeight: "300",
+                }}
+              >
+                Application Tracking System
               </h1>
               <div className="">
                 {/* <span className="btn-icon ">
               <button className="btn btn-danger btn-icon"><i className="fas fa-plus"></i>&nbsp;New</button>
             </span> */}
+              </div>
+              <LoginPage side={this.sidebarHandler} />
+            </div>
           </div>
-            <LoginPage side={this.sidebarHandler} />
         </div>
-      </div>
-    </div>
-    );
+      );
     }
     return app;
   }

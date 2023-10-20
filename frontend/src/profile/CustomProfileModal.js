@@ -1,19 +1,41 @@
+import axios from "axios";
 import React, { useState } from "react";
 import { Modal, ModalBody, ModalFooter, Form } from "react-bootstrap";
 import ModalHeader from "react-bootstrap/esm/ModalHeader";
+import { CONSTANTS } from "../data/Constants";
 
 const CustomProfileModal = (props) => {
-  const { profile, setProfile, setModalOpen } = props;
+  const { profile, setProfile, setModalOpen, updateProfile } = props;
   const [data, setData] = useState(profile);
   const [error, setError] = useState(false);
 
   const handleSave = () => {
-    if (data.name == "") {
+    if (data[CONSTANTS.PROFILE.NAME] == "") {
       setError(true);
     } else {
-      setProfile({ ...profile, ...data });
-      console.log(data);
-      setModalOpen(false);
+      axios
+        .post(
+          "http://localhost:5000/updateProfile",
+          {
+            ...data,
+          },
+          {
+            headers: {
+              userid: profile.id,
+              Authorization: `Bearer ${localStorage.getItem("userId")}`,
+            },
+          }
+        )
+        .then((res) => {
+          // setProfile({ ...profile, ...data });
+          updateProfile({ ...profile, ...data });
+          console.log(data);
+          setModalOpen(false);
+        })
+        .catch((err) => {
+          console.log(err.message);
+          setModalOpen(false);
+        });
     }
   };
 
@@ -37,8 +59,10 @@ const CustomProfileModal = (props) => {
             <Form.Control
               type="text"
               placeholder="Enter name"
-              value={data.name}
-              onChange={(e) => setData({ ...data, name: e.target.value })}
+              value={data[CONSTANTS.PROFILE.NAME]}
+              onChange={(e) =>
+                setData({ ...data, [CONSTANTS.PROFILE.NAME]: e.target.value })
+              }
             />
             {error && (
               <span style={{ color: "red", fontSize: 12 }}>
@@ -51,8 +75,13 @@ const CustomProfileModal = (props) => {
             <Form.Control
               type="text"
               placeholder="Enter university"
-              value={data.university}
-              onChange={(e) => setData({ ...data, university: e.target.value })}
+              value={data[CONSTANTS.PROFILE.UNIVERSITY]}
+              onChange={(e) =>
+                setData({
+                  ...data,
+                  [CONSTANTS.PROFILE.UNIVERSITY]: e.target.value,
+                })
+              }
             />
           </Form.Group>
           <Form.Group className="my-3">
@@ -60,8 +89,10 @@ const CustomProfileModal = (props) => {
             <Form.Control
               type="email"
               placeholder="Enter email"
-              value={data.email}
-              onChange={(e) => setData({ ...data, email: e.target.value })}
+              value={data[CONSTANTS.PROFILE.EMAIL]}
+              onChange={(e) =>
+                setData({ ...data, [CONSTANTS.PROFILE.EMAIL]: e.target.value })
+              }
             />
           </Form.Group>
           <Form.Group className="my-3">
@@ -69,8 +100,13 @@ const CustomProfileModal = (props) => {
             <Form.Control
               type="text"
               placeholder="Enter address"
-              value={data.address}
-              onChange={(e) => setData({ ...data, address: e.target.value })}
+              value={data[CONSTANTS.PROFILE.ADDRESS]}
+              onChange={(e) =>
+                setData({
+                  ...data,
+                  [CONSTANTS.PROFILE.ADDRESS]: e.target.value,
+                })
+              }
             />
           </Form.Group>
           <Form.Group className="my-3">
@@ -78,8 +114,13 @@ const CustomProfileModal = (props) => {
             <Form.Control
               type="text"
               placeholder="Enter contact"
-              value={data.contact}
-              onChange={(e) => setData({ ...data, contact: e.target.value })}
+              value={data[CONSTANTS.PROFILE.CONTACT]}
+              onChange={(e) =>
+                setData({
+                  ...data,
+                  [CONSTANTS.PROFILE.CONTACT]: e.target.value,
+                })
+              }
             />
           </Form.Group>
         </Form>

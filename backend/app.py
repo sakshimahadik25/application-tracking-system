@@ -194,7 +194,12 @@ def create_app():
                     fullName=full_name,
                     email=users_email,
                     authTokens=[],
-                    applications=[]
+                    applications=[],
+                    skills=[],
+                    job_levels=[],
+                    locations=[],
+                    phone_number="",
+                    address=""
                 )
                 userSave.save()
                 unique_id = userSave['id']
@@ -209,11 +214,10 @@ def create_app():
             [{"token": token_whole, "expiry": expiry_str}]
         userSaved.update(authTokens=auth_tokens_new)
 
-        return redirect(f"http://localhost:3000/?token={token_whole}&expiry={expiry_str}")
+        return redirect(f"http://localhost:3000/?token={token_whole}&expiry={expiry_str}&userId={unique_id}")
 
     @app.route("/users/signup", methods=["POST"])
     def sign_up():
-        # print("Inside signup")
         """
         Creates a new user profile and adds the user to the database and returns the message
 
@@ -222,7 +226,7 @@ def create_app():
         try:
             # print(request.data)
             data = json.loads(request.data)
-            # print(data)
+            print(data)
             try:
                 _ = data["username"]
                 _ = data["password"]
@@ -231,7 +235,6 @@ def create_app():
                 return jsonify({"error": "Missing fields in input"}), 400
 
             username_exists = Users.objects(username=data["username"])
-
             if len(username_exists) != 0:
                 return jsonify({"error": "Username already exists"}), 400
             password = data["password"]
@@ -243,8 +246,16 @@ def create_app():
                 password=password_hash.hexdigest(),
                 authTokens=[],
                 applications=[],
+                skills=[],
+                job_levels=[],
+                locations=[],
+                phone_number="",
+                address="",
+                institution="",
+                email=""
             )
             user.save()
+            # del user.to_json()["password", "authTokens"]
             return jsonify(user.to_json()), 200
         except:
             return jsonify({"error": "Internal server error"}), 500
@@ -266,6 +277,8 @@ def create_app():
             profileInformation["institution"] = user["institution"]
             profileInformation["phone_number"] = user["phone_number"]
             profileInformation["address"] = user["address"]
+            profileInformation["email"] = user["email"]
+            profileInformation["fullName"] = user["fullName"]
 
             return jsonify(profileInformation)
         except:
@@ -277,29 +290,32 @@ def create_app():
         Update the user profile with preferences: skills, job-level and location
         """
         try:
-            # print(request.data)
+            print(request.data)
             userid = get_userid_from_header()
             user = Users.objects(id=userid).first()
             data = json.loads(request.data)
-            # print(user.fullName)
-            
-            if data["skills"]:
-                user.skills = data["skills"]
+            print(user)
 
-            if data["job_levels"]:
-                user.job_levels = data["job_levels"]
+            for key in data.keys():
+                user[key] = data[key]
 
-            if data["locations"]:
-                user.locations = data["locations"]
+            # if data["skills"]:
+            #     user.skills = data["skills"]
 
-            if data["institution"]:
-                user.institution = data["institution"]
+            # if data["job_levels"]:
+            #     user.job_levels = data["job_levels"]
 
-            if data["phone_number"]:
-                user.phone_number = data["phone_number"]
+            # if data["locations"]:
+            #     user.locations = data["locations"]
 
-            if data["address"]:
-                user.address = data["address"]
+            # if data["institution"]:
+            #     user.institution = data["institution"]
+
+            # if data["phone_number"]:
+            #     user.phone_number = data["phone_number"]
+
+            # if data["address"]:
+            #     user.address = data["address"]
 
             user.save()
             return jsonify(user.to_json()), 200
@@ -316,47 +332,50 @@ def create_app():
         try:
             userid = get_userid_from_header()
             user = Users.objects(id=userid).first()
-            skill_sets = user["skills"]
-            job_levels_sets = user["job_levels"]
-            locations_set = user["locations"]
+            print(user["skills"])
+            skill_sets = [x["value"] for x in user["skills"]]
+            job_levels_sets = [x["value"] for x in user["job_levels"]]
+            locations_set = [x["value"] for x in user["locations"]]
             recommendedJobs = []
             headers = {"User-Agent":
-                   #    "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_5_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
-                   user_agent.random,
-                   "Referrer": "https://www.google.com/"
-            }
-            if len(skill_sets)>0 or len(job_levels_sets)>0 or len(locations_set)>0:
+                       #    "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_5_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
+                       user_agent.random,
+                       "Referrer": "https://www.google.com/"
+                       }
+            if len(skill_sets) > 0 or len(job_levels_sets) > 0 or len(locations_set) > 0:
                 random_skill = random.choice(skill_sets)
                 random_job_level = random.choice(job_levels_sets)
                 random_location = random.choice(locations_set)
-                query = "https://www.google.com/search?q=" + random_skill + random_job_level + random_location + "&ibp=htl;jobs" 
-                # print(query)            
+                query = "https://www.google.com/search?q=" + random_skill + \
+                    random_job_level + random_location + "&ibp=htl;jobs"
+                print(query)
 
                 # inner_div = mydivs[0].find("div", class_="KGjGe")
                 # if inner_div:
                 #     data_share_url = inner_div.get("data-share-url")
                 #     print(data_share_url)
-          
+
             else:
                 query = "https://www.google.com/search?q=" + "sde usa" + "&ibp=htl;jobs"
-                
+
             page = requests.get(query, headers=headers)
             soup = BeautifulSoup(page.text, "html.parser")
-            #KGjGe - div class to get url
+            # KGjGe - div class to get url
             mydivs = soup.find_all("div", class_="PwjeAc")
             for div in mydivs:
-                job={}
+                job = {}
                 inner_div = div.find("div", class_="KGjGe")
                 if inner_div:
-                    job["data_share_url"] = inner_div.get("data-share-url")
-                job["jobTitle"] = div.find("div", {"class": "BjJfJf PUpOsf"}).text
-                # print(job["jobTitle"])
+                    job["data-share-url"] = inner_div.get("data-share-url")
+                job["jobTitle"] = div.find(
+                    "div", {"class": "BjJfJf PUpOsf"}).text
+                print(job["jobTitle"])
                 job["companyName"] = div.find("div", {"class": "vNEEBe"}).text
                 job["location"] = div.find("div", {"class": "Qk80Jf"}).text
                 recommendedJobs.append(job)
-            # print(recommendedJobs)
+            print(recommendedJobs)
             return jsonify(recommendedJobs)
-        
+
         except Exception as err:
             print(err)
             return jsonify({"error": "Internal server error"}), 500
@@ -389,9 +408,17 @@ def create_app():
             ]
             user.update(authTokens=auth_tokens_new)
             profileInfo = {
-                "fullName": user.fullName
+                "id": user.id,
+                "fullName": user.fullName,
+                "institution": user.institution,
+                "skills": user.skills,
+                "phone_number": user.phone_number,
+                "address": user.address,
+                "locations": user.locations,
+                "jobLevels": user.job_levels,
+                "email": user.email
             }
-            return jsonify({"profile":profileInfo, "token": token, "expiry": expiry_str})
+            return jsonify({"profile": profileInfo, "token": token, "expiry": expiry_str})
         except:
             return jsonify({"error": "Internal server error"}), 500
 

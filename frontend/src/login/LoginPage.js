@@ -20,8 +20,8 @@ export default class LoginPage extends Component {
       .then((res) => {
         console.log(res);
         if (res["error"]) throw new Error("Wrong username or password");
-        storeToken(res);
-        this.props.side();
+        storeToken({ ...res, userId: res.profile.id });
+        this.props.side(res.profile);
       })
       .catch((error) => {
         console.log(error);
@@ -55,9 +55,11 @@ export default class LoginPage extends Component {
       const query = new URLSearchParams(window.location.search);
       const token = query.get("token");
       const expiry = query.get("expiry");
+      const userId = query.get("userId");
       let obj = {
         token: token,
         expiry: expiry,
+        userId: userId,
       };
       if (token) {
         storeToken(obj);
