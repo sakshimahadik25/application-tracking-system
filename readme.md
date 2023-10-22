@@ -72,20 +72,20 @@ The interface through which a user is able to search for specific jobs and apply
 3. Click on Apply button which will redirect to the Job Apply link.
 
 <p align="center"><img width="700" src="./resources/search_roles_companywise.png"></p> 
-<p align="center"><img width="700" src="./resources/FindJobs.PNG"></p>
-<p align="center"><img width="700" src="./resources/Job_Description.PNG"></p>
+<p align="center"><img width="700" src="./resources/FindJobs.png"></p>
+<p align="center"><img width="700" src="./resources/Job_Description.png"></p>
 
 ### ApplicationPage
 
 The user is able to access different saved applications - Waitlisted applications, Waiting for Refereals, Applied Jobs, Application Status. The user can also add more jobs to track through this screen.
 
-<p align="center"><img width="700" src="./resources/AddApplicationpage.PNG"></p>
+<p align="center"><img width="700" src="./resources/AddApplicationpage.png"></p>
 
 ### MatchesPage
 
 On this page, user can see different jobs that would be recommended to them based on their profile and their preferences. User can apply for that position from this page too.
 
-<p align="center"><img width="700" src="./resources/Recommendjobspage.PNG"></p>
+<p align="center"><img width="700" src="./resources/Recommendjobspage.png"></p>
 
 ### Whats New
 
@@ -99,7 +99,7 @@ On this page, user can see different jobs that would be recommended to them base
 
 ## Roadmap:
 
-<p align="center"><img width="700" src="./resources/Roadmapx.PNG"></p>
+<p align="center"><img width="700" src="./resources/Roadmapx.png"></p>
 
 ## Future Scope:
 
