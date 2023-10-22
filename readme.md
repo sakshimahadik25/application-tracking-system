@@ -97,10 +97,6 @@ On this page, user can see different jobs that would be recommended to them base
 - Added Apply button and Job details on the Search page
 - Modfied and revamped the UI
 
-## Roadmap:
-
-<p align="center"><img width="700" src="./resources/Roadmapx.png"></p>
-
 ## Future Scope:
 
 - Include deadline reminders for the application and interview.
