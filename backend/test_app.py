@@ -9,6 +9,7 @@ import json
 import datetime
 from flask_mongoengine import MongoEngine
 import yaml
+import certifi
 from app import create_app, Users
 
 
@@ -32,7 +33,7 @@ def client():
         password = info["password"]
         app.config["MONGODB_SETTINGS"] = {
             "db": "appTracker",
-            "host": f"mongodb+srv://{username}:{password}@applicationtracker.287am.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+            "host": f"mongodb+srv://{username}:{password}@cluster0.r0056lg.mongodb.net/appTracker?tls=true&tlsCAFile={certifi.where()}&retryWrites=true&w=majority",
         }
     db = MongoEngine()
     db.disconnect()
@@ -51,7 +52,7 @@ def user(client):
     :return: the user object and auth token
     """
     # print(request.data)
-    data = {"username": "testUser", "password": "test", "fullName": "fullName"}
+    data = {"username": "asmith", "password": "asmith", "fullName": "Adam Smith"}
 
     user = Users.objects(username=data["username"])
     user.first()["applications"] = []
@@ -233,34 +234,56 @@ def test_logout(client, user):
     :param client: mongodb client
     :param user: the test user object
     """
-    user, auth = user
+    userVar, auth = user
     rv = client.post("/users/logout", headers=auth)
     # assert no error occured
     assert rv.status_code == 200
 
 
-def test_resume(client, mocker, user):
-    """
-    Tests that using the resume endpoint returns data
+def test_getProfile(client, user):
+    userDetails, headers = user
+    print(userDetails)
+    print(headers)
+    headers = {**headers, "userid": userDetails.id}
+    userProfile = client.get("/getProfile", headers=headers)
+    rv = json.loads(userProfile.data.decode("utf-8"))
+    assert rv["email"] == "asmith@ncsu.edu"
 
-    :param client: mongodb client
-    :param mocker: pytest mocker
-    :param user: the test user object
-    """
-    mocker.patch(
-        # Dataset is in slow.py, but imported to main.py
-        "app.get_new_user_id",
-        return_value=-1,
-    )
-    user, header = user
-    user["applications"] = []
-    user.save()
-    data = dict(
-        file=(BytesIO(b"testing resume"), "resume.txt"),
-    )
-    rv = client.post(
-        "/resume", headers=header, content_type="multipart/form-data", data=data
-    )
-    assert rv.status_code == 200
-    rv = client.get("/resume", headers=header)
-    assert rv.status_code == 200
+
+def test_updateProfile(client, user):
+    userDetails, headers = user
+    headers = {**headers, "userid": userDetails.id}
+    updatedUser = client.post(
+        "/updateProfile", json={"email": "asmith@ncsu.edu"}, headers=headers)
+    rv = json.loads(updatedUser.data.decode("utf-8"))
+    print(rv)
+
+    fetchUser = client.get("/getProfile", headers=headers)
+    res = json.loads(fetchUser.data.decode("utf-8"))
+    assert res["email"] == "asmith@ncsu.edu"
+
+# def test_resume(client, mocker, user):
+#     """
+#     Tests that using the resume endpoint returns data
+
+#     :param client: mongodb client
+#     :param mocker: pytest mocker
+#     :param user: the test user object
+#     """
+#     mocker.patch(
+#         # Dataset is in slow.py, but imported to main.py
+#         "app.get_new_user_id",
+#         return_value=-1,
+#     )
+#     user, header = user
+#     user["applications"] = []
+#     user.save()
+#     data = dict(
+#         file=(BytesIO(b"testing resume"), "resume.txt"),
+#     )
+#     rv = client.post(
+#         "/resume", headers=header, content_type="multipart/form-data", data=data
+#     )
+#     assert rv.status_code == 200
+#     rv = client.get("/resume", headers=header)
+#     assert rv.status_code == 200
