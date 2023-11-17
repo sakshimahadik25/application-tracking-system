@@ -46,7 +46,7 @@ export default class App extends React.Component {
     if (localStorage.getItem("token")) {
       const userId = localStorage.getItem("userId");
       await axios
-        .get("http://localhost:5000/getProfile", {
+        .get("http://127.0.0.1:5000/getProfile", {
           headers: {
             userid: userId,
             Authorization: `Bearer ${localStorage.getItem("token")}`,

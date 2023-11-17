@@ -71,7 +71,7 @@ export default class SearchPage extends Component {
     }
     this.setState({ searching: true });
     $.ajax({
-      url: "http://localhost:5000/search",
+      url: "http://127.0.0.1:5000/search",
       method: "get",
       data: {
         keywords: this.state.searchText,
@@ -141,14 +141,14 @@ export default class SearchPage extends Component {
     // console.log(job)
 
     $.ajax({
-      url: "http://localhost:5000/applications",
+      url: "http://127.0.0.1:5000/applications",
       method: "POST",
       data: JSON.stringify({
         application: job,
       }),
       headers: {
         Authorization: "Bearer " + localStorage.getItem("token"),
-        "Access-Control-Allow-Origin": "http://localhost:3000",
+        "Access-Control-Allow-Origin": "http://127.0.0.1:3000",
         "Access-Control-Allow-Credentials": "true",
       },
       contentType: "application/json",

@@ -12,7 +12,7 @@ const Recommendations = () => {
       const response = await fetch("http://127.0.0.1:5000/getRecommendations", {
         headers: {
           Authorization: "Bearer " + localStorage.getItem("token"),
-          "Access-Control-Allow-Origin": "http://localhost:3000",
+          "Access-Control-Allow-Origin": "http://127.0.0.1:3000",
           "Access-Control-Allow-Credentials": "true",
         },
         method: "GET",

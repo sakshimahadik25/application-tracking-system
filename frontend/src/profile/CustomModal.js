@@ -13,7 +13,7 @@ const CustomModal = (props) => {
     console.log({ [name]: data });
     axios
       .post(
-        "http://localhost:5000/updateProfile",
+        "http://127.0.0.1:5000/updateProfile",
         {
           [name]: data,
         },

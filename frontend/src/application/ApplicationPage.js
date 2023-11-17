@@ -196,7 +196,7 @@ const ApplicationPage = () => {
       fetch('http://127.0.0.1:5000/applications', {
         headers: {
           Authorization: 'Bearer ' + localStorage.getItem('token'),
-          'Access-Control-Allow-Origin': 'http://localhost:3000',
+          'Access-Control-Allow-Origin': 'http://127.0.0.1:3000',
           'Access-Control-Allow-Credentials': 'true',
         },
         method: 'GET',
@@ -226,7 +226,7 @@ const ApplicationPage = () => {
         fetch('http://127.0.0.1:5000/applications', {
           headers: {
             Authorization: 'Bearer ' + localStorage.getItem('token'),
-            'Access-Control-Allow-Origin': 'http://localhost:3000',
+            'Access-Control-Allow-Origin': 'http://127.0.0.1:3000',
             'Access-Control-Allow-Credentials': 'true',
           },
           method: 'POST',
@@ -252,7 +252,7 @@ const ApplicationPage = () => {
         fetch('http://127.0.0.1:5000/applications/' + application.id, {
           headers: {
             Authorization: 'Bearer ' + localStorage.getItem('token'),
-            'Access-Control-Allow-Origin': 'http://localhost:3000',
+            'Access-Control-Allow-Origin': 'http://127.0.0.1:3000',
             'Access-Control-Allow-Credentials': 'true',
           },
           method: 'PUT',
@@ -285,7 +285,7 @@ const ApplicationPage = () => {
     fetch('http://127.0.0.1:5000/applications/' + application?.id, {
       headers: {
         Authorization: 'Bearer ' + localStorage.getItem('token'),
-        'Access-Control-Allow-Origin': 'http://localhost:3000',
+        'Access-Control-Allow-Origin': 'http://127.0.0.1:3000',
         'Access-Control-Allow-Credentials': 'true',
       },
       method: 'DELETE',

@@ -214,7 +214,7 @@ def create_app():
             [{"token": token_whole, "expiry": expiry_str}]
         userSaved.update(authTokens=auth_tokens_new)
 
-        return redirect(f"http://localhost:3000/?token={token_whole}&expiry={expiry_str}&userId={unique_id}")
+        return redirect(f"http://127.0.0.1:3000/?token={token_whole}&expiry={expiry_str}&userId={unique_id}")
 
     @app.route("/users/signup", methods=["POST"])
     def sign_up():
@@ -712,7 +712,9 @@ with open("application.yml") as f:
     # ca=certifi.where()
     app.config["MONGODB_SETTINGS"] = {
         "db": "appTracker",
-        "host": f"mongodb+srv://{username}:{password}@cluster0.r0056lg.mongodb.net/appTracker?tls=true&tlsCAFile={certifi.where()}&retryWrites=true&w=majority",
+        # "host": f"mongodb+srv://{username}:{password}@cluster0.r0056lg.mongodb.net/appTracker?tls=true&tlsCAFile={certifi.where()}&retryWrites=true&w=majority",
+        "host": f"mongodb+srv://{username}:{password}@seproject.p1kzzaz.mongodb.net/?tls=true&tlsCAFile={certifi.where()}&retryWrites=true&w=majority",
+
     }
 db = MongoEngine()
 db.init_app(app)

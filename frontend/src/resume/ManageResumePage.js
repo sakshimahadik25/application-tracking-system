@@ -19,11 +19,11 @@ export default class ManageResumePage extends Component {
 
   getFiles () {
     $.ajax({
-          url: 'http://localhost:5000/resume',
+          url: 'http://127.0.0.1:5000/resume',
           method: 'GET',
           headers: {
             'Authorization': 'Bearer ' + localStorage.getItem('token'),
-            'Access-Control-Allow-Origin': 'http://localhost:3000',
+            'Access-Control-Allow-Origin': 'http://127.0.0.1:3000',
             'Access-Control-Allow-Credentials': 'true'
           },
           xhrFields: {
@@ -55,11 +55,11 @@ export default class ManageResumePage extends Component {
         //console.log(formData);
 
         $.ajax({
-          url: 'http://localhost:5000/resume',
+          url: 'http://127.0.0.1:5000/resume',
           method: 'POST',
           headers: {
             'Authorization': 'Bearer ' + localStorage.getItem('token'),
-            'Access-Control-Allow-Origin': 'http://localhost:3000',
+            'Access-Control-Allow-Origin': 'http://127.0.0.1:3000',
             'Access-Control-Allow-Credentials': 'true'
           },
           data: formData,
@@ -74,11 +74,11 @@ export default class ManageResumePage extends Component {
 
  downloadResume(){
   $.ajax({
-          url: 'http://localhost:5000/resume',
+          url: 'http://127.0.0.1:5000/resume',
           method: 'GET',
           headers: {
             'Authorization': 'Bearer ' + localStorage.getItem('token'),
-            'Access-Control-Allow-Origin': 'http://localhost:3000',
+            'Access-Control-Allow-Origin': 'http://127.0.0.1:3000',
             'Access-Control-Allow-Credentials': 'true'
           },
           xhrFields: {
