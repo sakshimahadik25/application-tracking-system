@@ -25,6 +25,7 @@ import random
 from authlib.integrations.flask_client import OAuth
 from authlib.common.security import generate_token
 import os
+from mongoengine.connection import get_db, connect
 
 existing_endpoints = ["/applications", "/resume"]
 
@@ -407,6 +408,8 @@ def create_app():
                 {"token": token, "expiry": expiry_str}
             ]
             user.update(authTokens=auth_tokens_new)
+            
+
             profileInfo = {
                 "id": user.id,
                 "fullName": user.fullName,
@@ -712,6 +715,7 @@ with open("application.yml") as f:
     # ca=certifi.where()
     app.config["MONGODB_SETTINGS"] = {
         "db": "appTracker",
+        
         # "host": f"mongodb+srv://{username}:{password}@cluster0.r0056lg.mongodb.net/appTracker?tls=true&tlsCAFile={certifi.where()}&retryWrites=true&w=majority",
         "host": f"mongodb+srv://{username}:{password}@seproject.p1kzzaz.mongodb.net/?tls=true&tlsCAFile={certifi.where()}&retryWrites=true&w=majority",
 
@@ -797,3 +801,4 @@ def get_new_application_id(user_id):
 
 if __name__ == "__main__":
     app.run()
+    
