@@ -54,10 +54,7 @@ const ProfilePage = (props) => {
                 }}
               >
                 <span style={{ fontSize: 60, letterSpacing: 1.2 }}>
-                  {profile.fullName && profile.fullName.length > 0
-                    ? profile.fullName?.split(" ")[0]?.substring(0, 1) +
-                      profile.fullName?.split(" ")[1]?.substring(0, 1)
-                    : ""}
+                  {profile.fullName }
                 </span>
               </div>
             </div>
@@ -274,6 +271,7 @@ const ProfilePage = (props) => {
       {ExpLevelModalOpen && (
         <ExperienceLevelModal
           name={CONSTANTS.PROFILE.EXPERIENCE_LEVEL}
+          
           options={CONSTANTS.EXPERIENCE_LEVEL}
           profile={props.profile}
           // setProfile={setProfile}

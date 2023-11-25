@@ -92,7 +92,7 @@ traitlets==5.0.5
 urllib3==1.26.2
 wcwidth==0.2.5
 webdriver-manager==4.0.1
-Werkzeug==2.2.2
+Werkzeug==2.3.7
 wrapt==1.12.1
 wtforms==3.1.0
 z3-solver==4.8.12.0
