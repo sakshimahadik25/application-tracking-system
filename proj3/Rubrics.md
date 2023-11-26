@@ -20,7 +20,7 @@
 |Use of syntax checkers|2| config files in GH showing this checker's config|
 |Use of code coverage|3| 	config files in GH|
 |Other automated analysis tools|1| config files in GH|
-|Test cases exist|2| [TestCases](https://github.com/Kashika08/ShopSync/tree/main/tests)|
+|Test cases exist|2| [Test Cases](https://github.com/Kashika08/application-tracking-system/blob/main/backend/test_app.py)|
 |Test cases are routinely executed|2| Github actions implemented|
 |The files CONTRIBUTING.md lists coding standards and lots of tips on how to extend the system without screwing things up  |1|[Guidelines in contributing.md](https://github.com/Kashika08/application-tracking-system/blob/main/Contributing.md) |
 |Issues are discussed before they are closed |3| Discussed on Whatsapp |
