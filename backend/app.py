@@ -707,12 +707,13 @@ app = create_app()
 
 with open("application.yml") as f:
     info = yaml.load(f, Loader=yaml.FullLoader)
-    username = info["username"]
-    password = info["password"]
+    username = info["USERNAME"]
+    password = info["PASSWORD"]
+    cluster_url = info["CLUSTER_URL"]
     # ca=certifi.where()
     app.config["MONGODB_SETTINGS"] = {
         "db": "appTracker",
-        "host": f"mongodb+srv://{username}:{password}@cluster0.r0056lg.mongodb.net/appTracker?tls=true&tlsCAFile={certifi.where()}&retryWrites=true&w=majority",
+        "host": f"mongodb+srv://{username}:{password}@{cluster_url}/",
     }
 db = MongoEngine()
 db.init_app(app)
