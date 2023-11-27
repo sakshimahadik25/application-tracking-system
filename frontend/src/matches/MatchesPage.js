@@ -4,6 +4,7 @@ import Spinner from '../spinners/Spinner';
 const Recommendations = () => {
 	const [recommendedJobs, setRecommendedJobs] = useState([]);
 	const [isFetchingJobs, setIsFetchingJobs] = useState(true);
+	const [fetchError, setFetchError] = useState(null);
 
 	useEffect(() => {
 		fetchRecommendations();
@@ -21,9 +22,13 @@ const Recommendations = () => {
 				method: 'GET'
 			});
 			const data = await response.json();
-			setRecommendedJobs(data);
+			if (data && data['error']) {
+				throw new Error(data['error']);
+			} else {
+				setRecommendedJobs(data);
+			}
 		} catch (error) {
-			console.error('Error fetching recommendations:', error);
+			setFetchError(error.message);
 		} finally {
 			setIsFetchingJobs(false);
 		}
@@ -90,6 +95,7 @@ const Recommendations = () => {
 				</thead>
 				<tbody>
 					{!isFetchingJobs &&
+						!fetchError &&
 						recommendedJobs &&
 						recommendedJobs.map((job, index) => (
 							<tr key={index}>
@@ -119,15 +125,27 @@ const Recommendations = () => {
 						))}
 					{isFetchingJobs && (
 						<tr key='0'>
-							<td className='p-3'>
-								<Spinner />
+							<td className='p-3 text-center' colSpan={3}>
+								<Spinner otherCSS='me-5' />
+								Finding most relevant jobs for you!
 							</td>
-							<td className='p-3'>Finding most relevant jobs for you!</td>
 						</tr>
 					)}
-					{!isFetchingJobs && (!recommendedJobs || recommendedJobs.length === 0) && (
+					{!isFetchingJobs &&
+						!fetchError &&
+						(!recommendedJobs || recommendedJobs.length === 0) && (
+							<tr key='0'>
+								<td className='p-3 text-center' colSpan={4}>
+									No Matches found
+								</td>
+							</tr>
+						)}
+					{!isFetchingJobs && fetchError && (
 						<tr key='0'>
-							<td className='p-3'>No Matches found</td>
+							<td className='p-3 text-center' colSpan={4}>
+								{fetchError}. Re-try after updating your profile with your skills,
+								preferred location and desired experience level details.
+							</td>
 						</tr>
 					)}
 				</tbody>
