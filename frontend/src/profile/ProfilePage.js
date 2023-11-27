@@ -27,9 +27,12 @@ const ProfilePage = (props) => {
 	 * @returns The abbreviated name string
 	 */
 	function getUserInitials(fullName) {
-		if (fullName && fullName.length > 0) {
-			const arr = fullName.split(' ');
-			const initials = arr[0].substring(0, 1) + arr[arr.length - 1].substring(0, 1);
+		if (fullName && fullName.trim().length > 0) {
+			const arr = fullName.trim().split(' ');
+			let initials = arr[0].substring(0, 1);
+			if (arr.length > 1) {
+				initials += arr[arr.length - 1].substring(0, 1);
+			}
 			return <span style={{ fontSize: 60, letterSpacing: 1.2 }}>{initials}</span>;
 		}
 		return (
