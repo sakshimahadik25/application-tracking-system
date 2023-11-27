@@ -50,6 +50,7 @@ const CustomModal = (props) => {
 					defaultValue={profile[name]}
 					isSearchable
 					isClearable
+					tabSelectsValue
 					isMulti
 					options={options}
 					onChange={(ele) => setData(ele)}
