@@ -55,7 +55,7 @@ def create_app():
     oauth = OAuth(app)
 
     @app.errorhandler(404)
-    def page_not_found(e):
+    def page_not_found():
         """
         Returns a json object to indicate error 404
 
@@ -65,7 +65,7 @@ def create_app():
 
     @app.errorhandler(405)
     # pylint: disable=C0103
-    def page_not_allowed(e):
+    def page_not_allowed():
         """
         Returns a json object to indicate error 405
 
