@@ -10,8 +10,6 @@ from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 from itertools import islice
 from webdriver_manager.chrome import ChromeDriverManager
-from bson.json_util import dumps
-from io import BytesIO
 from fake_useragent import UserAgent
 import pandas as pd
 import json
