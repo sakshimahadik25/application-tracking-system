@@ -2,6 +2,10 @@
 The flask application for our program
 """
 # importing required python libraries
+import json
+from datetime import datetime, timedelta
+import hashlib
+import uuid
 from flask import Flask, jsonify, request, send_file, redirect, url_for, session
 from flask_mongoengine import MongoEngine
 from flask_cors import CORS, cross_origin
@@ -10,11 +14,11 @@ from bs4 import BeautifulSoup
 
 from fake_useragent import UserAgent
 import pandas as pd
-import json
-from datetime import datetime, timedelta
+
+
 import yaml
-import hashlib
-import uuid
+
+
 
 import requests
 import random
