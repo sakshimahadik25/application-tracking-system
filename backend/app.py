@@ -19,12 +19,12 @@ from datetime import datetime, timedelta
 import yaml
 import hashlib
 import uuid
-import certifi
+
 import requests
 import random
 from authlib.integrations.flask_client import OAuth
 from authlib.common.security import generate_token
-import os
+
 
 existing_endpoints = ["/applications", "/resume"]
 
