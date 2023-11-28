@@ -5,8 +5,7 @@ The flask application for our program
 from flask import Flask, jsonify, request, send_file, redirect, url_for, session
 from flask_mongoengine import MongoEngine
 from flask_cors import CORS, cross_origin
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+
 from bs4 import BeautifulSoup
 
 from fake_useragent import UserAgent
