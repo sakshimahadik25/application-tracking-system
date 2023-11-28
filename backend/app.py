@@ -6,6 +6,7 @@ import json
 from datetime import datetime, timedelta
 import hashlib
 import uuid
+import random
 from flask import Flask, jsonify, request, send_file, redirect, url_for, session
 from flask_mongoengine import MongoEngine
 from flask_cors import CORS, cross_origin
@@ -21,7 +22,7 @@ import yaml
 
 
 import requests
-import random
+
 from authlib.integrations.flask_client import OAuth
 from authlib.common.security import generate_token
 
