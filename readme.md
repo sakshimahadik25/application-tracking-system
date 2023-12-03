@@ -81,12 +81,6 @@ The user is able to access different saved applications - Waitlisted application
 
 <p align="center"><img width="700" src="./resources/AddApplicationpage.png"></p>
 
-### MatchesPage
-
-On this page, user can see different jobs that would be recommended to them based on their profile and their preferences. User can apply for that position from this page too.
-
-<p align="center"><img width="700" src="./resources/Recommendjobspage.png"></p>
-
 ### Whats New
 
 #### Version 1.1
