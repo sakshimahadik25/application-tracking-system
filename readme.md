@@ -73,7 +73,6 @@ The interface through which a user is able to search for specific jobs and apply
 
 <p align="center"><img width="700" src="./resources/search_roles_companywise.png"></p> 
 <p align="center"><img width="700" src="./resources/FindJobs.png"></p>
-<p align="center"><img width="700" src="./resources/Job_Description.png"></p>
 
 ### ApplicationPage
 
